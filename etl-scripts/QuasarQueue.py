@@ -87,7 +87,23 @@ class QuasarQueue:
     def _process_message(self, method_frame, message_data):
         logging.info("[Message {0}] Processing message..."
                      "".format(message_data['meta']['request_id']))
-        query_results = self.insert_record(message_data)
+        message_type = _message_type(message_data)
+
+        if message_type:
+            email_address = ['data']['data']['email_address']
+            northstar_id = self.mysql_query("SELECT northstar_id "
+                              "FROM {1} WHERE email = \"{0}\";"
+                              "".format(email_address,
+                                        self.mysql_table))
+            if northstar_id:
+                query_results = self.insert_record(message_data, northstar_id,
+                                                   message_type)
+            else:
+                pass
+        else:
+            self.channel.basic_ack(method_frame.delivery_tag)
+            logging.info("[Message {0}] Message not sub or unsub. Dropping."
+                         "".format(message_data['meta']['request_id']))
 
         if query_results:
             self.channel.basic_ack(method_frame.delivery_tag)
@@ -145,6 +161,17 @@ class QuasarQueue:
     def _body_encode(self, message_data):
         return json.dumps(message_data)
 
+    def _message_type(self, message_data):
+        message_type = ['data']['data']['event_type']
+        if message_type == 'customer_subscribed':
+            customer_io_subscription_status = 'subscribed'
+            return customer_io_subscription_status
+        elif message_type == 'customer_unsubscribed':
+            customer_io_subscription_status = 'unsubscribed'
+            return customer_io_subscription_status
+        else:
+            return False
+
     def mysql_query(self, query):
         try:
             self.mysql_cursor.execute(query)
@@ -153,15 +180,17 @@ class QuasarQueue:
         except MySQLdb.DatabaseError as e:
             raise QuasarQueueException(e)
 
-    def insert_record(self, message_object):
-        email_address = message_object['data']['data']['email_address']
-        customer_id = message_object['data']['data']['customer_id']
+    def insert_record(self, message_object, northstar_id, message_type):
+        customer_io_subscription_status = message_type
+        customer_io_subscription_timestamp = ['data']['data']['timestamp']
 
-        return self.mysql_query("INSERT INTO {2} "
-                                "VALUES(\"{0}\", \"{1}\");"
-                                "".format(email_address,
-                                          customer_id,
-                                          self.mysql_table))
+        return self.mysql_query("UPDATE {3} SET "
+                                "customer_io_subscription_status = \"{0}\", "
+                                "customer_io_subscription_timestamp = {1} "
+                                "WHERE northstar_id = \"{2}\""
+                                "".format(customer_io_subscription_status,
+                                          customer_io_subscription_timestamp,
+                                          northstar_id, self.mysql_table))
 
 
 class QuasarQueueException(Exception):
