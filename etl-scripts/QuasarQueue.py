@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format=log_format)
 
 
 class QuasarQueue:
-    """ This class handles queue tasks for Blink Quasar Customer.io Queue.
+    """This class handles queue tasks for Blink Quasar Customer.io Queue.
 
     This first class is to MVP our migration to Customer.io using queueing
     in our ETL pipeline, a first for DS.
@@ -92,9 +92,9 @@ class QuasarQueue:
         if message_type:
             email_address = ['data']['data']['email_address']
             northstar_id = self.mysql_query("SELECT northstar_id "
-                              "FROM {1} WHERE email = \"{0}\";"
-                              "".format(email_address,
-                                        self.mysql_table))
+                                            "FROM {1} WHERE email = \"{0}\";"
+                                            "".format(email_address,
+                                                      self.mysql_table))
             if northstar_id:
                 query_results = self.insert_record(message_data, northstar_id,
                                                    message_type)
