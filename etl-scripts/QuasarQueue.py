@@ -99,7 +99,7 @@ class QuasarQueue:
     def _process_message(self, method_frame, message_data):
         logging.info("[Message {0}] Processing message..."
                      "".format(message_data['meta']['request_id']))
-        message_type = _message_type(message_data)
+        message_type = self._message_type(message_data)
 
         if message_type:
             email_address = ['data']['data']['email_address']
