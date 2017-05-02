@@ -34,6 +34,7 @@ class QuasarQueue:
                  mysql_password=config.MYSQL_PASSWORD,
                  mysql_database=config.MYSQL_DATABASE,
                  mysql_table=config.MYSQL_TABLE):
+        """Setup MySQL and AMQP connections and credentials."""
         self.params = pika.URLParameters(amqp_uri)
         self.params.socket_timeout = 5
         self.connection = pika.BlockingConnection(self.params)
@@ -60,6 +61,10 @@ class QuasarQueue:
         self.mysql_cursor = self.mysql_connection.cursor()
 
     def start(self):
+        """Kick off consumer process to ingest messages.
+
+        Stays active until killed by keyboard interrupt (Ctrl-c or equivalent).
+        """
         logging.info("Starting Blink consumer...")
         self.channel.basic_consume(self.on_message, self.amqp_queue)
         try:
@@ -70,6 +75,13 @@ class QuasarQueue:
         self.connection.close()
 
     def on_message(self, channel, method_frame, header_frame, body):
+        """Parse message once one arrives in queue.
+
+        The body of the message is decoded via JSON decoder. As long as the
+        queue isn't empty, the messages are parsed and processed by the
+        _process_message private method which inserts the records in the
+        Quasar DB and discards them if they're not type sub or sunsub.
+        """
         message_data = self._body_decode(body)
         logging.info("[Message {0}]: Received."
                      "".format(message_data['meta']['request_id']))
@@ -173,6 +185,10 @@ class QuasarQueue:
             return False
 
     def mysql_query(self, query):
+        """Parse and run DB query.
+
+        On error, raise exception and log why.
+        """
         try:
             self.mysql_cursor.execute(query)
             self.mysql_connection.commit()
@@ -181,6 +197,12 @@ class QuasarQueue:
             raise QuasarQueueException(e)
 
     def insert_record(self, message_object, northstar_id, message_type):
+        """Insert email and timestamp event into Quasar DB.
+
+        Using derived Northstar ID associated with e-mail address the email
+        status of subscribed or unsubscribed is put in to the Quasar DB along
+        with the recorded timestamp.
+        """
         customer_io_subscription_status = message_type
         customer_io_subscription_timestamp = ['data']['data']['timestamp']
 
@@ -194,6 +216,12 @@ class QuasarQueue:
 
 
 class QuasarQueueException(Exception):
+    """Donated exception handling code by Rob Spectre.
+
+    This logs any error message we need to pass in.
+    """
+
     def __init__(self, message):
+        """Log errors with formatted messaging."""
         logging.error("ERROR: {0}".format(message))
         pass
