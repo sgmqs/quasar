@@ -2,6 +2,7 @@ import pika
 
 import json
 
+
 class BlinkQueue:
     """ This class handles queue tasks for Blink Quasar Customer.io Queue.
 
@@ -37,7 +38,8 @@ class BlinkQueue:
         self.connection.close()
 
     def getOneMessage(self):
-        method_frame, header_frame, body = self.channel.basic_get(self.queue_name)
+        method_frame, header_frame, body = (
+            self.channel.basic_get(self.queue_name))
         if method_frame:
             message_response = body.decode()
             message_data = json.loads(message_response)
