@@ -1,7 +1,9 @@
+from datetime import datetime
 import json
 import logging
 import MySQLdb
 from queue import Queue
+import re
 import time
 
 import pika
@@ -102,13 +104,15 @@ class QuasarQueue:
         message_type = self._message_type(message_data)
 
         if message_type:
-            email_address = ['data']['data']['email_address']
+            email_address = message_data['data']['data']['email_address']
             northstar_id = self.mysql_query("SELECT northstar_id "
                                             "FROM {1} WHERE email = \"{0}\";"
                                             "".format(email_address,
                                                       self.mysql_table))
-            if northstar_id:
-                query_results = self.insert_record(message_data, northstar_id,
+            if northstar_id[0]:
+                query_results = self.insert_record(message_data,
+                                                   self._bare_str(
+                                                       northstar_id[1]),
                                                    message_type)
             else:
                 pass
@@ -174,7 +178,7 @@ class QuasarQueue:
         return json.dumps(message_data)
 
     def _message_type(self, message_data):
-        message_type = ['data']['data']['event_type']
+        message_type = message_data['data']['event_type']
         if message_type == 'customer_subscribed':
             customer_io_subscription_status = 'subscribed'
             return customer_io_subscription_status
@@ -184,6 +188,12 @@ class QuasarQueue:
         else:
             return False
 
+    def _bare_str(self, base_value):
+        """Convert value to string and strips special characters."""
+        base_string = str(base_value)
+        strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
+        return str(strip_special_chars)
+
     def mysql_query(self, query):
         """Parse and run DB query.
 
@@ -192,7 +202,8 @@ class QuasarQueue:
         try:
             self.mysql_cursor.execute(query)
             self.mysql_connection.commit()
-            return True
+            results = self.mysql_cursor.fetchall()
+            return True, results
         except MySQLdb.DatabaseError as e:
             raise QuasarQueueException(e)
 
@@ -204,15 +215,20 @@ class QuasarQueue:
         with the recorded timestamp.
         """
         customer_io_subscription_status = message_type
-        customer_io_subscription_timestamp = ['data']['data']['timestamp']
+        customer_io_subscription_timestamp = (
+            datetime.fromtimestamp(
+                message_object['data']['timestamp']).isoformat())
+        query_status = self.mysql_query("UPDATE {3} SET "
+                                        "customer_io_subscription_status = "
+                                        "\"{0}\", "
+                                        "customer_io_subscription_timestamp = "
+                                        "\"{1}\" WHERE northstar_id = \"{2}\""
+                                        "".format(
+                                            customer_io_subscription_status,
+                                            customer_io_subscription_timestamp,
+                                            northstar_id, self.mysql_table))
 
-        return self.mysql_query("UPDATE {3} SET "
-                                "customer_io_subscription_status = \"{0}\", "
-                                "customer_io_subscription_timestamp = {1} "
-                                "WHERE northstar_id = \"{2}\""
-                                "".format(customer_io_subscription_status,
-                                          customer_io_subscription_timestamp,
-                                          northstar_id, self.mysql_table))
+        return query_status[0]
 
 
 class QuasarQueueException(Exception):
