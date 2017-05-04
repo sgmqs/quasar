@@ -1,4 +1,5 @@
 import requests
+import re
 from requests.auth import HTTPBasicAuth
 import time
 from datetime import datetime
@@ -17,6 +18,12 @@ def isInt(s):
         return True
     except ValueError:
         return False
+
+def _bare_str(base_value):
+    """Convert value to string and strips special characters."""
+    base_string = str(base_value)
+    strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
+    return str(strip_special_chars)
 
 mc_increment = 1000
 
@@ -109,7 +116,7 @@ while (len(member_array['members'])) > 1:
                 pass
             else:
                 for x in range(0, northstar_email_matches):
-                    northstar_id = cur.fetchone()
+                    northstar_id = _bare_str(cur.fetchone())
                     first_subscribed = submember['timestamp_opt'].replace('T', ' ').split('+')[0]
                     status = submember['status']
                     list_id = submember['list_id']
