@@ -14,11 +14,14 @@ _TASK_
 -------------------
 #### Ideal Deadline
 
-#### Request
+#### Description
 
 #### Why This is Important
 
 #### Definition of Done
+**Given**
+**When**
+**Then**
 
 #### Additional Information
 
