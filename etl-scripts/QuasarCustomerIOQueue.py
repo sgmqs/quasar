@@ -4,6 +4,7 @@ import logging
 import MySQLdb
 from queue import Queue
 import re
+import sys
 import time
 
 import pika
@@ -68,7 +69,8 @@ class QuasarQueue:
         Stays active until killed by keyboard interrupt (Ctrl-c or equivalent).
         """
         logging.info("Starting Blink consumer...")
-        self.channel.basic_consume(self.on_message, self.amqp_queue)
+        self.channel.basic_consume(self.on_message, self.amqp_queue,
+                                   no_ack = False)
         try:
             self.channel.start_consuming()
             logging.info("Blink consumer started.")
@@ -109,7 +111,7 @@ class QuasarQueue:
                                             "FROM {1} WHERE email = \"{0}\";"
                                             "".format(email_address,
                                                       self.mysql_table))
-            if northstar_id[1] is not None:
+            if self._bare_str(northstar_id[1]) != "":
                 query_results = self.insert_record(message_data,
                                                    self._bare_str(
                                                        northstar_id[1]),
@@ -121,7 +123,8 @@ class QuasarQueue:
             else:
                 logging.info("[Message {0}] Message failed, retrying..."
                              "".format(message_data['meta']['request_id']))
-                return self._retry_message(method_frame, message_data)
+                self._retry_message(method_frame, message_data)
+                sys.exit()
         else:
             self.channel.basic_ack(method_frame.delivery_tag)
             logging.info("[Message {0}] Message not sub or unsub. Dropping."
@@ -138,6 +141,7 @@ class QuasarQueue:
         message_data['meta']['retry_after'] = time.time() + \
             message_data['meta']['retry']
 
+        method_frame.delivery_tag = 0
         self.channel.basic_ack(method_frame.delivery_tag)
 
         return self.retry_queue.put({'method_frame': method_frame,
