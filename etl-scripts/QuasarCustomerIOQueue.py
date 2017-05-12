@@ -69,8 +69,7 @@ class QuasarQueue:
         Stays active until killed by keyboard interrupt (Ctrl-c or equivalent).
         """
         logging.info("Starting Blink consumer...")
-        self.channel.basic_consume(self.on_message, self.amqp_queue,
-                                   no_ack = False)
+        self.channel.basic_consume(self.on_message, self.amqp_queue)
         try:
             self.channel.start_consuming()
             logging.info("Blink consumer started.")
@@ -141,7 +140,6 @@ class QuasarQueue:
         message_data['meta']['retry_after'] = time.time() + \
             message_data['meta']['retry']
 
-        method_frame.delivery_tag = 0
         self.channel.basic_ack(method_frame.delivery_tag)
 
         return self.retry_queue.put({'method_frame': method_frame,
