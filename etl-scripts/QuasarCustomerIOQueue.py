@@ -4,6 +4,7 @@ import logging
 import MySQLdb
 from queue import Queue
 import re
+import sys
 import time
 
 import pika
@@ -109,27 +110,25 @@ class QuasarQueue:
                                             "FROM {1} WHERE email = \"{0}\";"
                                             "".format(email_address,
                                                       self.mysql_table))
-            if northstar_id[0]:
+            if self._bare_str(northstar_id[1]) != "":
                 query_results = self.insert_record(message_data,
                                                    self._bare_str(
                                                        northstar_id[1]),
                                                    message_type)
+                self.channel.basic_ack(method_frame.delivery_tag)
+                logging.info("[Message {0}] Message processed."
+                             "".format(message_data['meta']['request_id']))
+                return True
             else:
-                pass
+                logging.info("[Message {0}] Message failed, retrying..."
+                             "".format(message_data['meta']['request_id']))
+                self._retry_message(method_frame, message_data)
+                sys.exit()
         else:
             self.channel.basic_ack(method_frame.delivery_tag)
             logging.info("[Message {0}] Message not sub or unsub. Dropping."
                          "".format(message_data['meta']['request_id']))
 
-        if query_results:
-            self.channel.basic_ack(method_frame.delivery_tag)
-            logging.info("[Message {0}] Message processed."
-                         "".format(message_data['meta']['request_id']))
-            return True
-        else:
-            logging.info("[Message {0}] Message failed, retrying..."
-                         "".format(message_data['meta']['request_id']))
-            return self._retry_message(method_frame, message_data)
 
     def _retry_message(self, method_frame, message_data):
         if message_data['meta'].get('retry', None):
