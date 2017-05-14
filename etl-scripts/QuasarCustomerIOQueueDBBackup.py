@@ -3,7 +3,6 @@ import json
 import logging
 import MySQLdb
 import re
-import time
 
 import pika
 
@@ -104,10 +103,9 @@ class QuasarQueue:
             if self._bare_str(northstar_id[1]) != "":
                 logging.info("Procesing Northstar ID: {0}."
                              "".format(northstar_id[1]))
-                query_results = self.insert_record(message_data,
-                                                   self._bare_str(
-                                                       northstar_id[1]),
-                                                   message_type)
+                self.insert_record(message_data,
+                                   self._bare_str(northstar_id[1]),
+                                   message_type)
                 self.channel.basic_ack(method_frame.delivery_tag)
                 logging.info("[Message {0}] Message processed."
                              "".format(message_data['meta']['request_id']))
