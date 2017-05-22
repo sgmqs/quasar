@@ -1,4 +1,4 @@
-from QuasarCustomerIOQueueDBBackup import QuasarQueue
+from QuasarCustomerIOQueue import QuasarQueue
 import logging
 
 

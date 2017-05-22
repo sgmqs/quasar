@@ -2,7 +2,6 @@ from datetime import datetime
 import json
 import logging
 import MySQLdb
-from queue import Queue
 import re
 import sys
 import time
@@ -44,7 +43,6 @@ class QuasarQueue:
         self.channel = self.connection.channel()
         self.channel.basic_qos(prefetch_count=100)
         self.channel.queue_declare(amqp_queue, durable=True)
-        self.retry_queue = Queue()
 
         self.amqp_uri = amqp_uri
         self.amqp_exchange = amqp_exchange
@@ -89,14 +87,6 @@ class QuasarQueue:
         logging.info("[Message {0}]: Received."
                      "".format(message_data['meta']['request_id']))
 
-        if not self.retry_queue.empty():
-            message = self.retry_queue.get()
-            if message['message_data']['meta']['retry_after'] < time.time():
-                self._process_message(message['method_frame'],
-                                      message['message_data'])
-            else:
-                self.retry_queue.put(message)
-
         return self._process_message(method_frame, message_data)
 
     def _process_message(self, method_frame, message_data):
@@ -120,30 +110,16 @@ class QuasarQueue:
                              "".format(message_data['meta']['request_id']))
                 return True
             else:
-                logging.info("[Message {0}] Message failed, retrying..."
+                self.channel.basic_nack(method_frame.delivery_tag,
+                                        requeue=True)
+                logging.info("[Message {0}] Message failed, requeueing "
+                             "single message and exiting till next run..."
                              "".format(message_data['meta']['request_id']))
-                self._retry_message(method_frame, message_data)
-                sys.exit()
+                sys.exit(0)
         else:
             self.channel.basic_ack(method_frame.delivery_tag)
             logging.info("[Message {0}] Message not sub or unsub. Dropping."
                          "".format(message_data['meta']['request_id']))
-
-
-    def _retry_message(self, method_frame, message_data):
-        if message_data['meta'].get('retry', None):
-            compute_retry = (message_data['meta']['retry'] ^ 2) * 30
-            message_data['meta']['retry'] = compute_retry
-        else:
-            message_data['meta']['retry'] = 1
-
-        message_data['meta']['retry_after'] = time.time() + \
-            message_data['meta']['retry']
-
-        self.channel.basic_ack(method_frame.delivery_tag)
-
-        return self.retry_queue.put({'method_frame': method_frame,
-                                     'message_data': message_data})
 
     def _create_connection(self, mysql_host, mysql_port, mysql_user,
                            mysql_password, mysql_database):
