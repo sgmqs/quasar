@@ -43,7 +43,6 @@ class QuasarQueue:
         self.channel = self.connection.channel()
         self.channel.basic_qos(prefetch_count=100)
         self.channel.queue_declare(amqp_queue, durable=True)
-        self.retry_queue = Queue()
 
         self.amqp_uri = amqp_uri
         self.amqp_exchange = amqp_exchange
@@ -88,14 +87,6 @@ class QuasarQueue:
         logging.info("[Message {0}]: Received."
                      "".format(message_data['meta']['request_id']))
 
-        if not self.retry_queue.empty():
-            message = self.retry_queue.get()
-            if message['message_data']['meta']['retry_after'] < time.time():
-                self._process_message(message['method_frame'],
-                                      message['message_data'])
-            else:
-                self.retry_queue.put(message)
-
         return self._process_message(method_frame, message_data)
 
     def _process_message(self, method_frame, message_data):
@@ -119,19 +110,12 @@ class QuasarQueue:
                              "".format(message_data['meta']['request_id']))
                 return True
             else:
-                try:
-                    self.channel.basic_nack(method_frame.delivery_tag,
-                                            requeue=True)
-                    logging.info("[Message {0}] Message failed, requeueing..."
-                                 "".format(message_data['meta']['request_id']))
-                else:
-                    logging.info("[Message {0}] Message failed. "
-                                 "Putting message content in backup table."
-                                 "".format(message_data['meta']['request_id']))
-                    self.backup_results = self.backup_record(message_data,
-                                                             message_type)
-                    self.channel.basic_ack(method_frame.delivery_tag)
-                    logging.info("Backed up email {0}.".format(email_address))
+                self.channel.basic_nack(method_frame.delivery_tag,
+                                        requeue=True)
+                logging.info("[Message {0}] Message failed, requeueing "
+                             "single message and exiting till next run..."
+                             "".format(message_data['meta']['request_id']))
+                sys.exit(0)
         else:
             self.channel.basic_ack(method_frame.delivery_tag)
             logging.info("[Message {0}] Message not sub or unsub. Dropping."
