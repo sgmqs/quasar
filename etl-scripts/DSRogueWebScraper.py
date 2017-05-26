@@ -19,13 +19,13 @@ class RogueScraper(Scraper):
 
     def get(self, path, query_params=''):
         """Set get method to use Rogue API Key."""
-        auth_header = {'X-DS-Rogue-API-Key' : rogue_api_key}
+        auth_header = {'X-DS-Rogue-API-Key' : self.rogue_api_key}
         response = self.session.get(self.url + path,
                                     headers = auth_header,
                                     params=query_params)
         return response.json()
 
-    def getActivity(self, page=1, limit=40):
+    def get_activity(self, page=1, limit=40):
         """Get activity from Rogue API with page and limit.
 
         Args:
@@ -36,7 +36,7 @@ class RogueScraper(Scraper):
                                      {'page': page, 'limit': limit})
         return(activity_response['data'])
 
-    def getTotalPages(self, page=1, limit=40):
+    def get_total_pages(self, page=1, limit=40):
         """Get total pages from Rogue API with page and limit.
 
         Args:
