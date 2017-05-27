@@ -25,16 +25,21 @@ class RogueEtl:
         # rogueLoad = BladeMySQL(config.CAMPAIGN_ACTIVITY_TABLE)
 
 
-    def full_backfil(self):
+    def full_backfill(self):
         final_page = self.rogueExtract.get_total_pages()
         current_page = 1
-        
+        while current_page <= final_page:
+            print("Current page is %s." % current_page)
+            page_results = self._transform_records(
+                self._get_activity_page(current_page))
+            current_page += 1
+
 
     def insert_record(self):
         """Put sanitized record into Blade DB."""
         print(type(self._get_extract_page(1,40)))
 
-    def _get_extract_page(self, page, limit):
+    def _get_activity_page(self, page, limit=40):
         roguePage = self.rogueExtract.get_activity(page, limit)
         return roguePage
 
@@ -42,15 +47,11 @@ class RogueEtl:
         """Iterate over page of results from Rogue API and return clean list."""
         parsed_records = []
         for i in rogue_page:
-            if i['posts']['data'] is None:
-                i['posts']['data']['id'] = ''
-                i['posts']['data']['url'] = ''
-                i['posts']['data']['caption'] = ''
-                i['posts']['data']['status'] = ''
-                i['posts']['data']['remote_addr'] = ''
-                i['posts']['data']['post_source'] = ''
-                i['posts']['data']['created_at'] = ''
-                i['posts']['data']['updated_at'] = ''
+            if i['posts']['data'] == []:
+                i['posts']['data'] = {'id': '', 'status': '',
+                                      'media': {'caption': '', 'url': ''},
+                                      'remote_addr': '','post_source': '',
+                                      'created_at': '', 'updated_at': ''}
                 parsed_records.append(i)
             else:
                 parsed_records.append(i)

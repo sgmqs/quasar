@@ -45,4 +45,4 @@ class RogueScraper(Scraper):
             """
         page_response = self.get('/api/v2/activity',
                                      {'page': page, 'limit': limit})
-        return(user_response['meta']['pagination']['total_pages'])
+        return(page_response['meta']['pagination']['total_pages'])

@@ -7,4 +7,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format=log_format)
 
     testCampaignActivityETL = RogueEtl()
-    testCampaignActivityETL.insert_records()
+    testCampaignActivityETL.full_backfill()
