@@ -16,7 +16,7 @@ class BladeMySQL:
         self.mysql_database = config.MYSQL_DATABASE
         # self.mysql_table = mysql_table
 
-        self.mysql_connection = self._create_connection(mysql_host,
+        self.mysql_connection = self.create_connection(mysql_host,
                                                         mysql_port,
                                                         mysql_user,
                                                         mysql_password,
