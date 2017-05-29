@@ -28,7 +28,6 @@ class RogueEtl:
 
     def full_backfill(self):
         """Run or resume full backfill of Campaign Activity from Rogue API."""
-        self.rogueLoad.create_connection()
         final_page = self.rogueExtract.get_total_pages()
         current_page = 1
         while current_page <= final_page:

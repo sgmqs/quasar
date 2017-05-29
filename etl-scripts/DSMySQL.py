@@ -14,16 +14,15 @@ class BladeMySQL:
         self.mysql_user = config.MYSQL_USER
         self.mysql_password = config.MYSQL_PASSWORD
         self.mysql_database = config.MYSQL_DATABASE
-        # self.mysql_table = mysql_table
 
-        self.mysql_connection = self.create_connection(self.mysql_host,
+        self.mysql_connection = self._create_connection(self.mysql_host,
                                                        self.mysql_port,
                                                        self.mysql_user,
                                                        self.mysql_password,
                                                        self.mysql_database)
         self.mysql_cursor = self.mysql_connection.cursor()
 
-    def create_connection(self, mysql_host, mysql_port, mysql_user,
+    def _create_connection(self, mysql_host, mysql_port, mysql_user,
                            mysql_password, mysql_database):
         try:
             conn = MySQLdb.connect(host=mysql_host,
