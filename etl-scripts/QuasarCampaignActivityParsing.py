@@ -79,6 +79,7 @@ class RogueEtl:
                                       dsh.bare_str(i['updated_at']),
                                       None, None, None, None, None, None,
                                       None, None)
+                print(query)
                 self.rogueLoad.mysql_query(query)
             else:
                 for j in i['posts']['data']:
@@ -117,4 +118,5 @@ class RogueEtl:
                                        dsh.bare_str(j['source']),
                                        dsh.bare_str(j['created_at']),
                                        dsh.bare_str(j['updated_at']))
+                    print(query)
                     self.rogueLoad.mysql_query(query)
