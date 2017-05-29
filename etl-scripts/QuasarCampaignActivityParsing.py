@@ -65,7 +65,7 @@ class RogueEtl:
                            status = {13},
                            remote_addr = {14},
                            post_source = {15},
-                           submission_created_at = {16},ß
+                           submission_created_at = {16},
                            submission_updated_at = {17}
                            """.format(self.campaign_activity_table,
                                       dsh.bare_str(i['northstar_id']),
