@@ -54,7 +54,7 @@ class RogueEtl:
                            signup_event_id = \"{2}\",
                            campaign_id = {3},
                            campaign_run_id = {4},
-                           quantity = {5},
+                           quantity = \"{5}\",
                            why_participated = \"{6}\",
                            signup_source = \"{7}\",
                            signup_created_at = \"{8}\",
