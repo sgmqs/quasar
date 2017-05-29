@@ -7,14 +7,14 @@ from DSHelper import QuasarException
 
 class BladeMySQL:
 
-    def __init__(self, mysql_table=config.MYSQL_TABLE):
+    def __init__(self):
         """Setup MySQL Connector and credentials to Blade DB."""
         self.mysql_host = config.MYSQL_HOST
         self.mysql_port = config.MYSQL_PORT
         self.mysql_user = config.MYSQL_USER
         self.mysql_password = config.MYSQL_PASSWORD
         self.mysql_database = config.MYSQL_DATABASE
-        self.mysql_table = mysql_table
+        # self.mysql_table = mysql_table
 
         self.mysql_connection = self._create_connection(mysql_host,
                                                         mysql_port,
