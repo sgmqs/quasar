@@ -77,8 +77,7 @@ class RogueEtl:
                                       dsh.bare_str(i['signup_source']),
                                       dsh.bare_str(i['created_at']),
                                       dsh.bare_str(i['updated_at']),
-                                      None, None, None, None, None, None,
-                                      None, None)
+                                      '', '', '', '', '', '', '', '')
                 print(query)
                 self.rogueLoad.mysql_query(query)
             else:
