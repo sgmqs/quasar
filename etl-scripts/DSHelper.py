@@ -9,7 +9,7 @@ def bare_str(base_value):
     """Convert value to string and strips special characters."""
     base_string = str(base_value)
     if base_string is None or base_string == 'None':
-        base_string = ''
+        strip_special_chars = ''
     else:
         strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
     return str(strip_special_chars)
