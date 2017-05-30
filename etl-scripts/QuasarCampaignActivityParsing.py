@@ -51,24 +51,23 @@ class RogueEtl:
         """Iterate over page of results and load into Blade DB."""
         for i in rogue_page:
             if i['posts']['data'] == []:
-                self.db.mysql_query_str("""INSERT INTO %s
-                                        SET northstar_id = %s,
-                                        signup_event_id = %s,
-                                        campaign_id = %s,
-                                        campaign_run_id = %s,
-                                        quantity = %s,
-                                        why_participated = %s,
-                                        signup_source = %s,
-                                        signup_created_at = %s,
-                                        signup_updated_at = %s,
-                                        post_id = NULL,
-                                        url = NULL,
-                                        caption = NULL,
-                                        status = NULL,
-                                        remote_addr = NULL,
-                                        post_source = NULL,
-                                        submission_created_at = NULL,
-                                        """,
+                self.db.mysql_query_str("INSERT INTO %s \
+                                        SET northstar_id = %s,\
+                                        signup_event_id = %s,\
+                                        campaign_id = %s,\
+                                        campaign_run_id = %s,\
+                                        quantity = %s,\
+                                        why_participated = %s,\
+                                        signup_source = %s,\
+                                        signup_created_at = %s,\
+                                        signup_updated_at = %s,\
+                                        post_id = NULL,\
+                                        url = NULL,\
+                                        caption = NULL,\
+                                        status = NULL,\
+                                        remote_addr = NULL,\
+                                        post_source = NULL,\
+                                        submission_created_at = NULL",
                                         (self.campaign_activity_table,
                                          dsh.bare_str(i['northstar_id']),
                                          dsh.bare_str(i['signup_id']),
@@ -81,25 +80,24 @@ class RogueEtl:
                                          dsh.bare_str(i['updated_at'])))
             else:
                 for j in i['posts']['data']:
-                    self.db.mysql_query_str("""INSERT INTO %s
-                                            SET northstar_id = %s,
-                                            signup_event_id = %s,
-                                            campaign_id = %s,
-                                            campaign_run_id = %s,
-                                            quantity = %s,
-                                            why_participated = %s,
-                                            signup_source = %s,
-                                            signup_created_at = %s,
-                                            signup_updated_at = %s,
-                                            post_id = %s,
-                                            url = %s,
-                                            caption = %s,
-                                            status = %s,
-                                            remote_addr = %s,
-                                            post_source = %s,
-                                            submission_created_at = %s,
-                                            submission_updated_at = %s
-                                            """,
+                    self.db.mysql_query_str("INSERT INTO %s \
+                                            SET northstar_id = %s,\
+                                            signup_event_id = %s,\
+                                            campaign_id = %s,\
+                                            campaign_run_id = %s,\
+                                            quantity = %s,\
+                                            why_participated = %s,\
+                                            signup_source = %s,\
+                                            signup_created_at = %s,\
+                                            signup_updated_at = %s,\
+                                            post_id = %s,\
+                                            url = %s,\
+                                            caption = %s,\
+                                            status = %s,\
+                                            remote_addr = %s,\
+                                            post_source = %s,\
+                                            submission_created_at = %s,\
+                                            submission_updated_at = %s",
                                             (self.campaign_activity_table,
                                              dsh.bare_str(i['northstar_id']),
                                              dsh.bare_str(i['signup_id']),
