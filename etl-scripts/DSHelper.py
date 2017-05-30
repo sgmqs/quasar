@@ -3,13 +3,14 @@ import re
 
 # DoSomething Helper Functions - Code Reused Across Lots of our ETL Scripts
 
-### Database Helpers
+### String Parser
 
 def bare_str(base_value):
     """Convert value to string and strips special characters."""
     base_string = str(base_value)
-    if base_string is None or base_string == 'None':
-        strip_special_chars = ''
+    if base_string is None:
+        null_string = ''
+        return str(null_string)
     else:
         strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
     return str(strip_special_chars)

@@ -10,6 +10,7 @@ from DSRogueWebScraper import RogueScraper
 log_format = "%(asctime)s - %(levelname)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_format)
 
+
 class RogueEtl:
     """This class ETL's data from DS Rogue API to Blade Data Warehouse.
 
@@ -39,7 +40,7 @@ class RogueEtl:
 
     def insert_record(self):
         """Put sanitized record into Blade DB."""
-        print(type(self._get_extract_page(1,40)))
+        print(type(self._get_extract_page(1, 40)))
 
     def _get_activity_page(self, page, limit=40):
         """Get a paginated response from Rogue API."""
@@ -47,74 +48,74 @@ class RogueEtl:
         return roguePage
 
     def _process_records(self, rogue_page):
-        """Iterate over page of results ."""
+        """Iterate over page of results and load into Blade DB."""
         for i in rogue_page:
             if i['posts']['data'] == []:
-                query = """INSERT INTO {0} SET northstar_id = \"{1}\",
-                           signup_event_id = \"{2}\",
-                           campaign_id = {3},
-                           campaign_run_id = {4},
-                           quantity = \"{5}\",
-                           why_participated = \"{6}\",
-                           signup_source = \"{7}\",
-                           signup_created_at = \"{8}\",
-                           signup_updated_at = \"{9}\",
-                           post_id = {10},
-                           url = {11},
-                           caption = {12},
-                           status = {13},
-                           remote_addr = {14},
-                           post_source = {15},
-                           submission_created_at = {16},
-                           submission_updated_at = {17}
-                           """.format(self.campaign_activity_table,
-                                      dsh.bare_str(i['northstar_id']),
-                                      dsh.bare_str(i['signup_id']),
-                                      dsh.bare_str(i['campaign_id']),
-                                      dsh.bare_str(i['campaign_run_id']),
-                                      dsh.bare_str(i['quantity']),
-                                      dsh.bare_str(i['why_participated']),
-                                      dsh.bare_str(i['signup_source']),
-                                      dsh.bare_str(i['created_at']),
-                                      dsh.bare_str(i['updated_at']),
-                                      'NULL', 'NULL', 'NULL', 'NULL',
-                                      'NULL', 'NULL', 'NULL', 'NULL')
-                self.rogueLoad.mysql_query(query)
+                self.rogueLoad.mysql_query("""INSERT INTO %s
+                                           SET northstar_id = %s,
+                                           signup_event_id = %s,
+                                           campaign_id = %s,
+                                           campaign_run_id = %s,
+                                           quantity = %s,
+                                           why_participated = %s,
+                                           signup_source = %s,
+                                           signup_created_at = %s,
+                                           signup_updated_at = %s,
+                                           post_id = NULL,
+                                           url = NULL,
+                                           caption = NULL,
+                                           status = NULL,
+                                           remote_addr = NULL,
+                                           post_source = NULL,
+                                           submission_created_at = NULL,
+                                           submission_updated_at = NULL
+                                           """,
+                                           (self.campaign_activity_table,
+                                            dsh.bare_str(i['northstar_id']),
+                                            dsh.bare_str(i['signup_id']),
+                                            dsh.bare_str(i['campaign_id']),
+                                            dsh.bare_str(i['campaign_run_id']),
+                                            dsh.bare_str(i['quantity']),
+                                            dsh.bare_str(i['why_participated']),
+                                            dsh.bare_str(i['signup_source']),
+                                            dsh.bare_str(i['created_at']),
+                                            dsh.bare_str(i['updated_at'])))
             else:
                 for j in i['posts']['data']:
-                    query = """INSERT INTO {0} SET northstar_id = \"{1}\",
-                            signup_event_id = \"{2}\",
-                            campaign_id = {3},
-                            campaign_run_id = {4},
-                            quantity = {5},
-                            why_participated = \"{6}\",
-                            signup_source = \"{7}\",
-                            signup_created_at = \"{8}\",
-                            signup_updated_at = \"{9}\",
-                            post_id = {10},
-                            url = \"{11}\",
-                            caption = \"{12}\",
-                            status = \"{13}\",
-                            remote_addr = \"{14}\",
-                            post_source = \"{15}\",
-                            submission_created_at = \"{16}\",
-                            submission_updated_at = \"{17}\"
-                            """.format(self.campaign_activity_table,
-                                       dsh.bare_str(i['northstar_id']),
-                                       dsh.bare_str(i['signup_id']),
-                                       dsh.bare_str(i['campaign_id']),
-                                       dsh.bare_str(i['campaign_run_id']),
-                                       dsh.bare_str(i['quantity']),
-                                       dsh.bare_str(i['why_participated']),
-                                       dsh.bare_str(i['signup_source']),
-                                       dsh.bare_str(i['created_at']),
-                                       dsh.bare_str(i['updated_at']),
-                                       dsh.bare_str(j['id']),
-                                       dsh.bare_str(j['media']['url']),
-                                       dsh.bare_str(j['media']['caption']),
-                                       dsh.bare_str(j['status']),
-                                       dsh.bare_str(j['remote_addr']),
-                                       dsh.bare_str(j['source']),
-                                       dsh.bare_str(j['created_at']),
-                                       dsh.bare_str(j['updated_at']))
-                    self.rogueLoad.mysql_query(query)
+                    self.rogueLoad.mysql_query("""INSERT INTO %s
+                                               SET northstar_id = %s,
+                                               signup_event_id = %s,
+                                               campaign_id = %s,
+                                               campaign_run_id = %s,
+                                               quantity = %s,
+                                               why_participated = %s,
+                                               signup_source = %s,
+                                               signup_created_at = %s,
+                                               signup_updated_at = %s,
+                                               post_id = %s,
+                                               url = %s,
+                                               caption = %s,
+                                               status = %s,
+                                               remote_addr = %s,
+                                               post_source = %s,
+                                               submission_created_at = %s,
+                                               submission_updated_at = %s
+                                               """,
+                                               (self.campaign_activity_table,
+                                                dsh.bare_str(i['northstar_id']),
+                                                dsh.bare_str(i['signup_id']),
+                                                dsh.bare_str(i['campaign_id']),
+                                                dsh.bare_str(i['campaign_run_id']),
+                                                dsh.bare_str(i['quantity']),
+                                                dsh.bare_str(i['why_participated']),
+                                                dsh.bare_str(i['signup_source']),
+                                                dsh.bare_str(i['created_at']),
+                                                dsh.bare_str(i['updated_at']),
+                                                dsh.bare_str(j['id']),
+                                                dsh.bare_str(j['media']['url']),
+                                                dsh.bare_str(j['media']['caption']),
+                                                dsh.bare_str(j['status']),
+                                                dsh.bare_str(j['remote_addr']),
+                                                dsh.bare_str(j['source']),
+                                                dsh.bare_str(j['created_at']),
+                                                dsh.bare_str(j['updated_at'])))
