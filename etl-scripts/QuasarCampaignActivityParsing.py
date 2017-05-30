@@ -78,7 +78,7 @@ class RogueEtl:
                                          dsh.bare_str(i['why_participated']),
                                          dsh.bare_str(i['signup_source']),
                                          dsh.bare_str(i['created_at']),
-                                         dsh.bare_str(i['updated_at']))))
+                                         dsh.bare_str(i['updated_at'])))
             else:
                 for j in i['posts']['data']:
                     self.db.mysql_query_str("""INSERT INTO %s
@@ -117,4 +117,4 @@ class RogueEtl:
                                              dsh.bare_str(j['remote_addr']),
                                              dsh.bare_str(j['source']),
                                              dsh.bare_str(j['created_at']),
-                                             dsh.bare_str(j['updated_at']))))
+                                             dsh.bare_str(j['updated_at'])))
