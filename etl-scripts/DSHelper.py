@@ -8,7 +8,7 @@ import re
 def bare_str(base_value):
     """Convert value to string and strips special characters."""
     base_string = str(base_value)
-    if base_string is None:
+    if base_string is None or base_string == 'None':
         null_string = ''
         return str(null_string)
     else:
