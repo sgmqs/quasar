@@ -54,3 +54,16 @@ class BladeMySQL:
             return results
         except MySQLdb.DatabaseError as e:
             raise QuasarException(e)
+
+    def mysql_query_str(self, query, string):
+        """Parse and run DB query.
+
+        Return On error, raise exception and log why.
+        """
+        try:
+            self.mysql_cursor.execute(query, string)
+            self.mysql_connection.commit()
+            results = self.mysql_cursor.fetchall()
+            return results
+        except MySQLdb.DatabaseError as e:
+            raise QuasarException(e)
