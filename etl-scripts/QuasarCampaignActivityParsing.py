@@ -31,7 +31,7 @@ class RogueEtl:
     def full_backfill(self):
         """Run or resume full backfill of Campaign Activity from Rogue API."""
         final_page = self.rogueExtract.get_total_pages()
-        get_last_page = dsh.bare_str(self.db.query("SELECT counter_value FROM"
+        get_last_page = dsh.bare_str(self.db.query("SELECT counter_value FROM "
                                                    + self.rogue_progress_table +
                                                    " WHERE counter_name  = \
                                                    'rogue_backfill_page'"))
