@@ -35,7 +35,7 @@ class RogueEtl:
                                                    + self.rogue_progress_table +
                                                    " WHERE counter_name  = \
                                                    'rogue_backfill_page'"))
-        if get_last_page is None or get_last_page > 1:
+        if get_last_page is None or int(get_last_page) > 1:
             current_page = get_last_page
         else:
             current_page = 1
