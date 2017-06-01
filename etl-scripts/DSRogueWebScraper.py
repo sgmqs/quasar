@@ -6,7 +6,7 @@ from QuasarWebScraper import Scraper
 
 
 class RogueScraper(Scraper):
-    """Class for extracting Phoenix data via API."""
+    """Class for extracting Rogue data via API."""
 
     # Set Rogue API key.
     rogue_api_key = config.DS_ROGUE_API_KEY

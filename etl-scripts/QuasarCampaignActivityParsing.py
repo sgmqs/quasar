@@ -26,11 +26,19 @@ class RogueEtl:
         self.rogueExtract = RogueScraper()
         self.db = BladeMySQL()
         self.campaign_activity_table = config.CAMPAIGN_ACTIVITY_TABLE
+        self.rogue_progress_table = config.ROGUE_PROGRESS_TABLE
 
     def full_backfill(self):
         """Run or resume full backfill of Campaign Activity from Rogue API."""
         final_page = self.rogueExtract.get_total_pages()
-        current_page = 1
+        get_last_page = dsh.bare_str(self.db.query("SELECT counter_value FROM"
+                                                   + self.rogue_progress_table +
+                                                   " WHERE counter_name  = \"
+                                                   "'rogue_backfill_page'"))
+        if get_last_page is None or get_last_page > 1:
+            current_page = get_last_page
+        else:
+            current_page = 1
         while current_page <= final_page:
             print("Current page is %s." % current_page)
             page_results = self._process_records(
@@ -51,68 +59,68 @@ class RogueEtl:
         """Iterate over page of results and load into Blade DB."""
         for i in rogue_page:
             if i['posts']['data'] == []:
-                self.db.mysql_query_str("INSERT INTO " +
-                                        self.campaign_activity_table +
-                                        " SET northstar_id = %s,\
-                                        signup_event_id = %s,\
-                                        campaign_id = %s,\
-                                        campaign_run_id = %s,\
-                                        quantity = %s,\
-                                        why_participated = %s,\
-                                        signup_source = %s,\
-                                        signup_created_at = %s,\
-                                        signup_updated_at = %s,\
-                                        post_id = NULL,\
-                                        url = NULL,\
-                                        caption = NULL,\
-                                        status = NULL,\
-                                        remote_addr = NULL,\
-                                        post_source = NULL,\
-                                        submission_created_at = NULL",
-                                        (dsh.bare_str(i['northstar_id']),
-                                         dsh.bare_str(i['signup_id']),
-                                         dsh.bare_str(i['campaign_id']),
-                                         dsh.bare_str(i['campaign_run_id']),
-                                         dsh.bare_str(i['quantity']),
-                                         dsh.bare_str(i['why_participated']),
-                                         dsh.bare_str(i['signup_source']),
-                                         dsh.bare_str(i['created_at']),
-                                         dsh.bare_str(i['updated_at'])))
+                self.db.query_str("INSERT INTO " +
+                                  self.campaign_activity_table +
+                                  " SET northstar_id = %s,\
+                                  signup_event_id = %s,\
+                                  campaign_id = %s,\
+                                  campaign_run_id = %s,\
+                                  quantity = %s,\
+                                  why_participated = %s,\
+                                  signup_source = %s,\
+                                  signup_created_at = %s,\
+                                  signup_updated_at = %s,\
+                                  post_id = NULL,\
+                                  url = NULL,\
+                                  caption = NULL,\
+                                  status = NULL,\
+                                  remote_addr = NULL,\
+                                  post_source = NULL,\
+                                  submission_created_at = NULL",
+                                  (dsh.bare_str(i['northstar_id']),
+                                   dsh.bare_str(i['signup_id']),
+                                   dsh.bare_str(i['campaign_id']),
+                                   dsh.bare_str(i['campaign_run_id']),
+                                   dsh.bare_str(i['quantity']),
+                                   dsh.bare_str(i['why_participated']),
+                                   dsh.bare_str(i['signup_source']),
+                                   dsh.bare_str(i['created_at']),
+                                   dsh.bare_str(i['updated_at'])))
             else:
                 for j in i['posts']['data']:
-                    self.db.mysql_query_str("INSERT INTO " +
-                                            self.campaign_activity_table +
-                                            " SET northstar_id = %s,\
-                                            signup_event_id = %s,\
-                                            campaign_id = %s,\
-                                            campaign_run_id = %s,\
-                                            quantity = %s,\
-                                            why_participated = %s,\
-                                            signup_source = %s,\
-                                            signup_created_at = %s,\
-                                            signup_updated_at = %s,\
-                                            post_id = %s,\
-                                            url = %s,\
-                                            caption = %s,\
-                                            status = %s,\
-                                            remote_addr = %s,\
-                                            post_source = %s,\
-                                            submission_created_at = %s,\
-                                            submission_updated_at = %s",
-                                            (dsh.bare_str(i['northstar_id']),
-                                             dsh.bare_str(i['signup_id']),
-                                             dsh.bare_str(i['campaign_id']),
-                                             dsh.bare_str(i['campaign_run_id']),
-                                             dsh.bare_str(i['quantity']),
-                                             dsh.bare_str(i['why_participated']),
-                                             dsh.bare_str(i['signup_source']),
-                                             dsh.bare_str(i['created_at']),
-                                             dsh.bare_str(i['updated_at']),
-                                             dsh.bare_str(j['id']),
-                                             dsh.bare_str(j['media']['url']),
-                                             dsh.bare_str(j['media']['caption']),
-                                             dsh.bare_str(j['status']),
-                                             dsh.bare_str(j['remote_addr']),
-                                             dsh.bare_str(j['source']),
-                                             dsh.bare_str(j['created_at']),
-                                             dsh.bare_str(j['updated_at'])))
+                    self.db.query_str("INSERT INTO " +
+                                      self.campaign_activity_table +
+                                      " SET northstar_id = %s,\
+                                      signup_event_id = %s,\
+                                      campaign_id = %s,\
+                                      campaign_run_id = %s,\
+                                      quantity = %s,\
+                                      why_participated = %s,\
+                                      signup_source = %s,\
+                                      signup_created_at = %s,\
+                                      signup_updated_at = %s,\
+                                      post_id = %s,\
+                                      url = %s,\
+                                      caption = %s,\
+                                      status = %s,\
+                                      remote_addr = %s,\
+                                      post_source = %s,\
+                                      submission_created_at = %s,\
+                                      submission_updated_at = %s",
+                                      (dsh.bare_str(i['northstar_id']),
+                                       dsh.bare_str(i['signup_id']),
+                                       dsh.bare_str(i['campaign_id']),
+                                       dsh.bare_str(i['campaign_run_id']),
+                                       dsh.bare_str(i['quantity']),
+                                       dsh.bare_str(i['why_participated']),
+                                       dsh.bare_str(i['signup_source']),
+                                       dsh.bare_str(i['created_at']),
+                                       dsh.bare_str(i['updated_at']),
+                                       dsh.bare_str(j['id']),
+                                       dsh.bare_str(j['media']['url']),
+                                       dsh.bare_str(j['media']['caption']),
+                                       dsh.bare_str(j['status']),
+                                       dsh.bare_str(j['remote_addr']),
+                                       dsh.bare_str(j['source']),
+                                       dsh.bare_str(j['created_at']),
+                                       dsh.bare_str(j['updated_at'])))

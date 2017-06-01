@@ -42,7 +42,7 @@ class BladeMySQL:
         self.mysql_cursor.close()
         return self.mysql_connection()
 
-    def mysql_query(self, query):
+    def query(self, query):
         """Parse and run DB query.
 
         Return On error, raise exception and log why.
@@ -55,7 +55,7 @@ class BladeMySQL:
         except MySQLdb.DatabaseError as e:
             raise QuasarException(e)
 
-    def mysql_query_str(self, query, string):
+    def query_str(self, query, string):
         """Parse and run DB query.
 
         Return On error, raise exception and log why.
