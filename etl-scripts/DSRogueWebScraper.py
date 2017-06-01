@@ -36,6 +36,19 @@ class RogueScraper(Scraper):
                                      {'page': page, 'limit': limit})
         return(activity_response['data'])
 
+    def get_latest_activity(self, time_since, page=1, limit=40):
+        """Get activity from Rogue API since designated timestamp to now.
+
+        Args:
+            time_since (str): Date in format MM-DD-YYYY HH:MM:SS
+            page_number (int): Page number to send to request, default 1.
+            limit (int): Total responses to send per page, default 40.
+        """
+        activity_response = self.get('api/v2/activity',
+                                     {'page': page, 'limit': limit,
+                                      'filter[updated_at]': time_since})
+        return(activity_response['data'])
+
     def get_total_pages(self, page=1, limit=40):
         """Get total pages from Rogue API with page and limit.
 
@@ -45,4 +58,17 @@ class RogueScraper(Scraper):
             """
         page_response = self.get('/api/v2/activity',
                                      {'page': page, 'limit': limit})
+        return(page_response['meta']['pagination']['total_pages'])
+
+    def get_total_pages_latest(self, time_since, page=1, limit=40):
+        """Get total pages from Rogue API with backfill hours limit.
+
+        Args:
+            time_since (str): Date in format MM-DD-YYYY HH:MM:SS
+            page_number (int): Page number to send to request, default 1.
+            limit (int): Total responses to send per page, default 40.
+        """
+        page_response = self.get('api/v2/activity',
+                                 {'page': page, 'limit': limit,
+                                  'filter[updated_at]': time_since})
         return(page_response['meta']['pagination']['total_pages'])

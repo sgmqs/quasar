@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime as dt
 import json
 import logging
+import time
 
 import config
 import DSHelper as dsh
@@ -46,6 +47,19 @@ class RogueEtl:
             current_page += 1
         self.db.create_disconnect()
 
+    def update_since(self, backfill_hours):
+        """Update activity from now - backfill_hours as backfill."""
+        backfill_since = int(time.time()) - (int(backfill_hours) * 3600)
+        formatted_time = dt.fromtimestamp(backfill_since).isoformat()
+        final_page = self.rogueExtract.get_total_pages_latest(formatted_time)
+        current_page = 1
+        while current_page <= final_page:
+            print("Current backfill hours are %s." % backfill_hours)
+            self._process_records(self._get_updated_page(formatted_time,
+                                                         current_page))
+            current_page += 1
+        self.db.create_disconnect()
+
     def insert_record(self):
         """Put sanitized record into Blade DB."""
         print(type(self._get_extract_page(1, 40)))
@@ -53,6 +67,12 @@ class RogueEtl:
     def _get_activity_page(self, page, limit=40):
         """Get a paginated response from Rogue API."""
         roguePage = self.rogueExtract.get_activity(page, limit)
+        return roguePage
+
+    def _get_updated_page(self, time_since, page, limit=40):
+        """Get a paginated response from updated_at Rogue API endpoint."""
+        roguePage = self.rogueExtract.get_latest_activity(time_since, page,
+                                                          limit)
         return roguePage
 
     def _process_records(self, rogue_page):
