@@ -44,9 +44,9 @@ class RogueScraper(Scraper):
             page_number (int): Page number to send to request, default 1.
             limit (int): Total responses to send per page, default 40.
         """
-        params = ('page=' + page + '&limit=' + limit + '&filter[updated_at]=' +
+        params = ('?page=' + page + '&limit=' + limit + '&filter[updated_at]=' +
                   time_since)
-        activity_response = self.get('api/v2/activity', params)
+        activity_response = self.get('api/v2/activity' + params)
         return(activity_response['data'])
 
     def get_total_pages(self, page=1, limit=40):
