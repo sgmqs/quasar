@@ -19,8 +19,8 @@ class RogueEtl:
     The API data is pulled from Rogue Activity API and a series of extracted
     data structures are tested for existence or not.
 
-    The iteration over extracted pages has a hard upper limit that is set at the
-    beginning of the ETL run.
+    The iteration over extracted pages has a hard upper limit that is set at
+    the beginning of the ETL run.
     """
 
     def __init__(self):
@@ -33,12 +33,12 @@ class RogueEtl:
     def full_backfill(self):
         """Run or resume full backfill of Campaign Activity from Rogue API."""
         final_page = self.rogueExtract.get_total_pages()
-        get_last_page = dsh.bare_str(self.db.query("SELECT counter_value FROM "
-                                                   + self.rogue_progress_table +
-                                                   " WHERE counter_name  = \
-                                                   'rogue_backfill_page'"))
-        if get_last_page is None or int(get_last_page) > 1:
-            current_page = int(get_last_page)
+        last_page = dsh.bare_str(self.db.query("SELECT counter_value FROM " +
+                                               self.rogue_progress_table +
+                                               " WHERE counter_name  = \
+                                                'rogue_backfill_page'"))
+        if last_page is None or int(last_page) > 1:
+            current_page = int(last_page)
         else:
             current_page = 1
         while current_page <= final_page:
