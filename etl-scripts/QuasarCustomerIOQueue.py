@@ -120,6 +120,7 @@ class QuasarQueue:
                 logging.info("[Message {0}] Message failed, requeueing "
                              "message and trying the next one."
                              "".format(message_data['meta']['request_id']))
+                logging.info("Retry counter at {0}.".format(retry_counter))
                 retry_counter += 1
                 time.sleep(1)
             else:
