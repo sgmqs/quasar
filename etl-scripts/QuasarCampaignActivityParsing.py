@@ -47,7 +47,7 @@ class RogueEtl:
             current_page += 1
         self.db.create_disconnect()
 
-    def update_since(self, backfill_hours):
+    def backfill_since(self, backfill_hours):
         """Update activity from now - backfill_hours as backfill."""
         backfill_since = int(time.time()) - (int(backfill_hours) * 3600)
         formatted_time = dt.fromtimestamp(backfill_since).isoformat()

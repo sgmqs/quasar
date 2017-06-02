@@ -6,5 +6,5 @@ if __name__ == "__main__":
     log_format = "%(asctime)s - %(levelname)s: %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_format)
 
-    testCampaignActivityETL = RogueEtl()
-    testCampaignActivityETL.full_backfill()
+    CampaignActivityETL = RogueEtl()
+    CampaignActivityETL.backfill_since(1000)
