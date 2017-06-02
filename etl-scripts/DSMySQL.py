@@ -5,6 +5,7 @@ from DSHelper import QuasarException
 
 # MySQL Connector Library for Blade Platform.
 
+
 class BladeMySQL:
 
     def __init__(self):
@@ -16,10 +17,10 @@ class BladeMySQL:
         self.mysql_database = config.MYSQL_DATABASE
 
         self.mysql_connection = self._create_connection(self.mysql_host,
-                                                       self.mysql_port,
-                                                       self.mysql_user,
-                                                       self.mysql_password,
-                                                       self.mysql_database)
+                                                        self.mysql_port,
+                                                        self.mysql_user,
+                                                        self.mysql_password,
+                                                        self.mysql_database)
         self.mysql_cursor = self.mysql_connection.cursor()
 
     def _create_connection(self, mysql_host, mysql_port, mysql_user,

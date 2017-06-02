@@ -43,8 +43,7 @@ class RogueEtl:
             current_page = 1
         while current_page <= final_page:
             print("Current page is %s." % current_page)
-            page_results = self._process_records(
-                self._get_activity_page(current_page))
+            self._process_records(self._get_activity_page(current_page))
             current_page += 1
             self.db.query_str("REPLACE INTO " + self.rogue_progress_table +
                               " (counter_name, counter_value) VALUES(%s, %s)",

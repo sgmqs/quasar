@@ -3,7 +3,8 @@ import re
 
 # DoSomething Helper Functions - Code Reused Across Lots of our ETL Scripts
 
-### String Parser
+# String Parser
+
 
 def bare_str(base_value):
     """Convert value to string and strips special characters."""
@@ -15,7 +16,8 @@ def bare_str(base_value):
         strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
     return str(strip_special_chars)
 
-### Error Logging
+# Error Logging
+
 
 class QuasarException(Exception):
     """Donated exception handling code by Rob Spectre.
