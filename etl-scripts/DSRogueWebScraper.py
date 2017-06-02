@@ -47,7 +47,7 @@ class RogueScraper(Scraper):
         print(time_since)
         params = ('?page=' + str(page) + '&limit=' + str(limit) +
                   '&filter[updated_at]=' + str(time_since))
-        activity_response = self.get('api/v2/activity' + params)
+        activity_response = self.get('/api/v2/activity' + params)
         return(activity_response['data'])
 
     def get_total_pages(self, page=1, limit=40):
@@ -72,5 +72,5 @@ class RogueScraper(Scraper):
         print(time_since)
         params = ('?page=' + str(page) + '&limit=' + str(limit) +
                   '&filter[updated_at]=' + str(time_since))
-        activity_response = self.get('api/v2/activity' + params)
+        activity_response = self.get('/api/v2/activity' + params)
         return(page_response['meta']['pagination']['total_pages'])
