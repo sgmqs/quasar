@@ -63,6 +63,7 @@ class RogueEtl:
         try:
             self.db.create_disconnect()
         except Exception as e:
+            print("No records in this backfill period.")
             sys.exit(0)
 
     def insert_record(self):
