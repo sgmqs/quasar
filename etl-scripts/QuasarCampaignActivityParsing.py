@@ -46,6 +46,8 @@ class RogueEtl:
             page_results = self._process_records(
                 self._get_activity_page(current_page))
             current_page += 1
+            self.db.query("UPDATE " + self.rogue_progress_table +
+                          " SET rogue_backfill_page = %s",(current_page,))
         self.db.create_disconnect()
 
     def backfill_since(self, backfill_hours):
