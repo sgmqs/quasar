@@ -93,6 +93,7 @@ class QuasarQueue:
         logging.info("[Message {0}] Processing message..."
                      "".format(message_data['meta']['request_id']))
         message_type = self._message_type(message_data)
+        retry_counter = 0
 
         if message_type:
             email_address = message_data['data']['data']['email_address']
@@ -109,7 +110,7 @@ class QuasarQueue:
                 logging.info("[Message {0}] Message processed."
                              "".format(message_data['meta']['request_id']))
                 return True
-            else:
+            elif retry_counter <= 1000:
                 self.channel.basic_publish(self.amqp_exchange, self.amqp_queue,
                                            self._body_encode(message_data),
                                            pika.BasicProperties(
@@ -117,8 +118,12 @@ class QuasarQueue:
                                                delivery_mode=2))
                 self.channel.basic_ack(method_frame.delivery_tag)
                 logging.info("[Message {0}] Message failed, requeueing "
-                             "single message and exiting till next run..."
+                             "message and trying the next one."
                              "".format(message_data['meta']['request_id']))
+                retry_counter += 1
+                time.sleep(1)
+            else:
+                logging.info("Max retry counter reached, exiting for now.")
                 sys.exit(0)
         else:
             self.channel.basic_ack(method_frame.delivery_tag)
