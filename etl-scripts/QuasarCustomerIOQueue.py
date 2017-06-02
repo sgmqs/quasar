@@ -60,6 +60,7 @@ class QuasarQueue:
                                                         mysql_password,
                                                         mysql_database)
         self.mysql_cursor = self.mysql_connection.cursor()
+        self.retry_counter = 0
 
     def start(self):
         """Kick off consumer process to ingest messages.
@@ -93,7 +94,6 @@ class QuasarQueue:
         logging.info("[Message {0}] Processing message..."
                      "".format(message_data['meta']['request_id']))
         message_type = self._message_type(message_data)
-        retry_counter = 0
 
         if message_type:
             email_address = message_data['data']['data']['email_address']
@@ -110,18 +110,18 @@ class QuasarQueue:
                 logging.info("[Message {0}] Message processed."
                              "".format(message_data['meta']['request_id']))
                 return True
-            elif retry_counter <= 1000:
+            elif self.retry_counter <= 1000:
                 self.channel.basic_publish(self.amqp_exchange, self.amqp_queue,
                                            self._body_encode(message_data),
                                            pika.BasicProperties(
                                                content_type='application/json',
                                                delivery_mode=2))
                 self.channel.basic_ack(method_frame.delivery_tag)
+                self.retry_counter += 1
                 logging.info("[Message {0}] Message failed, requeueing "
                              "message and trying the next one."
                              "".format(message_data['meta']['request_id']))
-                logging.info("Retry counter at {0}.".format(retry_counter))
-                retry_counter += 1
+                logging.info("Retry counter at {0}.".format(self.retry_counter))
                 time.sleep(1)
             else:
                 logging.info("Max retry counter reached, exiting for now.")
