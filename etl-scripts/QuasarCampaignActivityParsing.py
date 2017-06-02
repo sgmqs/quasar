@@ -47,7 +47,7 @@ class RogueEtl:
                 self._get_activity_page(current_page))
             current_page += 1
             self.db.query_str("REPLACE INTO " + self.rogue_progress_table +
-                              " (counter_name, counter_value) = (\"%s\", \"%s\")",
+                              " (counter_name, counter_value) = (%s, '%s')",
                               ('rogue_backfill_page', current_page))
         self.db.create_disconnect()
 
