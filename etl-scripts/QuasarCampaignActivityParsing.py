@@ -50,6 +50,7 @@ class RogueEtl:
     def backfill_since(self, backfill_hours):
         """Update activity from now - backfill_hours as backfill."""
         backfill_since = int(time.time()) - (int(backfill_hours) * 3600)
+        print(backfill_since)
         formatted_time = dt.fromtimestamp(backfill_since).isoformat()
         final_page = self.rogueExtract.get_total_pages_latest(formatted_time)
         current_page = 1
