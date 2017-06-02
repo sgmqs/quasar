@@ -53,8 +53,9 @@ class RogueEtl:
         formatted_time = dt.fromtimestamp(backfill_since).isoformat()
         final_page = self.rogueExtract.get_total_pages_latest(formatted_time)
         current_page = 1
+        print("Current backfill hours are %s." % backfill_hours)
         while current_page <= final_page:
-            print("Current backfill hours are %s." % backfill_hours)
+            print("Current page is %s." % current_page)
             self._process_records(self._get_updated_page(formatted_time,
                                                          current_page))
             current_page += 1
