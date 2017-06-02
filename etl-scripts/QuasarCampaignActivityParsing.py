@@ -59,7 +59,10 @@ class RogueEtl:
             self._process_records(self._get_updated_page(formatted_time,
                                                          current_page))
             current_page += 1
-        self.db.create_disconnect()
+        try:
+            self.db.create_disconnect()
+        except Exception as e:
+            sys.exit(0)
 
     def insert_record(self):
         """Put sanitized record into Blade DB."""
