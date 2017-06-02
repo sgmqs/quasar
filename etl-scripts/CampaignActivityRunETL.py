@@ -7,4 +7,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format=log_format)
 
     CampaignActivityETL = RogueEtl()
-    CampaignActivityETL.backfill_since(1000)
+    CampaignActivityETL.backfill_since(10000)
