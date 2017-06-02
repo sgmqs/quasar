@@ -45,8 +45,8 @@ class RogueScraper(Scraper):
             limit (int): Total responses to send per page, default 40.
         """
         print(time_since)
-        params = ('?page=' + page + '&limit=' + limit + '&filter[updated_at]=' +
-                  time_since)
+        params = ('?page=' + str(page) + '&limit=' + str(limit) +
+                  '&filter[updated_at]=' + str(time_since))
         activity_response = self.get('api/v2/activity' + params)
         return(activity_response['data'])
 
@@ -70,7 +70,7 @@ class RogueScraper(Scraper):
             limit (int): Total responses to send per page, default 40.
         """
         print(time_since)
-        params = ('?page=' + page + '&limit=' + limit + '&filter[updated_at]=' +
-                  time_since)
+        params = ('?page=' + str(page) + '&limit=' + str(limit) +
+                  '&filter[updated_at]=' + str(time_since))
         activity_response = self.get('api/v2/activity' + params)
         return(page_response['meta']['pagination']['total_pages'])
