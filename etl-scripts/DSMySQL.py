@@ -41,7 +41,7 @@ class BladeMySQL:
 
     def create_disconnect(self):
         self.mysql_cursor.close()
-        return self.mysql_connection()
+        return self.mysql_connection
 
     def query(self, query):
         """Parse and run DB query.
