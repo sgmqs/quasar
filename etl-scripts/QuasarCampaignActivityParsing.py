@@ -41,12 +41,13 @@ class RogueEtl:
         else:
             current_page = 1
         while current_page <= final_page:
-            print("Current page is %s." % current_page)
+            print("Current page: %s of %s" % (current_page, final_page))
             self._process_records(self._get_activity_page(current_page))
             current_page += 1
             self.db.query_str("REPLACE INTO " + self.rogue_progress_table +
                               " (counter_name, counter_value) VALUES(%s, %s)",
                               ('rogue_backfill_page', current_page))
+        print("Reached final page in full backfill: %s" % current_page)
         self.db.create_disconnect()
 
     def backfill_since(self, backfill_hours):
