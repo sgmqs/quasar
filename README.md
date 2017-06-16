@@ -90,9 +90,9 @@ None yet. Let's add automated tests!
 
 ## Contributing
 
-[CONTRIBUTING.md](CONTRIBUTING.md) // add process notes?
-[Pull request template](PULL_REQUEST_TEMPLATE)
-[Issue template](issue_template.md)
+[CONTRIBUTING.md](CONTRIBUTING.md) // add process notes?  
+[Pull request template](PULL_REQUEST_TEMPLATE)  
+[Issue template](issue_template.md)  
 
 ## Versioning
 
