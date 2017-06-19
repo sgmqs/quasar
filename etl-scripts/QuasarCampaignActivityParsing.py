@@ -91,7 +91,7 @@ class RogueEtl:
                 self.db.query_str("INSERT INTO " +
                                   self.campaign_activity_table +
                                   " SET northstar_id = %s,\
-                                  signup_event_id = %s,\
+                                  signup_id = %s,\
                                   campaign_id = %s,\
                                   campaign_run_id = %s,\
                                   quantity = %s,\
@@ -105,7 +105,7 @@ class RogueEtl:
                                   status = NULL,\
                                   remote_addr = NULL,\
                                   post_source = NULL,\
-                                  submission_created_at = NULL",
+                                  submission_created_at = ''",
                                   (dsh.bare_str(i['northstar_id']),
                                    dsh.bare_str(i['signup_id']),
                                    dsh.bare_str(i['campaign_id']),
@@ -120,7 +120,7 @@ class RogueEtl:
                     self.db.query_str("INSERT INTO " +
                                       self.campaign_activity_table +
                                       " SET northstar_id = %s,\
-                                      signup_event_id = %s,\
+                                      signup_id = %s,\
                                       campaign_id = %s,\
                                       campaign_run_id = %s,\
                                       quantity = %s,\
