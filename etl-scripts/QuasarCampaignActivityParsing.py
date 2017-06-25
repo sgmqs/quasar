@@ -88,7 +88,7 @@ class RogueEtl:
         """Iterate over page of results and load into Blade DB."""
         for i in rogue_page:
             if i['posts']['data'] == []:
-                self.db.query_str("INSERT INTO " +
+                self.db.query_str("REPLACE INTO " +
                                   self.campaign_activity_table +
                                   " SET northstar_id = %s,\
                                   signup_id = %s,\
@@ -117,7 +117,7 @@ class RogueEtl:
                                    dsh.bare_str(i['updated_at'])))
             else:
                 for j in i['posts']['data']:
-                    self.db.query_str("INSERT INTO " +
+                    self.db.query_str("REPLACE INTO " +
                                       self.campaign_activity_table +
                                       " SET northstar_id = %s,\
                                       signup_id = %s,\
