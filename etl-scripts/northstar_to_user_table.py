@@ -107,7 +107,7 @@ while nextPage is True:
     for user in current_page:
         cur.execute("REPLACE INTO quasar.users (northstar_id,\
                     northstar_created_at_timestamp,\
-                    last_logged_in, drupal_uid,\
+                    last_logged_in, last_accessed, drupal_uid,\
                     northstar_id_source_name,\
                     email, mobile, birthdate,\
                     first_name, last_name,\
@@ -126,6 +126,7 @@ while nextPage is True:
                     (to_string(user['id']),
                      to_string(user['created_at']),
                      to_string(user['last_authenticated_at']),
+                     to_string(user['last_accessed_at'])
                      to_string(user['drupal_id']),
                      to_string(user['source']),
                      to_string(user['email']),
@@ -156,7 +157,7 @@ while nextPage is True:
         for user in current_page:
             cur.execute("REPLACE INTO quasar.users (northstar_id,\
                         northstar_created_at_timestamp,\
-                        last_logged_in, drupal_uid,\
+                        last_logged_in, last_accessed, drupal_uid,\
                         northstar_id_source_name,\
                         email, mobile, birthdate,\
                         first_name, last_name,\
@@ -175,6 +176,7 @@ while nextPage is True:
                         (to_string(user['id']),
                          to_string(user['created_at']),
                          to_string(user['last_authenticated_at']),
+                         to_string(user['last_accessed_at']),
                          to_string(user['drupal_id']),
                          to_string(user['source']),
                          to_string(user['email']),
