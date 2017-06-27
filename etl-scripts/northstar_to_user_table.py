@@ -118,7 +118,7 @@ while nextPage is True:
                     moco_commons_profile_id,\
                     moco_current_status,\
                     moco_source_detail)\
-                    VALUES(%s,%s,%s,%s,%s,\
+                    VALUES(%s,%s,%s,%s,%s,%s,\
                     %s,%s,%s,%s,\
                     %s,%s,%s,%s,\
                     %s,%s,%s,%s,\
@@ -126,7 +126,7 @@ while nextPage is True:
                     (to_string(user['id']),
                      to_string(user['created_at']),
                      to_string(user['last_authenticated_at']),
-                     to_string(user['last_accessed_at'])
+                     to_string(user['last_accessed_at']),
                      to_string(user['drupal_id']),
                      to_string(user['source']),
                      to_string(user['email']),
@@ -168,7 +168,7 @@ while nextPage is True:
                         moco_commons_profile_id,\
                         moco_current_status,\
                         moco_source_detail)\
-                        VALUES(%s,%s,%s,%s,%s,\
+                        VALUES(%s,%s,%s,%s,%s,%s,\
                         %s,%s,%s,%s,\
                         %s,%s,%s,%s,\
                         %s,%s,%s,%s,\
