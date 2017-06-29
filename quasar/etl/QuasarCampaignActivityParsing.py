@@ -4,9 +4,9 @@ import sys
 import time
 
 import config
-import DSHelper as dsh
-from DSMySQL import BladeMySQL
-from DSRogueWebScraper import RogueScraper
+import .DSHelper as dsh
+from .DSMySQL import BladeMySQL
+from .DSRogueWebScraper import RogueScraper
 
 log_format = "%(asctime)s - %(levelname)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_format)

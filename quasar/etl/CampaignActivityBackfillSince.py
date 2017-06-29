@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from QuasarCampaignActivityParsing import RogueEtl
+from .QuasarCampaignActivityParsing import RogueEtl
 
 if __name__ == "__main__":
     log_format = "%(asctime)s - %(levelname)s: %(message)s"

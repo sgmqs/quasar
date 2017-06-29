@@ -6,7 +6,7 @@ import MySQLdb
 import MySQLdb.converters
 import sys
 import config
-from DSNorthstarScraper import NorthstarScraper
+from .DSNorthstarScraper import NorthstarScraper
 
 
 def isInt(s):
@@ -59,7 +59,7 @@ if len(sys.argv) == 3:
 # Continue from last known offset or the beginning of hours.
     if sys.argv[2] == 'cont':
         cur.execute("SELECT * from quasar_etl_status.northstar_ingestion \
-                 WHERE counter_name = 'mailchimp_intl_to_ns_offset'")
+                 WHERE counter_name = 'mailchimp_to_northstar_offset'")
         db.commit()
         last_offset = cur.fetchall()
         member_offset = last_offset[0][1]
@@ -97,7 +97,7 @@ total_members = []
 
 
 # Get first batch of users
-r = requests.get('https://us4.api.mailchimp.com/3.0/lists/8e7844f6dd/members',
+r = requests.get('https://us4.api.mailchimp.com/3.0/lists/f2fab1dfd4/members',
                  auth=HTTPBasicAuth(un, pw), params=info)
 member_array = r.json()
 
@@ -121,7 +121,7 @@ while (len(member_array['members'])) > 1:
         total_members = []
     member_offset += mc_increment
     cur.execute("REPLACE INTO quasar_etl_status.northstar_ingestion \
-                 (counter_name, counter_value) VALUES(\"mailchimp_intl_to_ns_offset\",\
+                 (counter_name, counter_value) VALUES(\"mailchimp_to_northstar_offset\",\
                  \"{0}\")".format(member_offset))
     db.commit()
     info = {'status': 'subscribed',
@@ -130,7 +130,7 @@ while (len(member_array['members'])) > 1:
             'count': mc_increment,
             'fields': 'members.email_address,members.timestamp_opt,members.status,members.stats,members.list_id,members.location',
             'offset': member_offset}
-    r = requests.get('https://us4.api.mailchimp.com/3.0/lists/8e7844f6dd/members',
+    r = requests.get('https://us4.api.mailchimp.com/3.0/lists/f2fab1dfd4/members',
                      auth=HTTPBasicAuth(un, pw), params=info)
     member_array = r.json()
 
@@ -143,3 +143,4 @@ db.close()
 end = time.time()
 timer = end-start
 print("Total processing time was %s seconds." % timer)
+

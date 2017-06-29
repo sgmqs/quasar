@@ -3,7 +3,7 @@ import config
 import time
 import re
 import sys
-from DSNorthstarScraper import NorthstarScraper
+from .DSNorthstarScraper import NorthstarScraper
 
 """DS Northstar to Quasar User ETL script.
 

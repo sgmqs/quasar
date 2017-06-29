@@ -1,4 +1,4 @@
-from QuasarQueue import BlinkQueue
+from .QuasarQueue import BlinkQueue
 import config
 
 

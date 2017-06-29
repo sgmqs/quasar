@@ -1,5 +1,5 @@
 import config
-from QuasarWebScraper import Scraper
+from .QuasarWebScraper import Scraper
 
 
 class RogueScraper(Scraper):

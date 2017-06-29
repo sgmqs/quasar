@@ -74,7 +74,9 @@ source ~/.pyenvs/quasar/bin/activate
 
 ## Running the tests
 
-None yet. Let's add automated tests!
+```
+make test
+```
 
 ### End to end tests
 
