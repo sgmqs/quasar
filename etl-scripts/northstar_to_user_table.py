@@ -105,7 +105,7 @@ def to_string(base_value):
 while nextPage is True:
     current_page = ns_fetcher.getUsers(100, i)
     for user in current_page:
-        cur.execute("REPLACE INTO quasar.users (northstar_id,\
+        cur.execute("INSERT INTO quasar.users (northstar_id,\
                     northstar_created_at_timestamp,\
                     last_logged_in, last_accessed, drupal_uid,\
                     northstar_id_source_name,\
@@ -122,8 +122,42 @@ while nextPage is True:
                     %s,%s,%s,%s,\
                     %s,%s,%s,%s,\
                     %s,%s,%s,%s,\
-                    NULL,NULL,%s,%s,%s)",
+                    NULL,NULL,%s,%s,%s)\
+                    ON DUPLICATE KEY UPDATE \
+                    northstar_created_at_timestamp = %s,\
+                    last_logged_in = %s,\
+                    last_accessed = %s, drupal_uid = %s,\
+                    northstar_id_source_name = %s,\
+                    email = %s, mobile = %s, birthdate = %s,\
+                    first_name = %s, last_name = %s,\
+                    addr_street1 = %s, addr_street2 = %s,\
+                    addr_city = %s, addr_state = %s,\
+                    addr_zip = %s, country = %s, language = %s,\
+                    agg_id = NULL, cgg_id = NULL,\
+                    moco_commons_profile_id = %s,\
+                    moco_current_status = %s,\
+                    moco_source_detail = %s",
                     (to_string(user['id']),
+                     to_string(user['created_at']),
+                     to_string(user['last_authenticated_at']),
+                     to_string(user['last_accessed_at']),
+                     to_string(user['drupal_id']),
+                     to_string(user['source']),
+                     to_string(user['email']),
+                     to_string(user['mobile']),
+                     to_string(user['birthdate']),
+                     to_string(user['first_name']),
+                     to_string(user['last_name']),
+                     to_string(user['addr_street1']),
+                     to_string(user['addr_street2']),
+                     to_string(user['addr_city']),
+                     to_string(user['addr_state']),
+                     to_string(user['addr_zip']),
+                     to_string(user['country']),
+                     to_string(user['language']),
+                     to_string(user['mobilecommons_id']),
+                     to_string(user['mobilecommons_status']),
+                     to_string(user['source_detail']),
                      to_string(user['created_at']),
                      to_string(user['last_authenticated_at']),
                      to_string(user['last_accessed_at']),
@@ -155,7 +189,7 @@ while nextPage is True:
     else:
         current_page = ns_fetcher.getUsers(100, i)
         for user in current_page:
-            cur.execute("REPLACE INTO quasar.users (northstar_id,\
+            cur.execute("INSERT INTO quasar.users (northstar_id,\
                         northstar_created_at_timestamp,\
                         last_logged_in, last_accessed, drupal_uid,\
                         northstar_id_source_name,\
@@ -172,8 +206,42 @@ while nextPage is True:
                         %s,%s,%s,%s,\
                         %s,%s,%s,%s,\
                         %s,%s,%s,%s,\
-                        NULL,NULL,%s,%s,%s)",
+                        NULL,NULL,%s,%s,%s)\
+                        ON DUPLICATE KEY UPDATE \
+                        northstar_created_at_timestamp = %s,\
+                        last_logged_in = %s,\
+                        last_accessed = %s, drupal_uid = %s,\
+                        northstar_id_source_name = %s,\
+                        email = %s, mobile = %s, birthdate = %s,\
+                        first_name = %s, last_name = %s,\
+                        addr_street1 = %s, addr_street2 = %s,\
+                        addr_city = %s, addr_state = %s,\
+                        addr_zip = %s, country = %s, language = %s,\
+                        agg_id = NULL, cgg_id = NULL,\
+                        moco_commons_profile_id = %s,\
+                        moco_current_status = %s,\
+                        moco_source_detail = %s",
                         (to_string(user['id']),
+                         to_string(user['created_at']),
+                         to_string(user['last_authenticated_at']),
+                         to_string(user['last_accessed_at']),
+                         to_string(user['drupal_id']),
+                         to_string(user['source']),
+                         to_string(user['email']),
+                         to_string(user['mobile']),
+                         to_string(user['birthdate']),
+                         to_string(user['first_name']),
+                         to_string(user['last_name']),
+                         to_string(user['addr_street1']),
+                         to_string(user['addr_street2']),
+                         to_string(user['addr_city']),
+                         to_string(user['addr_state']),
+                         to_string(user['addr_zip']),
+                         to_string(user['country']),
+                         to_string(user['language']),
+                         to_string(user['mobilecommons_id']),
+                         to_string(user['mobilecommons_status']),
+                         to_string(user['source_detail']),
                          to_string(user['created_at']),
                          to_string(user['last_authenticated_at']),
                          to_string(user['last_accessed_at']),
