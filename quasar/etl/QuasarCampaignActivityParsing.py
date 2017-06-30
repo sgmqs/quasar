@@ -4,7 +4,7 @@ import sys
 import time
 
 import config
-import .DSHelper as dsh
+from . import DSHelper as dsh
 from .DSMySQL import BladeMySQL
 from .DSRogueWebScraper import RogueScraper
 
