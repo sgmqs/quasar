@@ -70,7 +70,17 @@ source ~/.pyenvs/quasar/bin/activate
 
 ## Usage
 
-???
+```
+cd $QUASAR_PROJECT_DIR
+pip install -e .
+```
+
+See `setup.py` for list of entry-points. E.g.
+
+```
+$ moco_update
+```
+
 
 ## Running the tests
 
