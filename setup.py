@@ -10,7 +10,9 @@ setup(
             'campaign_activity_backfill_since = quasar.etl.campaign_activity:backfill_since',
             'campaign_activity_full_backfill = quasar.etl.campaign_activity:full_backfill',
             'campaign_info_refresh = quasar.etl.phoenix_to_campaign_info_table:main',
-            'moco_update = quasar.etl.mobile_commons_campaign_scraper:main'
+            'daily_phoenix_snapshot = quasar.etl.daily_phoenix_db_snapshot:main',
+            'moco_campaigns = quasar.etl.mobile_commons:scrape_campaigns',
+            'mobile_user_update = quasar.etl.mobile_commons:backfill_user_profiles'
         ],
     },
     author="",
