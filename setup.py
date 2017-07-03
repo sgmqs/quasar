@@ -7,8 +7,8 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'campaign_activity_backfill_since = quasar.etl.CampaignActivityBackfillSince:main'
-            'campaign_activity_full_backfill = quasar.etl.CampaignActivityFullBackfill:main'
+            'campaign_activity_backfill_since = quasar.etl.campaign_activity:backfill_since',
+            'campaign_activity_full_backfill = quasar.etl.campaign_activity:full_backfill',
             'moco_update = quasar.etl.mobile_commons_campaign_scraper:main'
         ],
     },
