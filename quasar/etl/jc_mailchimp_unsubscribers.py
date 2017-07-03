@@ -8,7 +8,7 @@ from subprocess import Popen, PIPE, STDOUT
 import MySQLdb
 import MySQLdb.converters
 import sys
-from . import config
+from .config import config
 
 # Set Backfill Hours, default of from supplied argument
 if not sys.argv[1]:

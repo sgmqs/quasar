@@ -5,7 +5,7 @@ from datetime import datetime
 import MySQLdb
 import MySQLdb.converters
 import sys
-from . import config
+from .config import config
 from .DSNorthstarScraper import NorthstarScraper
 
 

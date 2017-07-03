@@ -1,5 +1,5 @@
 import sys
-from . import config
+from .config import config
 import MySQLdb
 import MySQLdb.converters
 

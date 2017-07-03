@@ -1,5 +1,5 @@
 import json
-from . import config
+from .config import config
 import oauthlib
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session

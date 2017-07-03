@@ -6,7 +6,7 @@ import re
 
 import pika
 
-from . import config
+from .config import config
 
 log_format = "%(asctime)s - %(levelname)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_format)

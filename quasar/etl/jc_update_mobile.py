@@ -11,7 +11,7 @@ import MySQLdb
 import MySQLdb.converters
 import time
 import sys
-from . import config
+from .config import config
 #can't easily oop because Python multiprocessing is difficult
 #set time to track execution time
 now = time.time()

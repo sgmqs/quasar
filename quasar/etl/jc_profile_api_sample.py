@@ -9,7 +9,7 @@ from math import log
 import jc_user_process
 import time
 import sys
-from . import config
+from .config import config
 
 # Master list for all unprocessed users
 master_unproc = []

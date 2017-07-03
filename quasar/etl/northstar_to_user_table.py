@@ -1,5 +1,5 @@
 import MySQLdb
-from . import config
+from .config import config
 import time
 import re
 import sys

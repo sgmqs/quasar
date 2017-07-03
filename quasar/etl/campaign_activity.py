@@ -3,7 +3,7 @@ import logging
 import sys
 import time
 
-from . import config
+from .config import config
 from . import DSHelper as dsh
 from .DSMySQL import BladeMySQL
 from .DSRogueWebScraper import RogueScraper

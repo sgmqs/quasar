@@ -1,6 +1,6 @@
 import MySQLdb
 import time
-from . import config
+from .config import config
 
 db = MySQLdb.connect(host=config.host, #hostname
           user=config.user, #  username
