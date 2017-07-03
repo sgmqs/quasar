@@ -2,7 +2,7 @@ import unittest
 
 class ExampleTest(unittest.TestCase):
 
-    '''Fails to verify that tests are running'''
+    '''Verify that tests are running - make test should return failure'''
     def test(self):
         self.assertTrue(False)
 
