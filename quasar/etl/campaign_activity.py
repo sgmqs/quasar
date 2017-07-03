@@ -9,17 +9,6 @@ from .DSMySQL import BladeMySQL
 from .DSRogueWebScraper import RogueScraper
 
 
-
-log_format = "%(asctime)s - %(levelname)s: %(message)s"
-logging.basicConfig(level=logging.INFO, format=log_format)
-etl = RogueEtl()
-
-def full_backfill():
-    etl.full_backfill()
-
-def backfill_since():
-    etl.backfill_since(sys.argv[1])
-
 class RogueEtl:
     """This class ETL's data from DS Rogue API to Blade Data Warehouse.
 
@@ -161,3 +150,13 @@ class RogueEtl:
                                        dsh.bare_str(j['source']),
                                        dsh.bare_str(j['created_at']),
                                        dsh.bare_str(j['updated_at'])))
+
+log_format = "%(asctime)s - %(levelname)s: %(message)s"
+logging.basicConfig(level=logging.INFO, format=log_format)
+etl = RogueEtl()
+
+def full_backfill():
+    etl.full_backfill()
+
+def backfill_since():
+    etl.backfill_since(sys.argv[1])

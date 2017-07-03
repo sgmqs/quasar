@@ -21,10 +21,12 @@ class BladeMySQL:
                                                         self.mysql_user,
                                                         self.mysql_password,
                                                         self.mysql_database)
-        self.mysql_cursor = self.mysql_connection.cursor()
+        if self.mysql_connection:
+            self.mysql_cursor = self.mysql_connection.cursor()
 
     def _create_connection(self, mysql_host, mysql_port, mysql_user,
                            mysql_password, mysql_database):
+        conn = False
         try:
             conn = MySQLdb.connect(host=mysql_host,
                                    port=mysql_port,
@@ -34,7 +36,6 @@ class BladeMySQL:
                                    use_unicode=True,
                                    charset='utf8')
         except MySQLdb.InterfaceError as e:
-            conn = False
             raise QuasarException(e)
         finally:
             return conn
