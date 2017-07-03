@@ -4,7 +4,7 @@ import datetime
 from collections import OrderedDict
 import sys
 import os
-import config
+from . import config
 
 conv_dict = MySQLdb.converters.conversions.copy()
 conv_dict[246]=float

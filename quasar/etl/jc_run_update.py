@@ -1,6 +1,6 @@
 import MySQLdb
 import MySQLdb.converters
-import config
+from . import config
 
 # Setup DB Connnection
 conv_dict = MySQLdb.converters.conversions.copy()

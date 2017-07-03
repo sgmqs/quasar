@@ -1,5 +1,5 @@
 from .QuasarQueue import BlinkQueue
-import config
+from . import config
 
 
 # Handle a message from the queue.

@@ -4,7 +4,7 @@ from requests.adapters import HTTPAdapter
 import re
 from bs4 import BeautifulSoup
 import sys
-import config
+from . import config
 import MySQLdb
 import MySQLdb.converters
 

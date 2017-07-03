@@ -1,5 +1,5 @@
 import json
-import config
+from . import config
 from .QuasarWebScraper import Scraper
 from requests.auth import HTTPBasicAuth
 

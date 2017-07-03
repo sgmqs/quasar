@@ -1,5 +1,5 @@
 import json
-import config
+from . import config
 import time
 from datetime import datetime
 from .QuasarWebScraper import Scraper

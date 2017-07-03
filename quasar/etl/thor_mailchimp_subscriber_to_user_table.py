@@ -5,7 +5,7 @@ from datetime import datetime
 import MySQLdb
 import MySQLdb.converters
 import sys
-import config
+from . import config
 
 
 def isInt(s):

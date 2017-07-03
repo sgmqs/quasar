@@ -12,7 +12,7 @@ from math import log
 import sys
 import os
 import time
-import config
+from . import config
 
 #flags - hour backfill campaign force clean
 # - hours - how many hours to go back

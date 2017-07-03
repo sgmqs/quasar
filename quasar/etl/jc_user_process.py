@@ -1,7 +1,7 @@
 import MySQLdb
 import MySQLdb.converters
 import sys
-import config
+from . import config
 
 def conn():
   conv_dict = MySQLdb.converters.conversions.copy()

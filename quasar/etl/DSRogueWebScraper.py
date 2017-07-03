@@ -1,4 +1,4 @@
-import config
+from . import config
 from .QuasarWebScraper import Scraper
 
 
