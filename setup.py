@@ -8,6 +8,7 @@ setup(
     entry_points={
         'console_scripts': [
             'campaign_activity_backfill_since = quasar.etl.CampaignActivityBackfillSince:main'
+            'campaign_activity_full_backfill = quasar.etl.CampaignActivityFullBackfill:main'
             'moco_update = quasar.etl.mobile_commons_campaign_scraper:main'
         ],
     },
