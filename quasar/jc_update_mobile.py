@@ -12,11 +12,6 @@ import MySQLdb.converters
 import time
 import sys
 from .config import config
-# can't easily oop because Python multiprocessing is difficult
-# set time to track execution time
-now = time.time()
-# list for opt outs using Manager function. Required for multiprocessing
-opt_outs = Manager().list([])
 
 
 def getHours():
@@ -134,24 +129,37 @@ def updateUsers(opt_out_list):
     db.commit()
     cur.execute(q_update)
     db.commit()
-# get hours list
-hours = getHours()
-# call credentials from config
-creds = apiCreds()
-# start multiprocessing pool
-pool = mp.Pool(24)
-# process hours
-dates = [pool.apply(getProfile, args=(i, x[0], x[1], creds,))
-         for i, x in enumerate(hours)]
-print('total opt outs: ', len(opt_outs))
-pool.close()
-# open connection
-connection = dbConn()
-db = connection[0]
-cur = connection[1]
-# update users
-updateUsers(opt_outs)
-cur.close()
-db.close()
-# print time
-print(time.time() - now)
+
+
+def main():
+    # can't easily oop because Python multiprocessing is difficult
+    # set time to track execution time
+    now = time.time()
+    # list for opt outs using Manager function. Required for multiprocessing
+    opt_outs = Manager().list([])
+
+
+    # get hours list
+    hours = getHours()
+    # call credentials from config
+    creds = apiCreds()
+    # start multiprocessing pool
+    pool = mp.Pool(24)
+    # process hours
+    dates = [pool.apply(getProfile, args=(i, x[0], x[1], creds,))
+             for i, x in enumerate(hours)]
+    print('total opt outs: ', len(opt_outs))
+    pool.close()
+    # open connection
+    connection = dbConn()
+    db = connection[0]
+    cur = connection[1]
+    # update users
+    updateUsers(opt_outs)
+    cur.close()
+    db.close()
+    # print time
+    print(time.time() - now)
+
+if __name__ == "__main__":
+    main()

@@ -407,33 +407,38 @@ class ClusterSubscribers:
                         tracker_date = dt
                         page_param = page_param - 1
 
-# hour backfill campaign force daily_clean
-main = MainSetup()
-if main.clean is True:
-    main.dailyClean()
-    print('cleaning...')
-print('backtime is ', main.backtime)
-print('force is ', main.force)
-print('backfill is ', main.backfill_campaign)
-main.getCampaigns()
-main.getCluster()
-main.processClusters()
 
-for c in main.all_clusters:
-    if main.backfill_campaign is not None:
-        if main.backfill_campaign not in c['cluster']:
-            continue
-    print(c['cluster'])
-    clust1 = ClusterSubscribers(
-        c, main.force, main.backtime, main.db, main.cur)
-    clust1.allNums()
-    clust1.runPath()
-    # print len(clust1.alpha_store.keys())
-    clust1.beenAlpha()
+def main():
+    # hour backfill campaign force daily_clean
+    main = MainSetup()
+    if main.clean is True:
+        main.dailyClean()
+        print('cleaning...')
+    print('backtime is ', main.backtime)
+    print('force is ', main.force)
+    print('backfill is ', main.backfill_campaign)
+    main.getCampaigns()
+    main.getCluster()
+    main.processClusters()
 
-end_time = time.time()
-duration = end_time - start_time
-print('duration: ', duration)
+    for c in main.all_clusters:
+        if main.backfill_campaign is not None:
+            if main.backfill_campaign not in c['cluster']:
+                continue
+        print(c['cluster'])
+        clust1 = ClusterSubscribers(
+            c, main.force, main.backtime, main.db, main.cur)
+        clust1.allNums()
+        clust1.runPath()
+        # print len(clust1.alpha_store.keys())
+        clust1.beenAlpha()
 
-main.cur.close()
-main.db.close()
+    end_time = time.time()
+    duration = end_time - start_time
+    print('duration: ', duration)
+
+    main.cur.close()
+    main.db.close()
+
+if __name__ == "__main__":
+    main()

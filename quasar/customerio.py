@@ -227,3 +227,10 @@ class QuasarQueueException(Exception):
         """Log errors with formatted messaging."""
         logging.error("ERROR: {0}".format(message))
         pass
+
+if __name__ == "__main__":
+    log_format = "%(asctime)s - %(levelname)s: %(message)s"
+    logging.basicConfig(level=logging.INFO, format=log_format)
+
+    testQuasarQueue = QuasarQueue()
+    testQuasarQueue.start()
