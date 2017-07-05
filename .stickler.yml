@@ -1,0 +1,3 @@
+linters:
+    pep8:
+        ignore: 'E501'
