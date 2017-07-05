@@ -8,6 +8,7 @@ from . import DSHelper as dsh
 from .DSMySQL import BladeMySQL
 from .QuasarWebScraper import Scraper
 
+
 class RogueScraper(Scraper):
     """Class for extracting Rogue data via API."""
 
@@ -223,8 +224,10 @@ log_format = "%(asctime)s - %(levelname)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_format)
 etl = RogueEtl()
 
+
 def full_backfill():
     etl.full_backfill()
+
 
 def backfill_since():
     etl.backfill_since(sys.argv[1])

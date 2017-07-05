@@ -47,20 +47,20 @@ if len(sys.argv) == 3:
         print("Please provide a working Northstar environment: thor/prod.")
         sys.exit(0)
     if sys.argv[2] == 'cont':
-       if sys.argv[1] == 'prod':
-          cur.execute("SELECT * from quasar_etl_status.northstar_ingestion \
+        if sys.argv[1] == 'prod':
+            cur.execute("SELECT * from quasar_etl_status.northstar_ingestion \
                        WHERE counter_name = 'last_page_scraped'")
-          db.commit()
-          last_page = cur.fetchall()
-          i = last_page[0][1]
-       elif sys.argv[1] == 'thor':
-          cur.execute("SELECT * from quasar_etl_status.thor_northstar_ingestion \
+            db.commit()
+            last_page = cur.fetchall()
+            i = last_page[0][1]
+        elif sys.argv[1] == 'thor':
+            cur.execute("SELECT * from quasar_etl_status.thor_northstar_ingestion \
                        WHERE counter_name = 'last_page_scraped'")
-          db.commit()
-          last_page = cur.fetchall()
-          i = last_page[0][1]
-       else:
-          print("Can not continue, invalid env specified.")
+            db.commit()
+            last_page = cur.fetchall()
+            i = last_page[0][1]
+        else:
+            print("Can not continue, invalid env specified.")
     elif isinstance(sys.argv[2], int):
         i = int(sys.argv[2])
     else:
@@ -109,25 +109,25 @@ while nextPage is True:
                                             %s,%s,%s,%s,\
                                             %s,%s,%s,%s,\
                                             NULL,NULL,%s,%s,%s)",
-                                            (to_string(user['id']),
-                                            to_string(user['created_at']),
-                                            to_string(user['drupal_id']),
-                                            to_string(user['source']),
-                                            to_string(user['email']),
-                                            to_string(user['mobile']),
-                                            to_string(user['birthdate']),
-                                            to_string(user['first_name']),
-                                            to_string(user['last_name']),
-                                            to_string(user['addr_street1']),
-                                            to_string(user['addr_street2']),
-                                            to_string(user['addr_city']),
-                                            to_string(user['addr_state']),
-                                            to_string(user['addr_zip']),
-                                            to_string(user['country']),
-                                            to_string(user['language']),
-                                            to_string(user['mobilecommons_id']),
-                                            to_string(user['mobilecommons_status']),
-                                            to_string(user['source_detail'])))
+                    (to_string(user['id']),
+                     to_string(user['created_at']),
+                     to_string(user['drupal_id']),
+                     to_string(user['source']),
+                     to_string(user['email']),
+                     to_string(user['mobile']),
+                     to_string(user['birthdate']),
+                     to_string(user['first_name']),
+                     to_string(user['last_name']),
+                     to_string(user['addr_street1']),
+                     to_string(user['addr_street2']),
+                     to_string(user['addr_city']),
+                     to_string(user['addr_state']),
+                     to_string(user['addr_zip']),
+                     to_string(user['country']),
+                     to_string(user['language']),
+                     to_string(user['mobilecommons_id']),
+                     to_string(user['mobilecommons_status']),
+                     to_string(user['source_detail'])))
         db.commit()
     nextPage = ns_fetcher.nextPageStatus(100, i)
     if nextPage is True:
@@ -157,25 +157,25 @@ while nextPage is True:
                                                 %s,%s,%s,%s,\
                                                 %s,%s,%s,%s,\
                                                 NULL,NULL,%s,%s,%s)",
-                                                (to_string(user['id']),
-                                                to_string(user['created_at']),
-                                                to_string(user['drupal_id']),
-                                                to_string(user['source']),
-                                                to_string(user['email']),
-                                                to_string(user['mobile']),
-                                                to_string(user['birthdate']),
-                                                to_string(user['first_name']),
-                                                to_string(user['last_name']),
-                                                to_string(user['addr_street1']),
-                                                to_string(user['addr_street2']),
-                                                to_string(user['addr_city']),
-                                                to_string(user['addr_state']),
-                                                to_string(user['addr_zip']),
-                                                to_string(user['country']),
-                                                to_string(user['language']),
-                                                to_string(user['mobilecommons_id']),
-                                                to_string(user['mobilecommons_status']),
-                                                to_string(user['source_detail'])))
+                        (to_string(user['id']),
+                         to_string(user['created_at']),
+                         to_string(user['drupal_id']),
+                         to_string(user['source']),
+                         to_string(user['email']),
+                         to_string(user['mobile']),
+                         to_string(user['birthdate']),
+                         to_string(user['first_name']),
+                         to_string(user['last_name']),
+                         to_string(user['addr_street1']),
+                         to_string(user['addr_street2']),
+                         to_string(user['addr_city']),
+                         to_string(user['addr_state']),
+                         to_string(user['addr_zip']),
+                         to_string(user['country']),
+                         to_string(user['language']),
+                         to_string(user['mobilecommons_id']),
+                         to_string(user['mobilecommons_status']),
+                         to_string(user['source_detail'])))
             db.commit()
 
 cur.close()

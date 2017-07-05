@@ -19,6 +19,7 @@ def isInt(s):
     except ValueError:
         return False
 
+
 def _bare_str(base_value):
     """Convert value to string and strips special characters."""
     base_string = str(base_value)
@@ -117,7 +118,8 @@ while (len(member_array['members'])) > 1:
             else:
                 for x in range(0, northstar_email_matches):
                     northstar_id = _bare_str(cur.fetchone())
-                    first_subscribed = submember['timestamp_opt'].replace('T', ' ').split('+')[0]
+                    first_subscribed = submember[
+                        'timestamp_opt'].replace('T', ' ').split('+')[0]
                     status = submember['status']
                     list_id = submember['list_id']
                     avg_open_rate = submember['stats']['avg_open_rate']
@@ -159,5 +161,5 @@ db.close()
 
 # Print How Long Run Took
 end = time.time()
-timer = end-start
+timer = end - start
 print("Total processing time was %s seconds." % timer)

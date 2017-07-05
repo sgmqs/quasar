@@ -2,22 +2,25 @@ import MySQLdb
 import time
 from .config import config
 
+
 def main():
-    db = MySQLdb.connect(host=config.host, #hostname
-              user=config.user, #  username
-              passwd=config.pw, #  password
-              db='phoenix_user_snapshots') # datatype conversions
+    db = MySQLdb.connect(host=config.host,  # hostname
+                         user=config.user,  # username
+                         passwd=config.pw,  # password
+                         db='phoenix_user_snapshots')  # datatype conversions
 
     cur = db.cursor()
 
     snapshot_time = str(int(time.time()))
 
-    #Create Table Schema Snapshot
-    run_query = "CREATE TABLE IF NOT EXISTS phoenix_users_snapshot_" + snapshot_time + """ LIKE dosomething.users"""
+    # Create Table Schema Snapshot
+    run_query = "CREATE TABLE IF NOT EXISTS phoenix_users_snapshot_" + \
+        snapshot_time + """ LIKE dosomething.users"""
     cur.execute(run_query)
 
     # Insert Daily Data from DS Users Table
-    run_query = "INSERT phoenix_users_snapshot_" + snapshot_time + """ SELECT * FROM dosomething.users"""
+    run_query = "INSERT phoenix_users_snapshot_" + \
+        snapshot_time + """ SELECT * FROM dosomething.users"""
     cur.execute(run_query)
     db.commit()
 

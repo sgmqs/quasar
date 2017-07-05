@@ -7,8 +7,8 @@ from requests.auth import HTTPBasicAuth
 
 
 class PhoenixScraper(Scraper):
-    """Class for extracting Phoenix data via API."""
 
+    """Class for extracting Phoenix data via API."""
 
     # MailChimp API v3.0 HTTP Simple Auth Credentials
     un = config.mailchimp_api_user
@@ -38,6 +38,7 @@ class PhoenixScraper(Scraper):
                 'count': mc_increment, 'fields': 'members.email_address,members.timestamp_opt,members.status,members.stats,members.list_id,members.location',
                 'offset': member_offset}
         self.get('')
+
     def getPages(self):
         """Get total campaign pages."""
         page_response = self.get('/api/v1/campaigns', {'page': 1})

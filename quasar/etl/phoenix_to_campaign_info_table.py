@@ -3,6 +3,7 @@ from .config import config
 import time
 import sys
 
+
 def main():
     start_time = time.time()
     """Keep track of start time of script."""

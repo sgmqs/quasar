@@ -2,7 +2,9 @@ import requests
 from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 
+
 class Scraper:
+
     """Top-level web-scraper class for the DoSomething.org data platform, Quasar.
 
     The intent is to extend this to handle the various DS services as their own

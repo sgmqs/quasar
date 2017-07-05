@@ -21,7 +21,8 @@ start = time.time()
 
 # Start time in Unixtime to use internally in ETL processing
 time_now = time.time()
-# Set backfill to seconds and set backfill origin time to time_now - backfill_time in seconds
+# Set backfill to seconds and set backfill origin time to time_now -
+# backfill_time in seconds
 backfill_time = backfill_hours * 3600
 origin_time = time_now - backfill_time
 
@@ -34,13 +35,15 @@ member_offset = 0
 
 # MailChimp API v3.0 Parameters to Get Subscribed Users over designated time window by paginating via "offset" parameter.
 # Grabs in batches of 1000 to be nice to API. Can modify based on query times.
-info = {'status':'subscribed', 'since_timestamp_opt':datetime.datetime.utcfromtimestamp(origin_time).isoformat() , 'before_timestamp_opt':datetime.datetime.utcfromtimestamp(time_now).isoformat() , 'count':1000, 'fields':'members.email_address,members.last_changed', 'offset':member_offset}
+info = {'status': 'subscribed', 'since_timestamp_opt': datetime.datetime.utcfromtimestamp(origin_time).isoformat(), 'before_timestamp_opt': datetime.datetime.utcfromtimestamp(
+    time_now).isoformat(), 'count': 1000, 'fields': 'members.email_address,members.last_changed', 'offset': member_offset}
 
 # Initialize Empty List for Total Members
 total_members = []
 
 # Get first batch of users
-r = requests.get('https://us4.api.mailchimp.com/3.0/lists/f2fab1dfd4/members',auth=HTTPBasicAuth(un, pw), params=info)
+r = requests.get('https://us4.api.mailchimp.com/3.0/lists/f2fab1dfd4/members',
+                 auth=HTTPBasicAuth(un, pw), params=info)
 member_array = r.json()
 
 # Iterate over entire list set till no more members are returned.
@@ -48,21 +51,23 @@ while (len(member_array['members'])) > 1:
     total_members.append(member_array['members'])
     print("Total Members in Array is currently %s" % len(total_members))
     member_offset += 1000
-    info = {'status':'subscribed', 'since_timestamp_opt':datetime.datetime.utcfromtimestamp(origin_time).isoformat() , 'before_timestamp_opt':datetime.datetime.utcfromtimestamp(time_now).isoformat() , 'count':1000, 'fields':'members.email_address,members.last_changed', 'offset':member_offset}
-    r = requests.get('https://us4.api.mailchimp.com/3.0/lists/f2fab1dfd4/members',auth=HTTPBasicAuth(un, pw), params=info)
+    info = {'status': 'subscribed', 'since_timestamp_opt': datetime.datetime.utcfromtimestamp(origin_time).isoformat(), 'before_timestamp_opt': datetime.datetime.utcfromtimestamp(
+        time_now).isoformat(), 'count': 1000, 'fields': 'members.email_address,members.last_changed', 'offset': member_offset}
+    r = requests.get('https://us4.api.mailchimp.com/3.0/lists/f2fab1dfd4/members',
+                     auth=HTTPBasicAuth(un, pw), params=info)
     member_array = r.json()
 
 # Setup DB Connnection
 # Moved from earlier in script to not have open MySQL connection that can timeout if
 # API scraping takes a long time. Have seen timeouts happen.
 conv_dict = MySQLdb.converters.conversions.copy()
-conv_dict[246]=float
-conv_dict[3]=int
+conv_dict[246] = float
+conv_dict[3] = int
 
-db = MySQLdb.connect(host=config.host, #hostname
-          user=config.user, #  username
-          passwd=config.pw, #  password
-          conv=conv_dict) # datatype conversions
+db = MySQLdb.connect(host=config.host,  # hostname
+                     user=config.user,  # username
+                     passwd=config.pw,  # password
+                     conv=conv_dict)  # datatype conversions
 
 cur = db.cursor()
 
@@ -70,15 +75,18 @@ cur = db.cursor()
 for member in total_members:
     for submember in member:
         email = submember['email_address']
-        confirm_time = submember['last_changed'].replace('T',' ').split('+')[0]
-        cur.execute("REPLACE INTO users_and_activities.mailchimp_sub_daily (email_address, confirm_time) VALUES(%s,%s)", (email,confirm_time))
+        confirm_time = submember['last_changed'].replace(
+            'T', ' ').split('+')[0]
+        cur.execute(
+            "REPLACE INTO users_and_activities.mailchimp_sub_daily (email_address, confirm_time) VALUES(%s,%s)", (email, confirm_time))
 
-# Double Check to Commit DB Changes and Close Connection in case of loop failure
+# Double Check to Commit DB Changes and Close Connection in case of loop
+# failure
 db.commit()
 cur.close()
 db.close()
 
 # Print How Long Run Took
 end = time.time()
-timer = end-start
+timer = end - start
 print("Total processing time was %s seconds." % timer)

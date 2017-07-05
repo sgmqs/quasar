@@ -7,12 +7,12 @@ import os
 from .config import config
 
 conv_dict = MySQLdb.converters.conversions.copy()
-conv_dict[246]=float
-conv_dict[8]=int
-db = MySQLdb.connect(host=config.host, #hostname
-          user=config.user, #  username
-          passwd=config.pw, #  password
-          conv=conv_dict) # datatype conversions
+conv_dict[246] = float
+conv_dict[8] = int
+db = MySQLdb.connect(host=config.host,  # hostname
+                     user=config.user,  # username
+                     passwd=config.pw,  # password
+                     conv=conv_dict)  # datatype conversions
 
 cur = db.cursor(MySQLdb.cursors.DictCursor)
 

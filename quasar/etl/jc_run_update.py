@@ -4,13 +4,13 @@ from .config import config
 
 # Setup DB Connnection
 conv_dict = MySQLdb.converters.conversions.copy()
-conv_dict[246]=float
-conv_dict[3]=int
+conv_dict[246] = float
+conv_dict[3] = int
 
-db = MySQLdb.connect(host=config.host, #hostname
-          user=config.user, #  username
-          passwd=config.pw, #  password
-          conv=conv_dict) # datatype conversions
+db = MySQLdb.connect(host=config.host,  # hostname
+                     user=config.user,  # username
+                     passwd=config.pw,  # password
+                     conv=conv_dict)  # datatype conversions
 
 cur = db.cursor()
 

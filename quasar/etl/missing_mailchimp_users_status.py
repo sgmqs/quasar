@@ -8,6 +8,7 @@ import sys
 from .config import config
 import hashlib
 
+
 def isInt(s):
     """Check if value is type int and return boolean result.
     Source at http://stackoverflow.com/questions/1265665/python-check-if-a-string-represents-an-int-without-using-try-except
@@ -17,6 +18,7 @@ def isInt(s):
         return True
     except ValueError:
         return False
+
 
 def computeMD5hash(string):
     """Output MD5 hash of string."""
@@ -62,14 +64,14 @@ total_members = cur.fetchall()
 for i in total_members:
     print(i[0])
     user_md5 = computeMD5hash(i[0].lower())
-    r = requests.get('https://us4.api.mailchimp.com/3.0/lists/f2fab1dfd4/members/'\
-                   + user_md5, auth=HTTPBasicAuth(un, pw))
+    r = requests.get('https://us4.api.mailchimp.com/3.0/lists/f2fab1dfd4/members/' + user_md5, auth=HTTPBasicAuth(un, pw))
     if r.status_code == 200:
         member = r.json()
         cur.execute("SELECT northstar_id FROM quasar.users \
                     WHERE email = %s", (i[0],))
         northstar_id = cur.fetchone()
-        first_subscribed = member['timestamp_opt'].replace('T', ' ').split('+')[0]
+        first_subscribed = member['timestamp_opt'].replace(
+            'T', ' ').split('+')[0]
         status = member['status']
         list_id = member['list_id']
         avg_open_rate = member['stats']['avg_open_rate']
@@ -90,14 +92,14 @@ for i in total_members:
         db.commit()
         print("Status updated for %s" % i[0])
     else:
-        p = requests.get('https://us4.api.mailchimp.com/3.0/lists/8e7844f6dd/members/'\
-                         + user_md5, auth=HTTPBasicAuth(un, pw))
+        p = requests.get('https://us4.api.mailchimp.com/3.0/lists/8e7844f6dd/members/' + user_md5, auth=HTTPBasicAuth(un, pw))
         if p.status_code == 200:
             member = p.json()
             cur.execute("SELECT northstar_id FROM quasar.users \
                         WHERE email = %s", (i[0],))
             northstar_id = cur.fetchone()
-            first_subscribed = member['timestamp_opt'].replace('T', ' ').split('+')[0]
+            first_subscribed = member['timestamp_opt'].replace(
+                'T', ' ').split('+')[0]
             status = member['status']
             list_id = member['list_id']
             avg_open_rate = member['stats']['avg_open_rate']
@@ -126,5 +128,5 @@ db.close()
 
 # Print How Long Run Took
 end = time.time()
-timer = end-start
+timer = end - start
 print("Total processing time was %s seconds." % timer)

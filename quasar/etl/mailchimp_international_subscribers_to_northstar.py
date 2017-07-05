@@ -113,7 +113,8 @@ while (len(member_array['members'])) > 1:
             if northstar_email_matches < 1:
                 try:
                     print("Importing email %s" % submember['email_address'])
-                    ns_fetcher.post('/v1/users', {'email': submember['email_address']})
+                    ns_fetcher.post(
+                        '/v1/users', {'email': submember['email_address']})
                 except:
                     print("Something went wrong.")
             else:
@@ -141,5 +142,5 @@ db.close()
 
 # Print How Long Run Took
 end = time.time()
-timer = end-start
+timer = end - start
 print("Total processing time was %s seconds." % timer)
