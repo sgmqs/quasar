@@ -4,6 +4,7 @@ import time
 import re
 import sys
 from .DSNorthstarScraper import NorthstarScraper
+from .utils import strip_str
 
 """DS Northstar to Quasar User ETL script.
 
@@ -93,16 +94,6 @@ def main():
     # Set environment url for Northstar, prod or thor.
     ns_fetcher = NorthstarScraper(northstar_env_url)
 
-
-    def to_string(base_value):
-        """Converts to string and replaces None values with empty values."""
-        if base_value is None:
-            return None
-        else:
-            base_string = str(base_value)
-            strip_special_chars = re.sub(r'[()<>/"\'\\]', '', base_string)
-            return str(strip_special_chars)
-
     while nextPage is True:
         current_page = ns_fetcher.getUsers(100, i)
         for user in current_page:
@@ -138,47 +129,47 @@ def main():
                         moco_commons_profile_id = %s,\
                         moco_current_status = %s,\
                         moco_source_detail = %s",
-                        (to_string(user['id']),
-                         to_string(user['created_at']),
-                         to_string(user['last_authenticated_at']),
-                         to_string(user['last_accessed_at']),
-                         to_string(user['drupal_id']),
-                         to_string(user['source']),
-                         to_string(user['email']),
-                         to_string(user['mobile']),
-                         to_string(user['birthdate']),
-                         to_string(user['first_name']),
-                         to_string(user['last_name']),
-                         to_string(user['addr_street1']),
-                         to_string(user['addr_street2']),
-                         to_string(user['addr_city']),
-                         to_string(user['addr_state']),
-                         to_string(user['addr_zip']),
-                         to_string(user['country']),
-                         to_string(user['language']),
-                         to_string(user['mobilecommons_id']),
-                         to_string(user['mobilecommons_status']),
-                         to_string(user['source_detail']),
-                         to_string(user['created_at']),
-                         to_string(user['last_authenticated_at']),
-                         to_string(user['last_accessed_at']),
-                         to_string(user['drupal_id']),
-                         to_string(user['source']),
-                         to_string(user['email']),
-                         to_string(user['mobile']),
-                         to_string(user['birthdate']),
-                         to_string(user['first_name']),
-                         to_string(user['last_name']),
-                         to_string(user['addr_street1']),
-                         to_string(user['addr_street2']),
-                         to_string(user['addr_city']),
-                         to_string(user['addr_state']),
-                         to_string(user['addr_zip']),
-                         to_string(user['country']),
-                         to_string(user['language']),
-                         to_string(user['mobilecommons_id']),
-                         to_string(user['mobilecommons_status']),
-                         to_string(user['source_detail'])))
+                        (strip_str(user['id']),
+                         strip_str(user['created_at']),
+                         strip_str(user['last_authenticated_at']),
+                         strip_str(user['last_accessed_at']),
+                         strip_str(user['drupal_id']),
+                         strip_str(user['source']),
+                         strip_str(user['email']),
+                         strip_str(user['mobile']),
+                         strip_str(user['birthdate']),
+                         strip_str(user['first_name']),
+                         strip_str(user['last_name']),
+                         strip_str(user['addr_street1']),
+                         strip_str(user['addr_street2']),
+                         strip_str(user['addr_city']),
+                         strip_str(user['addr_state']),
+                         strip_str(user['addr_zip']),
+                         strip_str(user['country']),
+                         strip_str(user['language']),
+                         strip_str(user['mobilecommons_id']),
+                         strip_str(user['mobilecommons_status']),
+                         strip_str(user['source_detail']),
+                         strip_str(user['created_at']),
+                         strip_str(user['last_authenticated_at']),
+                         strip_str(user['last_accessed_at']),
+                         strip_str(user['drupal_id']),
+                         strip_str(user['source']),
+                         strip_str(user['email']),
+                         strip_str(user['mobile']),
+                         strip_str(user['birthdate']),
+                         strip_str(user['first_name']),
+                         strip_str(user['last_name']),
+                         strip_str(user['addr_street1']),
+                         strip_str(user['addr_street2']),
+                         strip_str(user['addr_city']),
+                         strip_str(user['addr_state']),
+                         strip_str(user['addr_zip']),
+                         strip_str(user['country']),
+                         strip_str(user['language']),
+                         strip_str(user['mobilecommons_id']),
+                         strip_str(user['mobilecommons_status']),
+                         strip_str(user['source_detail'])))
             db.commit()
         nextPage = ns_fetcher.nextPageStatus(100, i)
         if nextPage is True:
@@ -222,47 +213,47 @@ def main():
                             moco_commons_profile_id = %s,\
                             moco_current_status = %s,\
                             moco_source_detail = %s",
-                            (to_string(user['id']),
-                             to_string(user['created_at']),
-                             to_string(user['last_authenticated_at']),
-                             to_string(user['last_accessed_at']),
-                             to_string(user['drupal_id']),
-                             to_string(user['source']),
-                             to_string(user['email']),
-                             to_string(user['mobile']),
-                             to_string(user['birthdate']),
-                             to_string(user['first_name']),
-                             to_string(user['last_name']),
-                             to_string(user['addr_street1']),
-                             to_string(user['addr_street2']),
-                             to_string(user['addr_city']),
-                             to_string(user['addr_state']),
-                             to_string(user['addr_zip']),
-                             to_string(user['country']),
-                             to_string(user['language']),
-                             to_string(user['mobilecommons_id']),
-                             to_string(user['mobilecommons_status']),
-                             to_string(user['source_detail']),
-                             to_string(user['created_at']),
-                             to_string(user['last_authenticated_at']),
-                             to_string(user['last_accessed_at']),
-                             to_string(user['drupal_id']),
-                             to_string(user['source']),
-                             to_string(user['email']),
-                             to_string(user['mobile']),
-                             to_string(user['birthdate']),
-                             to_string(user['first_name']),
-                             to_string(user['last_name']),
-                             to_string(user['addr_street1']),
-                             to_string(user['addr_street2']),
-                             to_string(user['addr_city']),
-                             to_string(user['addr_state']),
-                             to_string(user['addr_zip']),
-                             to_string(user['country']),
-                             to_string(user['language']),
-                             to_string(user['mobilecommons_id']),
-                             to_string(user['mobilecommons_status']),
-                             to_string(user['source_detail'])))
+                            (strip_str(user['id']),
+                             strip_str(user['created_at']),
+                             strip_str(user['last_authenticated_at']),
+                             strip_str(user['last_accessed_at']),
+                             strip_str(user['drupal_id']),
+                             strip_str(user['source']),
+                             strip_str(user['email']),
+                             strip_str(user['mobile']),
+                             strip_str(user['birthdate']),
+                             strip_str(user['first_name']),
+                             strip_str(user['last_name']),
+                             strip_str(user['addr_street1']),
+                             strip_str(user['addr_street2']),
+                             strip_str(user['addr_city']),
+                             strip_str(user['addr_state']),
+                             strip_str(user['addr_zip']),
+                             strip_str(user['country']),
+                             strip_str(user['language']),
+                             strip_str(user['mobilecommons_id']),
+                             strip_str(user['mobilecommons_status']),
+                             strip_str(user['source_detail']),
+                             strip_str(user['created_at']),
+                             strip_str(user['last_authenticated_at']),
+                             strip_str(user['last_accessed_at']),
+                             strip_str(user['drupal_id']),
+                             strip_str(user['source']),
+                             strip_str(user['email']),
+                             strip_str(user['mobile']),
+                             strip_str(user['birthdate']),
+                             strip_str(user['first_name']),
+                             strip_str(user['last_name']),
+                             strip_str(user['addr_street1']),
+                             strip_str(user['addr_street2']),
+                             strip_str(user['addr_city']),
+                             strip_str(user['addr_state']),
+                             strip_str(user['addr_zip']),
+                             strip_str(user['country']),
+                             strip_str(user['language']),
+                             strip_str(user['mobilecommons_id']),
+                             strip_str(user['mobilecommons_status']),
+                             strip_str(user['source_detail'])))
                 db.commit()
 
     cur.close()

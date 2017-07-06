@@ -9,6 +9,7 @@ import time
 import pika
 
 from .config import config
+from .utils import strip_str
 
 log_format = "%(asctime)s - %(levelname)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_format)
@@ -101,9 +102,9 @@ class QuasarQueue:
                                             "FROM {1} WHERE email = \"{0}\";"
                                             "".format(email_address,
                                                       self.mysql_table))
-            if self._bare_str(northstar_id[1]) != "":
+            if strip_str(northstar_id[1]) != "":
                 query_results = self.insert_record(message_data,
-                                                   self._bare_str(
+                                                   strip_str(
                                                        northstar_id[1]),
                                                    message_type)
                 self.channel.basic_ack(method_frame.delivery_tag)
@@ -173,12 +174,6 @@ class QuasarQueue:
             return customer_io_subscription_status
         else:
             return False
-
-    def _bare_str(self, base_value):
-        """Convert value to string and strips special characters."""
-        base_string = str(base_value)
-        strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
-        return str(strip_special_chars)
 
     def mysql_query(self, query):
         """Parse and run DB query.

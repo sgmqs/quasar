@@ -1,7 +1,7 @@
 import MySQLdb
 
 from .config import config
-from .DSHelper import QuasarException
+from .utils import QuasarException
 
 # MySQL Connector Library for Blade Platform.
 

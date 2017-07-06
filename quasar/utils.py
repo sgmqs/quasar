@@ -6,15 +6,17 @@ import re
 # String Parser
 
 
-def bare_str(base_value):
-    """Convert value to string and strips special characters."""
+def strip_str(base_value):
+    """Convert value to string and strips special characters. 
+
+    None becomes empty string
+    """
     base_string = str(base_value)
-    if base_string is None or base_string == 'None':
-        null_string = ''
-        return str(null_string)
+    if base_string == 'None':
+        return ''
     else:
         strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
-    return str(strip_special_chars)
+        return str(strip_special_chars)
 
 # Error Logging
 

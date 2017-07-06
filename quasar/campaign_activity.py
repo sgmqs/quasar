@@ -4,7 +4,7 @@ import sys
 import time
 
 from .config import config
-from . import DSHelper as dsh
+from .utils import strip_str
 from .DSMySQL import BladeMySQL
 from .QuasarWebScraper import Scraper
 
@@ -97,7 +97,7 @@ class RogueEtl:
     def full_backfill(self):
         """Run or resume full backfill of Campaign Activity from Rogue API."""
         final_page = self.rogueExtract.get_total_pages()
-        last_page = dsh.bare_str(self.db.query("SELECT counter_value FROM " +
+        last_page = strip_str(self.db.query("SELECT counter_value FROM " +
                                                self.rogue_progress_table +
                                                " WHERE counter_name  = \
                                                 'rogue_backfill_page'"))
@@ -171,15 +171,15 @@ class RogueEtl:
                                   remote_addr = NULL,\
                                   post_source = NULL,\
                                   submission_created_at = ''",
-                                  (dsh.bare_str(i['northstar_id']),
-                                   dsh.bare_str(i['signup_id']),
-                                   dsh.bare_str(i['campaign_id']),
-                                   dsh.bare_str(i['campaign_run_id']),
-                                   dsh.bare_str(i['quantity']),
-                                   dsh.bare_str(i['why_participated']),
-                                   dsh.bare_str(i['signup_source']),
-                                   dsh.bare_str(i['created_at']),
-                                   dsh.bare_str(i['updated_at'])))
+                                  (strip_str(i['northstar_id']),
+                                   strip_str(i['signup_id']),
+                                   strip_str(i['campaign_id']),
+                                   strip_str(i['campaign_run_id']),
+                                   strip_str(i['quantity']),
+                                   strip_str(i['why_participated']),
+                                   strip_str(i['signup_source']),
+                                   strip_str(i['created_at']),
+                                   strip_str(i['updated_at'])))
             else:
                 for j in i['posts']['data']:
                     self.db.query_str("REPLACE INTO " +
@@ -201,23 +201,23 @@ class RogueEtl:
                                       post_source = %s,\
                                       submission_created_at = %s,\
                                       submission_updated_at = %s",
-                                      (dsh.bare_str(i['northstar_id']),
-                                       dsh.bare_str(i['signup_id']),
-                                       dsh.bare_str(i['campaign_id']),
-                                       dsh.bare_str(i['campaign_run_id']),
-                                       dsh.bare_str(i['quantity']),
-                                       dsh.bare_str(i['why_participated']),
-                                       dsh.bare_str(i['signup_source']),
-                                       dsh.bare_str(i['created_at']),
-                                       dsh.bare_str(i['updated_at']),
-                                       dsh.bare_str(j['id']),
-                                       dsh.bare_str(j['media']['url']),
-                                       dsh.bare_str(j['media']['caption']),
-                                       dsh.bare_str(j['status']),
-                                       dsh.bare_str(j['remote_addr']),
-                                       dsh.bare_str(j['source']),
-                                       dsh.bare_str(j['created_at']),
-                                       dsh.bare_str(j['updated_at'])))
+                                      (strip_str(i['northstar_id']),
+                                       strip_str(i['signup_id']),
+                                       strip_str(i['campaign_id']),
+                                       strip_str(i['campaign_run_id']),
+                                       strip_str(i['quantity']),
+                                       strip_str(i['why_participated']),
+                                       strip_str(i['signup_source']),
+                                       strip_str(i['created_at']),
+                                       strip_str(i['updated_at']),
+                                       strip_str(j['id']),
+                                       strip_str(j['media']['url']),
+                                       strip_str(j['media']['caption']),
+                                       strip_str(j['status']),
+                                       strip_str(j['remote_addr']),
+                                       strip_str(j['source']),
+                                       strip_str(j['created_at']),
+                                       strip_str(j['updated_at'])))
 
 
 log_format = "%(asctime)s - %(levelname)s: %(message)s"
