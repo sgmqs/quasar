@@ -228,9 +228,12 @@ class QuasarQueueException(Exception):
         logging.error("ERROR: {0}".format(message))
         pass
 
-if __name__ == "__main__":
+def main():
     log_format = "%(asctime)s - %(levelname)s: %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_format)
 
     testQuasarQueue = QuasarQueue()
     testQuasarQueue.start()
+
+if __name__ == "__main__":
+    main()

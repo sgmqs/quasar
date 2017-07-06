@@ -13,7 +13,7 @@ def get(path, payload):
     retries = Retry(total=6, backoff_factor=600)
     req = requests.Session()
     req.mount('https://', HTTPAdapter(max_retries=retries))
-    path = ''.join('https://secure.mcommons.com/api/', path)
+    path = ''.join(('https://secure.mcommons.com/api/', path))
     response = requests.get(path, params=payload,
                             auth=(config.mc_user, config.mc_pw))
     return response
