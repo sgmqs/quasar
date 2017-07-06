@@ -18,62 +18,12 @@ db = BladeMySQL()
 write_table = config.CAMPAIGN_ACTIVITY_TABLE
 
 
-def _get(path, page=1, params={})
-
-    auth_header = {'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY}
-    default_params = {'page': page, 'limit': 40}
-    params = default_params.update(params)
-
-    response = self.session.get(self.url + path,
-                                headers=auth_header,
-                                params=params)
-    return response.json()
+def full_backfill():
+    _backfill()
 
 
-def _get_data(page=1, from_time=None):
-    params = {}
-    if from_time is not None:
-        params = {'filter[updated_at]': from_time}
-    return self.get('', page, params)['data']
-
-
-def _get_pages(page=1, from_time=None):
-    params = {}
-    if from_time is not None:
-        params = {'filter[updated_at]': from_time}
-    return self.get('', page, params)['meta']['pagination']['total_pages']
-
-
-def _now_minus_hours(hours):
-    """Returns time x hours ago"""
-    if hours is None:
-        return None
-    else:
-        start_time = int(time.time()) - (int(hours) * 3600)
-        return dt.fromtimestamp(start_time).isoformat()
-
-
-def _get_start_page():
-    table = config.ROGUE_PROGRESS_TABLE
-    querystr = ''.join(("SELECT counter_value FROM ", config.ROGUE_PROGRESS_TABLE,
-                        " WHERE counter_name = 'rogue_backfill_page'"))
-    last_page = strip_str(db.query(querystr))
-    if last_page is None or int(last_page) > 1:
-        return int(last_page)
-    else:
-        return 1
-
-
-def _update_progress(page):
-    db.query_str("REPLACE INTO " + config.ROGUE_PROGRESS_TABLE +
-                 " (counter_name, counter_value) VALUES(%s, %s)",
-                 ('rogue_backfill_page', page))
-
-
-def _get_end_page(backfill_hours=None):
-    start_time = _now_minus_hours(backfill_hours)
-    final_page = _get_pages(from_time=start_time)
-    return final_page
+def backfill_since():
+    _backfill(since=sys.argv[1])
 
 
 def _backfill(backfill_hours=None):
@@ -86,7 +36,8 @@ def _backfill(backfill_hours=None):
     while current_page <= final_page:
         print("Current page: %s of %s" % (current_page, final_page))
         start_time = _now_minus_hours(backfill_hours)
-        _process_records(_get_data(current_page, start_time))
+        data = _get_data(current_page, start_time)
+        _process_records(data)
         current_page += 1
 
         if backfill_hours is None:
@@ -102,6 +53,70 @@ def _backfill(backfill_hours=None):
             sys.exit(0)
         else:
             raise
+
+
+def _get(path, page=1, params={})
+
+    auth_header = {'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY}
+    default_params = {'page': page, 'limit': 40}
+    params = default_params.update(params)
+
+    response = self.session.get(self.url + path,
+                                headers=auth_header,
+                                params=params)
+    return response.json()
+
+
+def _get_data(page=1, from_time=None):
+    """ Args:
+        from_time (str): Date as MM-DD-YYYY HH:MM:SS. If specified, only returns data after this time
+    """
+    params = {}
+    if from_time is not None:
+        params = {'filter[updated_at]': from_time}
+    return self.get('', page, params)['data']
+
+
+def _get_pages(page=1, from_time=None):
+    """ Args:
+        from_time (str): Date as MM-DD-YYYY HH:MM:SS. If specified, only returns data after this time
+    """
+    params = {}
+    if from_time is not None:
+        params = {'filter[updated_at]': from_time}
+    return self.get('', page, params)['meta']['pagination']['total_pages']
+
+
+def _get_start_page():
+    table = config.ROGUE_PROGRESS_TABLE
+    querystr = ''.join(("SELECT counter_value FROM ", config.ROGUE_PROGRESS_TABLE,
+                        " WHERE counter_name = 'rogue_backfill_page'"))
+    last_page = strip_str(db.query(querystr))
+    if last_page is None or int(last_page) > 1:
+        return int(last_page)
+    else:
+        return 1
+
+
+def _get_end_page(backfill_hours=None):
+    start_time = _now_minus_hours(backfill_hours)
+    final_page = _get_pages(from_time=start_time)
+    return final_page
+
+
+def _now_minus_hours(hours):
+    """Returns time x hours ago"""
+    if hours is None:
+        return None
+    else:
+        start_time = int(time.time()) - (int(hours) * 3600)
+        return dt.fromtimestamp(start_time).isoformat()
+
+
+def _update_progress(page):
+    db.query_str("REPLACE INTO " + config.ROGUE_PROGRESS_TABLE +
+                 " (counter_name, counter_value) VALUES(%s, %s)",
+                 ('rogue_backfill_page', page))
 
 
 def _process_records(self, rogue_page):
@@ -173,11 +188,3 @@ def _process_records(self, rogue_page):
                                    strip_str(j['source']),
                                    strip_str(j['created_at']),
                                    strip_str(j['updated_at'])))
-
-
-def full_backfill():
-    _backfill()
-
-
-def backfill_since():
-    _backfill(since=sys.argv[1])
