@@ -41,7 +41,7 @@ class Scraper:
         self.session.mount('http://', http)
         self.session.mount('https://', https)
 
-    def get(self, path, query_params=''):
+    def get(self, path, query_params='', headers=''):
         """Basic GET request method.
 
         Args:

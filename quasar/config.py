@@ -6,7 +6,7 @@ default = {
     "CAMPAIGN_ACTIVITY_TABLE": "table",
     "ROGUE_PROGRESS_TABLE": "rogue",
     "DS_ROGUE_API_KEY": "dummy",
-    "ROGUE_URI": "uri",
+    "ROGUE_URI": "http://uri",
     "MYSQL_HOST": "localhost",
     "MYSQL_PORT": "3236",
     "MYSQL_USER": "root",

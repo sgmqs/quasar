@@ -11,9 +11,6 @@ from .QuasarWebScraper import Scraper
 log_format = "%(asctime)s - %(levelname)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_format)
 
-api_root = ''.join((config.ROGUE_URI, '/api/v2/activity'))
-scraper = Scraper.__init__(self, api_root)
-
 db = BladeMySQL()
 write_table = config.CAMPAIGN_ACTIVITY_TABLE
 
@@ -23,7 +20,7 @@ def full_backfill():
 
 
 def backfill_since():
-    _backfill(since=sys.argv[1])
+    _backfill(backfill_hours=sys.argv[1])
 
 
 def _backfill(backfill_hours=None):
@@ -47,23 +44,18 @@ def _backfill(backfill_hours=None):
         db.create_disconnect()
     except Exception as e:
         print("Exception is %s" % e)
+        sys.exit(0)
 
-        if backfill_hours is not None:
-            print("No records in this backfill period.")
-            sys.exit(0)
-        else:
-            raise
+api_root = ''.join((config.ROGUE_URI, '/api/v2/activity'))
+scraper = Scraper(api_root)
 
-
-def _get(path, page=1, params={})
+def _get(path, page=1, params={}):
 
     auth_header = {'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY}
     default_params = {'page': page, 'limit': 40}
-    params = default_params.update(params)
+    default_params.update(params)
 
-    response = self.session.get(self.url + path,
-                                headers=auth_header,
-                                params=params)
+    response = scraper.get(path, headers=auth_header, query_params=default_params)
     return response.json()
 
 
@@ -74,7 +66,7 @@ def _get_data(page=1, from_time=None):
     params = {}
     if from_time is not None:
         params = {'filter[updated_at]': from_time}
-    return self.get('', page, params)['data']
+    return _get('', page, params)['data']
 
 
 def _get_pages(page=1, from_time=None):
@@ -84,13 +76,14 @@ def _get_pages(page=1, from_time=None):
     params = {}
     if from_time is not None:
         params = {'filter[updated_at]': from_time}
-    return self.get('', page, params)['meta']['pagination']['total_pages']
+    return _get('', page, params)['meta']['pagination']['total_pages']
 
 
 def _get_start_page():
     table = config.ROGUE_PROGRESS_TABLE
     querystr = ''.join(("SELECT counter_value FROM ", config.ROGUE_PROGRESS_TABLE,
                         " WHERE counter_name = 'rogue_backfill_page'"))
+
     last_page = strip_str(db.query(querystr))
     if last_page is None or int(last_page) > 1:
         return int(last_page)
