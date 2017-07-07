@@ -59,6 +59,12 @@ sudo apt-get install libmysqlclient-dev
 sudo apt-get install python3-dev
 ```
 
+Start the vagrant machine. It runs MySQL:
+
+```
+vagrant up
+```
+
 ### Development
 
 Run this everytime:
