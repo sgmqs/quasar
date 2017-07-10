@@ -7,7 +7,7 @@ import re
 
 
 def strip_str(base_value):
-    """Convert value to string and strips special characters. 
+    """Convert value to string and strips special characters.
 
     None becomes empty string
     """

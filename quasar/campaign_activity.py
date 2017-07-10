@@ -49,13 +49,15 @@ def _backfill(backfill_hours=None):
 api_root = ''.join((config.ROGUE_URI, '/api/v2/activity'))
 scraper = Scraper(api_root)
 
+
 def _get(path, page=1, params={}):
 
     auth_header = {'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY}
     default_params = {'page': page, 'limit': 40}
     default_params.update(params)
 
-    response = scraper.get(path, headers=auth_header, query_params=default_params)
+    response = scraper.get(path, headers=auth_header,
+                           query_params=default_params)
     return response.json()
 
 

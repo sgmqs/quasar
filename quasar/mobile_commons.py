@@ -20,6 +20,7 @@ def get(path, payload):
                             auth=(config.mc_user, config.mc_pw))
     return response
 
+
 def backfill_user_profiles():
     _backfill_user_profiles(sys.argv[1])
 
@@ -134,6 +135,7 @@ def scrape_campaigns():
     cur.close()
     db.close()
 
+
 def convert_campaign_lookup_to_id():
     db, cur = _connect_db()
     cur.execute("SELECT * FROM users_and_activities.mobile_campaign_id_lookup")
@@ -166,4 +168,4 @@ def convert_campaign_lookup_to_id():
 
 
 def _connect_db():
-    return database.connect({'conv':database.dec_to_float_converter()})
+    return database.connect({'conv': database.dec_to_float_converter()})

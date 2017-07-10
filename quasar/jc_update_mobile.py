@@ -12,6 +12,7 @@ import sys
 from .config import config
 from . import database
 
+
 def getHours():
     """based on date or sys args creates list of tuples to feed to the api"""
     # list that will contain final tuples
@@ -122,7 +123,6 @@ def main():
     now = time.time()
     # list for opt outs using Manager function. Required for multiprocessing
     opt_outs = Manager().list([])
-
 
     # get hours list
     hours = getHours()

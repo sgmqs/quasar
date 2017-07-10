@@ -4,7 +4,7 @@ from .config import config
 
 def main():
     db, cur = database.connect({'conv': database.dec_to_float_converter()})
-    
+
     # Drop All Existing Tables for Demographics
     cur.execute("DROP TABLE IF EXISTS users_and_activities.action_gender")
     cur.execute("DROP TABLE IF EXISTS users_and_activities.action_income")

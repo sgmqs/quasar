@@ -223,6 +223,7 @@ class QuasarQueueException(Exception):
         logging.error("ERROR: {0}".format(message))
         pass
 
+
 def main():
     log_format = "%(asctime)s - %(levelname)s: %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_format)

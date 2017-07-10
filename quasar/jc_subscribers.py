@@ -59,7 +59,8 @@ class MainSetup:
 
         self.campaigns_dict = dict()
         self.all_clusters = list()
-        self.db, self.cur = database.connect({'conv': database.dec_to_float_converter()})
+        self.db, self.cur = database.connect(
+            {'conv': database.dec_to_float_converter()})
         # always refresh master
         self.refreshMaster()
 

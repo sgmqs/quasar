@@ -2,6 +2,7 @@ from .config import config
 from . import database
 import time
 
+
 def main():
     db, cur = database.connect({'db': 'phoenix_user_snapshots'})
 
