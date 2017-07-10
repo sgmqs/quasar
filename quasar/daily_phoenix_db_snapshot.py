@@ -1,15 +1,9 @@
-import MySQLdb
 import time
-from .config import config
+from . import database
 
 
 def main():
-    db = MySQLdb.connect(host=config.host,  # hostname
-                         user=config.user,  # username
-                         passwd=config.pw,  # password
-                         db='phoenix_user_snapshots')  # datatype conversions
-
-    cur = db.cursor()
+    db, cur = database.connect({'db': 'phoenix_user_snapshots'})
 
     snapshot_time = str(int(time.time()))
 

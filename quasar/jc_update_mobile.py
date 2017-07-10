@@ -7,12 +7,10 @@ from requests.adapters import HTTPAdapter
 import json
 from bs4 import BeautifulSoup as bs
 from multiprocessing import Manager
-import MySQLdb
-import MySQLdb.converters
 import time
 import sys
 from .config import config
-
+from . import database
 
 def getHours():
     """based on date or sys args creates list of tuples to feed to the api"""
@@ -95,19 +93,6 @@ def getProfile(idx, start, finish, cred):
         print('current len opt_outs', len(opt_outs))
 
 
-def dbConn():
-    """mysql conn and cursor"""
-    conv_dict = MySQLdb.converters.conversions.copy()
-    conv_dict[246] = float
-    conv_dict[8] = int
-    db = MySQLdb.connect(host=config.host,  # hostname
-                         user=config.user,  # username
-                         passwd=config.pw,  # password
-                         conv=conv_dict)  # datatype conversions
-    cur = db.cursor()
-    return db, cur
-
-
 def updateUsers(opt_out_list):
     """updates user in db"""
     # all numbers
@@ -151,9 +136,7 @@ def main():
     print('total opt outs: ', len(opt_outs))
     pool.close()
     # open connection
-    connection = dbConn()
-    db = connection[0]
-    cur = connection[1]
+    db, cur = database.connect({'conv': database.dec_to_float_converter()})
     # update users
     updateUsers(opt_outs)
     cur.close()

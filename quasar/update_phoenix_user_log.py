@@ -1,16 +1,9 @@
-import MySQLdb
 from .config import config
+from . import database
 import time
 
 def main():
-    # Setup DB Connection
-    db = MySQLdb.connect(host=config.host,  # hostname
-                         user=config.user,  # username
-                         passwd=config.pw,  # password
-                         db='phoenix_user_snapshots'  # source and staging area for snapshots
-                         )
-
-    cur = db.cursor()
+    db, cur = database.connect({'db': 'phoenix_user_snapshots'})
 
     # Record start time.
     start_time = time.time()

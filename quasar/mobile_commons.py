@@ -4,9 +4,9 @@ from requests.adapters import HTTPAdapter
 import re
 from bs4 import BeautifulSoup
 import sys
+
 from .config import config
-import MySQLdb
-import MySQLdb.converters
+from . import database
 
 
 def get(path, payload):
@@ -18,29 +18,12 @@ def get(path, payload):
                             auth=(config.mc_user, config.mc_pw))
     return response
 
-
-def connect_db():
-    # Create DB Connection with Appropriate Conversions
-    #   Conversions inherited from Josh's other ETL scripts.
-    conv_dict = MySQLdb.converters.conversions.copy()
-    conv_dict[246] = float
-    conv_dict[8] = int
-    # open connection
-    db = MySQLdb.connect(host=config.host,  # hostname
-                         user=config.user,  # username
-                         passwd=config.pw,  # password
-                         conv=conv_dict)  # datatype conversions
-    # set cursor object, and set to dict dursor
-    cur = db.cursor(MySQLdb.cursors.DictCursor)
-    return (db, cur)
-
-
 def backfill_user_profiles():
     _backfill_user_profiles(sys.argv[1])
 
 
 def _backfill_user_profiles(backfill_hours):
-    db, cur = connect_db()
+    db, cur = _connect_db()
 
     # Time Conversion from Now to ISO 8601 format used by MC
     now = datetime.now()
@@ -100,7 +83,7 @@ def _backfill_user_profiles(backfill_hours):
 def scrape_campaigns():
 
     mob_com_api_req = get("campaigns", {"include_opt_in_paths": 1})
-    db, cur = connect_db()
+    db, cur = _connect_db()
 
     # Capture Output into Beautiful Soup
     mob_com_campaign_soup = BeautifulSoup(mob_com_api_req.text, 'xml')
@@ -150,7 +133,7 @@ def scrape_campaigns():
     db.close()
 
 def convert_campaign_lookup_to_id():
-    db, cur = connect_db()
+    db, cur = _connect_db()
     cur.execute("SELECT * FROM users_and_activities.mobile_campaign_id_lookup")
     result = cur.fetchall()
 
@@ -178,3 +161,8 @@ def convert_campaign_lookup_to_id():
 
     cur.close()
     db.close()
+
+
+def _connect_db():
+    return database.connect({'conv':database.dec_to_float_converter()})
+    

@@ -5,19 +5,11 @@ from collections import OrderedDict
 import sys
 import os
 from .config import config
+from . import database
 
 
 def main():
-    conv_dict = MySQLdb.converters.conversions.copy()
-    conv_dict[246] = float
-    conv_dict[8] = int
-    db = MySQLdb.connect(host=config.host,  # hostname
-                         user=config.user,  # username
-                         passwd=config.pw,  # password
-                         conv=conv_dict)  # datatype conversions
-
-    cur = db.cursor(MySQLdb.cursors.DictCursor)
-
+    db, cur = database.connect({'conv': database.dec_to_float_converter()})
 
     list_track_drop = "drop table if exists users_and_activities.list_tracking"
 

@@ -1,23 +1,11 @@
 import sys
 from .config import config
-import MySQLdb
-import MySQLdb.converters
+from . import database
 import re
 
 
 def main():
-    # Create DB Connection with Appropriate Conversions
-    #   Conversions inherited from Josh's other ETL scripts.
-    conv_dict = MySQLdb.converters.conversions.copy()
-    conv_dict[246] = float
-    conv_dict[8] = int
-    # open connection
-    db = MySQLdb.connect(host=config.host,  # hostname
-                         user=config.user,  # username
-                         passwd=config.pw,  # password
-                         conv=conv_dict)  # datatype conversions
-    # set cursor object, and set to dict dursor
-    cur = db.cursor(MySQLdb.cursors.DictCursor)
+    db, cur = database.connect({'conv': database.dec_to_float_converter()})
 
     # Populate Array with all mobile values from Phoenix DB
     cur.execute(

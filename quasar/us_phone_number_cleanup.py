@@ -1,23 +1,10 @@
 import sys
 from .config import config
-import MySQLdb
-import MySQLdb.converters
+from . import database
 
 
 def main():
-    # Create DB connection with appropriate conversions
-    # inherited from Josh's other ETL scripts.
-    conv_dict = MySQLdb.converters.conversions.copy()
-    conv_dict[246] = float
-    conv_dict[8] = int
-
-    db = MySQLdb.connect(host=config.host,
-                         user=config.user,
-                         passwd=config.pw,
-                         conv=conv_dict)  # datatype conversions
-
-    # Set cursor object, and set to dict dursor
-    cur = db.cursor(MySQLdb.cursors.DictCursor)
+    db, cur = database.connect({'conv': database.dec_to_float_converter()})
 
     # Get all records missing a us_phone_number value
     cur.execute(

@@ -6,13 +6,13 @@ import json
 from datetime import datetime as d
 from datetime import timedelta as t
 from bs4 import BeautifulSoup as bs
-import MySQLdb
-import MySQLdb.converters
 from math import log
 import sys
 import os
 import time
+
 from .config import config
+from . import database
 
 # flags - hour backfill campaign force clean
 # - hours - how many hours to go back
@@ -59,31 +59,9 @@ class MainSetup:
 
         self.campaigns_dict = dict()
         self.all_clusters = list()
-        self.connection = self.dbConnect()
-        self.db = self.connection[0]
-        self.cur = self.connection[1]
+        self.db, self.cur = database.connect({'conv': database.dec_to_float_converter()})
         # always refresh master
         self.refreshMaster()
-
-    def dbConnect(self):
-        """open db connection"""
-        # set ignore mysqldb warnings for cleaner logs
-        filterwarnings('ignore', category=MySQLdb.Warning)
-        ###
-        # open mysql connection
-        ###
-        # set datatype conversions
-        conv_dict = MySQLdb.converters.conversions.copy()
-        conv_dict[246] = float
-        conv_dict[8] = int
-        # open connection
-        db = MySQLdb.connect(host=config.host,  # hostname
-                             user=config.user,  # username
-                             passwd=config.pw,  # password
-                             conv=conv_dict)  # datatype conversions
-        # set cursor object, and set to dict dursor
-        cur = db.cursor(MySQLdb.cursors.DictCursor)
-        return db, cur
 
     def refreshMaster(self):
         """refresh table of all drupal campaigns - users_and_activities.campaign_master"""

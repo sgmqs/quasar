@@ -1,4 +1,4 @@
-import MySQLdb
+from . import database
 from .config import config
 import time
 import sys
@@ -8,12 +8,10 @@ def main():
     start_time = time.time()
     """Keep track of start time of script."""
 
-    db = MySQLdb.connect(host=config.host,  # hostname
-                         user=config.user,  # username
-                         passwd=config.pw)  # password
+    db_opts = {'conv': database.dec_to_float_converter(),
+               'charset': 'utf8'}
+    db, cur = database.connect(db_opts)
 
-    db.set_character_set('utf8')
-    cur = db.cursor()
     cur.execute('SET NAMES utf8;')
     cur.execute('SET CHARACTER SET utf8;')
     cur.execute('SET character_set_connection=utf8;')

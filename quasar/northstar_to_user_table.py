@@ -1,10 +1,11 @@
-import MySQLdb
-from .config import config
 import time
 import re
 import sys
+
+from .config import config
 from .DSNorthstarScraper import NorthstarScraper
 from .utils import strip_str
+from . import database
 
 """DS Northstar to Quasar User ETL script.
 
@@ -18,10 +19,10 @@ that gets updated on ingestion loop.
 
 """
 
+
 def main():
     start_time = time.time()
     """Keep track of start time of script."""
-
 
     # Set pagination variable to be true by default. This
     # will track whether there are any more pages in a
@@ -29,15 +30,8 @@ def main():
     nextPage = True
 
     ca_settings = {'ca': '/home/quasar/rds-combined-ca-bundle.pem'}
-    db = MySQLdb.connect(host=config.host,  # hostname
-                         user=config.user,  # username
-                         passwd=config.pw,  # password
-                         use_unicode=True,  # Use unicode for queries.
-                         charset='utf8',    # Use UTF8 character set for queries.
-                         ssl=ca_settings)   # Connect using SSL
-
-    cur = db.cursor()
-
+    db_opts = {'use_unicode': True, 'charset': 'utf8', 'ssl': ca_settings}
+    db, cur = database.connect(db_opts)
 
     def isInt(s):
         """Check if value is type int and return boolean result.
@@ -48,7 +42,6 @@ def main():
             return True
         except ValueError:
             return False
-
 
     if len(sys.argv) == 3:
         if sys.argv[1] == 'prod':

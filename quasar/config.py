@@ -7,14 +7,15 @@ default = {
     "ROGUE_PROGRESS_TABLE": "rogue",
     "DS_ROGUE_API_KEY": "dummy",
     "ROGUE_URI": "http://uri",
-    "MYSQL_HOST": "localhost",
-    "MYSQL_PORT": "3236",
+    "MYSQL_HOST": "127.0.0.1",
+    "MYSQL_PORT": 6603,
     "MYSQL_USER": "root",
     "MYSQL_PASSWORD": "password",
     "MYSQL_DATABASE": "quasar",
-    "host": "localhost", # phoenix_to_campaign_info_table
-    "user": "root", # phoenix_to_campaign_info_table
-    "pw": "password", # phoenix_to_campaign_info_table
+    "host": "127.0.0.1",
+    "port": 6603,
+    "user": "root",
+    "pw": "password",
     "mc_user": "user",
     "mc_pw": "password",
     "ns_client_id": "123",
