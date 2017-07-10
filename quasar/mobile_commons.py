@@ -1,9 +1,11 @@
 import requests
+import re
+import sys
+
 from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-import re
+from datetime import datetime, date, timedelta
 from bs4 import BeautifulSoup
-import sys
 
 from .config import config
 from . import database
@@ -165,4 +167,3 @@ def convert_campaign_lookup_to_id():
 
 def _connect_db():
     return database.connect({'conv':database.dec_to_float_converter()})
-    
