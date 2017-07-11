@@ -18,7 +18,7 @@ test: clean
 	# py.test --verbose --color=yes $(TEST_PATH)
 
 MIGRATIONS:=$(shell find $(./data/sql/migrations) -name '*.sql' | sort)
-sql-migrate: $(MIGRATIONS)
+migrate-sql: $(MIGRATIONS)
 	for file in $(MIGRATIONS); do \
 		MYSQL_PWD=password mysql -uroot --host 127.0.0.1 --port 6603 < $$file; \
 	done
