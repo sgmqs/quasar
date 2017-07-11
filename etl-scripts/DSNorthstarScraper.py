@@ -5,6 +5,7 @@ from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 from QuasarWebScraper import Scraper
 
+
 class NorthstarScraper(Scraper):
     """Class for extracting Northstar data via API."""
 
@@ -19,7 +20,6 @@ class NorthstarScraper(Scraper):
     def __init__(self, ns_url='https://profile.dosomething.org'):
         """Set Northstar API with all the retry logic of Quasar Web Scraper."""
         Scraper.__init__(self, ns_url)
-
 
     # Note to self, should update this method to check for validity of token,
     # and only refresh when necessary. Something like a simple
