@@ -22,14 +22,8 @@ mysql -uroot -ppassword -e "GRANT ALL ON *.* to 'root'@'%' identified by 'passwo
 mysql -uroot -ppassword -e "FLUSH PRIVILEGES;"
 sudo /etc/init.d/mysql restart
 
-# Add 1GB swap for memory overflow
-sudo fallocate -l 1024M /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-echo "/swapfile   none    swap    sw    0   0" | sudo tee -a /etc/fstab
-printf "vm.swappiness=10\nvm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-
-# Allow caching of NFS file share
-sudo apt-get install -y cachefilesd
-echo "RUN=yes" | sudo tee /etc/default/cachefilesd
+MIGRATIONS=/vagrant/data/sql/migrations/*
+for file in $MIGRATIONS
+do
+    mysql -uroot -ppassword < $file
+done
