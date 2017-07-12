@@ -1,8 +1,10 @@
 import json
-import config
+
 import oauthlib
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
+
+import config
 from QuasarWebScraper import Scraper
 
 
@@ -41,7 +43,6 @@ class NorthstarScraper(Scraper):
 
     def post(self, path, body=[]):
         """Set POST method to include OAuth 2 Token for Authorization.
-
         Args:
             path (str): Add to base URL defined by init for full URI.
             body (dict): Post data for a request, default none.
@@ -53,7 +54,6 @@ class NorthstarScraper(Scraper):
 
     def getUsers(self, users=100, page_number=1):
         """Get users in max batch size by default from Northstar API.
-
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
@@ -65,7 +65,6 @@ class NorthstarScraper(Scraper):
 
     def getUsersCreatedSince(self, users=100, page_number=1, created_at):
         """Get users in max batch size based on created date from Norsthar API.
-
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
@@ -78,7 +77,6 @@ class NorthstarScraper(Scraper):
 
     def getUsersUpdatedSince(self, users=100, page_number=1, updated_at):
         """Get users in max batch size based on created date from Norsthar API.
-
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
@@ -91,7 +89,6 @@ class NorthstarScraper(Scraper):
 
     def getUsersSlow(self, users=100, page_number=1):
         """Get users in max batch size by default from Northstar API.
-
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
@@ -109,7 +106,6 @@ class NorthstarScraper(Scraper):
 
     def nextPageStatus(self, users=100, page_number=1):
         """Check next page pagination to see if null or not.
-
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
@@ -124,7 +120,6 @@ class NorthstarScraper(Scraper):
 
     def nextPageStatusCreatedSince(self, users=100, page_number=1, created_at):
         """Get users in max batch size based on created date from Norsthar API.
-
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
@@ -140,7 +135,6 @@ class NorthstarScraper(Scraper):
 
     def nextPageStatusUpdatedSince(self, users=100, page_number=1, updated_at):
         """Get users in max batch size based on created date from Norsthar API.
-
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.

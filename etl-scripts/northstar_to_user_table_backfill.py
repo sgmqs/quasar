@@ -42,7 +42,8 @@ cur = db.cursor()
 
 def isInt(s):
     """Check if value is type int and return boolean result.
-    Source at http://stackoverflow.com/questions/1265665/python-check-if-a-string-represents-an-int-without-using-try-except
+    Source at http://stackoverflow.com/questions/1265665/python-check-
+                     if-a-string-represents-an-int-without-using-try-except
     """
     try:
         int(s)
@@ -60,6 +61,9 @@ else:
 """Determine backfill hours and set for updated and created backfills."""
 
 ns_fetcher = NorthstarScraper('https://northstar.dosomething.org')
+backfill_since = int(time.time()) - (int(backfill_hours) * 3600)
+backfill_formatted_time = dt.fromtimestamp(backfill_since).isoformat()
+
 
 def to_string(base_value):
     """Converts to string and replaces None values with empty values."""
@@ -70,14 +74,43 @@ def to_string(base_value):
         strip_special_chars = re.sub(r'[()<>/"\'\\]', '', base_string)
         return str(strip_special_chars)
 
-backfill_since = int(time.time()) - (int(backfill_hours) * 3600)
-formatted_time = dt.fromtimestamp(backfill_since).isoformat()
 
-nextPage = nsfetcher.nextPageStatusCreatedSince(formatted_time)
-i = 1
+def updateCreatedSince(formatted_time):
+    """Grab all new NS users created since backfill time."""
+    nextPage = nsfetcher.nextPageStatusCreatedSince(formatted_time)
+    i = 1
+    while nextPage is True:
+        current_page = ns_fetcher.getUsersCreatedSince(100, i, formatted_time)
+        self._process_records(current_page)
+        nextPage = ns_fetcher.nextPageStatusCreatedSince(100, i,
+                                                         formatted_time)
+        if nextPage is True:
+            i += 1
+        else:
+            current_page = ns_fetcher.getUsersCreatedSince(100, i,
+                                                           formatted_time)
+            self._process_records(current_page)
 
-while nextPage is True:
-    current_page = ns_fetcher.getUsersCreatedSince(100, i, formatted_time)
+
+def updateUpdatedSince(formatted_time):
+    """Grab all new NS users created since backfill time."""
+    nextPage = nsfetcher.nextPageStatusUpdatedSince(formatted_time)
+    i = 1
+    while nextPage is True:
+        current_page = ns_fetcher.getUsersUpdatedSince(100, i, formatted_time)
+        self._process_records(current_page)
+        nextPage = ns_fetcher.nextPageStatusUpdatedSince(100, i,
+                                                         formatted_time)
+        if nextPage is True:
+            i += 1
+        else:
+            current_page = ns_fetcher.getUsersUpdatedSince(100, i,
+                                                           formatted_time)
+            self._process_records(current_page)
+
+
+def _process_records(current_page):
+    """Process Northstar API JSON to user table records."""
     for user in current_page:
         cur.execute("INSERT INTO quasar.users (northstar_id,\
                     northstar_created_at_timestamp,\
@@ -153,86 +186,9 @@ while nextPage is True:
                      to_string(user['mobilecommons_status']),
                      to_string(user['source_detail'])))
         db.commit()
-    nextPage = ns_fetcher.nextPageStatusCreatedSince(100, i, formatted_time)
-    if nextPage is True:
-        i += 1
-    else:
-        current_page = ns_fetcher.getUsersCreatedSince(100, i, formatted_time)
-        for user in current_page:
-            cur.execute("INSERT INTO quasar.users (northstar_id,\
-                        northstar_created_at_timestamp,\
-                        last_logged_in, last_accessed, drupal_uid,\
-                        northstar_id_source_name,\
-                        email, mobile, birthdate,\
-                        first_name, last_name,\
-                        addr_street1, addr_street2,\
-                        addr_city, addr_state,\
-                        addr_zip, country, language,\
-                        agg_id, cgg_id,\
-                        moco_commons_profile_id,\
-                        moco_current_status,\
-                        moco_source_detail)\
-                        VALUES(%s,%s,%s,%s,%s,%s,\
-                        %s,%s,%s,%s,\
-                        %s,%s,%s,%s,\
-                        %s,%s,%s,%s,\
-                        NULL,NULL,%s,%s,%s)\
-                        ON DUPLICATE KEY UPDATE \
-                        northstar_created_at_timestamp = %s,\
-                        last_logged_in = %s,\
-                        last_accessed = %s, drupal_uid = %s,\
-                        northstar_id_source_name = %s,\
-                        email = %s, mobile = %s, birthdate = %s,\
-                        first_name = %s, last_name = %s,\
-                        addr_street1 = %s, addr_street2 = %s,\
-                        addr_city = %s, addr_state = %s,\
-                        addr_zip = %s, country = %s, language = %s,\
-                        agg_id = NULL, cgg_id = NULL,\
-                        moco_commons_profile_id = %s,\
-                        moco_current_status = %s,\
-                        moco_source_detail = %s",
-                        (to_string(user['id']),
-                         to_string(user['created_at']),
-                         to_string(user['last_authenticated_at']),
-                         to_string(user['last_accessed_at']),
-                         to_string(user['drupal_id']),
-                         to_string(user['source']),
-                         to_string(user['email']),
-                         to_string(user['mobile']),
-                         to_string(user['birthdate']),
-                         to_string(user['first_name']),
-                         to_string(user['last_name']),
-                         to_string(user['addr_street1']),
-                         to_string(user['addr_street2']),
-                         to_string(user['addr_city']),
-                         to_string(user['addr_state']),
-                         to_string(user['addr_zip']),
-                         to_string(user['country']),
-                         to_string(user['language']),
-                         to_string(user['mobilecommons_id']),
-                         to_string(user['mobilecommons_status']),
-                         to_string(user['source_detail']),
-                         to_string(user['created_at']),
-                         to_string(user['last_authenticated_at']),
-                         to_string(user['last_accessed_at']),
-                         to_string(user['drupal_id']),
-                         to_string(user['source']),
-                         to_string(user['email']),
-                         to_string(user['mobile']),
-                         to_string(user['birthdate']),
-                         to_string(user['first_name']),
-                         to_string(user['last_name']),
-                         to_string(user['addr_street1']),
-                         to_string(user['addr_street2']),
-                         to_string(user['addr_city']),
-                         to_string(user['addr_state']),
-                         to_string(user['addr_zip']),
-                         to_string(user['country']),
-                         to_string(user['language']),
-                         to_string(user['mobilecommons_id']),
-                         to_string(user['mobilecommons_status']),
-                         to_string(user['source_detail'])))
-            db.commit()
+
+self.updateCreatedSince(backfill_formatted_time)
+self.updateUpdatedSince(backfill_formatted_time)
 
 cur.close()
 db.close()
