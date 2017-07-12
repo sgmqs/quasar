@@ -120,8 +120,6 @@ class NorthstarScraper(Scraper):
         else:
             return True
 
-            GET https://northstar.dosomething.org/v1/users?page=100000000&limit=100&pagination=cursor&after%5Bupdated_at%5D=2017-07-11T12:11:25.840455
-
     def nextPageStatusCreatedSince(self, created_at, users=100, page_number=1):
         """Get users in max batch size based on created date from Norsthar API.
 
