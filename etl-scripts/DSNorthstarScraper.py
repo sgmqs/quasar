@@ -131,6 +131,7 @@ class NorthstarScraper(Scraper):
         params = ('?page=' + str(page_number) + '&limit=' + str(users) +
                   '&after[created_at]=' + str(created_at))
         user_response = self.get('/v1/users' + params)
+        print(user_response)
         if user_response['meta']['cursor']['next'] is None:
             return False
         else:
@@ -147,6 +148,7 @@ class NorthstarScraper(Scraper):
         params = ('?page=' + str(page_number) + '&limit=' + str(users) +
                   '&after[updated_at]=' + str(updated_at))
         user_response = self.get('/v1/users' + params)
+        print(user_response)
         if user_response['meta']['cursor']['next'] is None:
             return False
         else:
