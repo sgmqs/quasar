@@ -60,6 +60,7 @@ else:
     sys.exit(0)
 """Determine backfill hours and set for updated and created backfills."""
 
+# Create NS Scraper and format backfill period to ISO8601.
 ns_fetcher = NorthstarScraper('https://northstar.dosomething.org')
 backfill_since = int(time.time()) - (int(backfill_hours) * 3600)
 backfill_formatted_time = dt.fromtimestamp(backfill_since).isoformat()
