@@ -61,6 +61,6 @@ class Scraper:
         response = self.session.post(self.url + path, data=body)
         return self.processResponse(response)
 
-    def processResponse(response):
+    def processResponse(self, response):
         """Stub method to handle data processing in vFuture."""
         return response

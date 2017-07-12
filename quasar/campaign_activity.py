@@ -12,7 +12,9 @@ log_format = "%(asctime)s - %(levelname)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_format)
 
 db = BladeMySQL()
-write_table = config.CAMPAIGN_ACTIVITY_TABLE
+campaign_activity_table = config.CAMPAIGN_ACTIVITY_TABLE
+api_root = ''.join((config.ROGUE_URI, '/api/v2/activity'))
+scraper = Scraper(api_root)
 
 
 def full_backfill():
@@ -30,6 +32,8 @@ def _backfill(backfill_hours=None):
     if backfill_hours is not None:
         print("Current backfill hours are %s." % backfill_hours)
 
+    print(final_page)
+    print(current_page)
     while current_page <= final_page:
         print("Current page: %s of %s" % (current_page, final_page))
         start_time = _now_minus_hours(backfill_hours)
@@ -45,9 +49,6 @@ def _backfill(backfill_hours=None):
     except Exception as e:
         print("Exception is %s" % e)
         sys.exit(0)
-
-api_root = ''.join((config.ROGUE_URI, '/api/v2/activity'))
-scraper = Scraper(api_root)
 
 
 def _get(path, page=1, params={}):
@@ -78,7 +79,9 @@ def _get_pages(page=1, from_time=None):
     params = {}
     if from_time is not None:
         params = {'filter[updated_at]': from_time}
-    return _get('', page, params)['meta']['pagination']['total_pages']
+    res = _get('', page, params)
+    print(res)
+    return res['meta']['pagination']['total_pages']
 
 
 def _get_start_page():
@@ -87,10 +90,10 @@ def _get_start_page():
                         " WHERE counter_name = 'rogue_backfill_page'"))
 
     last_page = strip_str(db.query(querystr))
-    if last_page is None or int(last_page) > 1:
-        return int(last_page)
-    else:
+    if last_page == '' or int(last_page) <= 1:
         return 1
+    else:
+        return int(last_page)
 
 
 def _get_end_page(backfill_hours=None):
@@ -114,12 +117,12 @@ def _update_progress(page):
                  ('rogue_backfill_page', page))
 
 
-def _process_records(self, rogue_page):
+def _process_records(rogue_page):
     """Iterate over page of results and load into Blade DB."""
     for i in rogue_page:
         if i['posts']['data'] == []:
-            self.db.query_str("REPLACE INTO " +
-                              self.campaign_activity_table +
+            db.query_str("REPLACE INTO " +
+                              campaign_activity_table +
                               " SET northstar_id = %s,\
                               signup_id = %s,\
                               campaign_id = %s,\
@@ -147,8 +150,8 @@ def _process_records(self, rogue_page):
                                strip_str(i['updated_at'])))
         else:
             for j in i['posts']['data']:
-                self.db.query_str("REPLACE INTO " +
-                                  self.campaign_activity_table +
+                db.query_str("REPLACE INTO " +
+                                  campaign_activity_table +
                                   " SET northstar_id = %s,\
                                   signup_id = %s,\
                                   campaign_id = %s,\
