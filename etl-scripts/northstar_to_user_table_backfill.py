@@ -188,6 +188,7 @@ def _process_records(current_page):
                      to_string(user['source_detail'])))
         db.commit()
 
+
 updateCreatedSince(backfill_formatted_time)
 updateUpdatedSince(backfill_formatted_time)
 
