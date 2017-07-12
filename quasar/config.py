@@ -32,5 +32,5 @@ default = {
 config = SimpleNamespace(**default)
 
 if env == "PROD" or env == "STAGING":
-    sys.path.append(os.environ['WORKSPACE'])
+    sys.path.append(os.environ['JENKINS_HOME'])
     import config as config
