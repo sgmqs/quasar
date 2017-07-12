@@ -187,8 +187,8 @@ def _process_records(current_page):
                      to_string(user['source_detail'])))
         db.commit()
 
-self.updateCreatedSince(backfill_formatted_time)
-self.updateUpdatedSince(backfill_formatted_time)
+updateCreatedSince(backfill_formatted_time)
+updateUpdatedSince(backfill_formatted_time)
 
 cur.close()
 db.close()
