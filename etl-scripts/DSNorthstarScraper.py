@@ -65,6 +65,7 @@ class NorthstarScraper(Scraper):
 
     def getUsersCreatedSince(self, users=100, page_number=1, created_at):
         """Get users in max batch size based on created date from Norsthar API.
+
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
@@ -77,6 +78,7 @@ class NorthstarScraper(Scraper):
 
     def getUsersUpdatedSince(self, users=100, page_number=1, updated_at):
         """Get users in max batch size based on created date from Norsthar API.
+
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
@@ -120,13 +122,14 @@ class NorthstarScraper(Scraper):
 
     def nextPageStatusCreatedSince(self, users=100, page_number=1, created_at):
         """Get users in max batch size based on created date from Norsthar API.
+
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
             created_at (str): Updated at parameter to backfill since.
         """
         params = ('?page=' + str(page_number) + '&limit=' + str(users) +
-                  '&after[updated_at]=' + str(created_at))
+                  '&after[created_at]=' + str(created_at))
         user_response = self.get('/v1/users' + params)
         if user_response['meta']['cursor']['next'] is None:
             return False
@@ -135,6 +138,7 @@ class NorthstarScraper(Scraper):
 
     def nextPageStatusUpdatedSince(self, users=100, page_number=1, updated_at):
         """Get users in max batch size based on created date from Norsthar API.
+
         Args:
             users (int): Users per page returned, default 100, max 100.
             page_number (int): Page number to return, default 1.
