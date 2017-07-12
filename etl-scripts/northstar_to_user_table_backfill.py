@@ -80,15 +80,15 @@ def updateCreatedSince(formatted_time):
     nextPage = nsfetcher.nextPageStatusCreatedSince(formatted_time)
     i = 1
     while nextPage is True:
-        current_page = ns_fetcher.getUsersCreatedSince(100, i, formatted_time)
+        current_page = ns_fetcher.getUsersCreatedSince(formatted_time, 100, i)
         self._process_records(current_page)
-        nextPage = ns_fetcher.nextPageStatusCreatedSince(100, i,
-                                                         formatted_time)
+        nextPage = ns_fetcher.nextPageStatusCreatedSince(formatted_time,
+                                                         100, i)
         if nextPage is True:
             i += 1
         else:
-            current_page = ns_fetcher.getUsersCreatedSince(100, i,
-                                                           formatted_time)
+            current_page = ns_fetcher.getUsersCreatedSince(formatted_time,
+                                                           100, i)
             self._process_records(current_page)
 
 
@@ -97,15 +97,15 @@ def updateUpdatedSince(formatted_time):
     nextPage = nsfetcher.nextPageStatusUpdatedSince(formatted_time)
     i = 1
     while nextPage is True:
-        current_page = ns_fetcher.getUsersUpdatedSince(100, i, formatted_time)
+        current_page = ns_fetcher.getUsersUpdatedSince(formatted_time, 100, i)
         self._process_records(current_page)
-        nextPage = ns_fetcher.nextPageStatusUpdatedSince(100, i,
-                                                         formatted_time)
+        nextPage = ns_fetcher.nextPageStatusUpdatedSince(formatted_time,
+                                                         100, i)
         if nextPage is True:
             i += 1
         else:
-            current_page = ns_fetcher.getUsersUpdatedSince(100, i,
-                                                           formatted_time)
+            current_page = ns_fetcher.getUsersUpdatedSince(formatted_time,
+                                                           100, i)
             self._process_records(current_page)
 
 

@@ -63,7 +63,7 @@ class NorthstarScraper(Scraper):
                                                'pagination': 'cursor'})
         return(user_response['data'])
 
-    def getUsersCreatedSince(self, users=100, page_number=1, created_at):
+    def getUsersCreatedSince(self, created_at, users=100, page_number=1):
         """Get users in max batch size based on created date from Norsthar API.
 
         Args:
@@ -76,7 +76,7 @@ class NorthstarScraper(Scraper):
         user_response = self.get('/v1/users' + params)
         return(user_response['data'])
 
-    def getUsersUpdatedSince(self, users=100, page_number=1, updated_at):
+    def getUsersUpdatedSince(self, updated_at, users=100, page_number=1):
         """Get users in max batch size based on created date from Norsthar API.
 
         Args:
@@ -120,7 +120,7 @@ class NorthstarScraper(Scraper):
         else:
             return True
 
-    def nextPageStatusCreatedSince(self, users=100, page_number=1, created_at):
+    def nextPageStatusCreatedSince(self, created_at, users=100, page_number=1):
         """Get users in max batch size based on created date from Norsthar API.
 
         Args:
@@ -136,7 +136,7 @@ class NorthstarScraper(Scraper):
         else:
             return True
 
-    def nextPageStatusUpdatedSince(self, users=100, page_number=1, updated_at):
+    def nextPageStatusUpdatedSince(self, updated_at, users=100, page_number=1):
         """Get users in max batch size based on created date from Norsthar API.
 
         Args:
