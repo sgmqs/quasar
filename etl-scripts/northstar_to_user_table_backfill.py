@@ -81,7 +81,7 @@ def updateCreatedSince(formatted_time):
     i = 1
     while nextPage is True:
         current_page = ns_fetcher.getUsersCreatedSince(formatted_time, 100, i)
-        self._process_records(current_page)
+        _process_records(current_page)
         nextPage = ns_fetcher.nextPageStatusCreatedSince(formatted_time,
                                                          100, i)
         if nextPage is True:
@@ -89,7 +89,7 @@ def updateCreatedSince(formatted_time):
         else:
             current_page = ns_fetcher.getUsersCreatedSince(formatted_time,
                                                            100, i)
-            self._process_records(current_page)
+            _process_records(current_page)
 
 
 def updateUpdatedSince(formatted_time):
@@ -98,7 +98,7 @@ def updateUpdatedSince(formatted_time):
     i = 1
     while nextPage is True:
         current_page = ns_fetcher.getUsersUpdatedSince(formatted_time, 100, i)
-        self._process_records(current_page)
+        _process_records(current_page)
         nextPage = ns_fetcher.nextPageStatusUpdatedSince(formatted_time,
                                                          100, i)
         if nextPage is True:
@@ -106,7 +106,7 @@ def updateUpdatedSince(formatted_time):
         else:
             current_page = ns_fetcher.getUsersUpdatedSince(formatted_time,
                                                            100, i)
-            self._process_records(current_page)
+            _process_records(current_page)
 
 
 def _process_records(current_page):
