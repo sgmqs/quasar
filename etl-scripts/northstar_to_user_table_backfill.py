@@ -77,7 +77,7 @@ def to_string(base_value):
 
 def updateCreatedSince(formatted_time):
     """Grab all new NS users created since backfill time."""
-    nextPage = nsfetcher.nextPageStatusCreatedSince(formatted_time)
+    nextPage = ns_fetcher.nextPageStatusCreatedSince(formatted_time)
     i = 1
     while nextPage is True:
         current_page = ns_fetcher.getUsersCreatedSince(formatted_time, 100, i)
@@ -94,7 +94,7 @@ def updateCreatedSince(formatted_time):
 
 def updateUpdatedSince(formatted_time):
     """Grab all new NS users created since backfill time."""
-    nextPage = nsfetcher.nextPageStatusUpdatedSince(formatted_time)
+    nextPage = ns_fetcher.nextPageStatusUpdatedSince(formatted_time)
     i = 1
     while nextPage is True:
         current_page = ns_fetcher.getUsersUpdatedSince(formatted_time, 100, i)
