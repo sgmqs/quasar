@@ -1,4 +1,6 @@
 import os
+import sys
+
 from types import SimpleNamespace
 
 env = os.environ.get("ENV")
@@ -30,4 +32,5 @@ default = {
 config = SimpleNamespace(**default)
 
 if env == "PROD" or env == "STAGING":
+    sys.path.append(os.environ['WORKSPACE'])
     import config as config
