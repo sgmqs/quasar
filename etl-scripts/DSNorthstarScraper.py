@@ -120,6 +120,8 @@ class NorthstarScraper(Scraper):
         else:
             return True
 
+            GET https://northstar.dosomething.org/v1/users?page=100000000&limit=100&pagination=cursor&after%5Bupdated_at%5D=2017-07-11T12:11:25.840455
+
     def nextPageStatusCreatedSince(self, created_at, users=100, page_number=1):
         """Get users in max batch size based on created date from Norsthar API.
 
@@ -129,9 +131,9 @@ class NorthstarScraper(Scraper):
             created_at (str): Updated at parameter to backfill since.
         """
         params = ('?page=' + str(page_number) + '&limit=' + str(users) +
-                  '&after[created_at]=' + str(created_at))
+                  '&pagination=cursor' + '&after[created_at]=' +
+                  str(created_at))
         user_response = self.get('/v1/users' + params)
-        print(user_response)
         if user_response['meta']['cursor']['next'] is None:
             return False
         else:
@@ -146,9 +148,9 @@ class NorthstarScraper(Scraper):
             updated_at (str): Updated at parameter to backfill since.
         """
         params = ('?page=' + str(page_number) + '&limit=' + str(users) +
-                  '&after[updated_at]=' + str(updated_at))
+                  '&pagination=cursor' + '&after[updated_at]=' +
+                  str(updated_at))
         user_response = self.get('/v1/users' + params)
-        print(user_response)
         if user_response['meta']['cursor']['next'] is None:
             return False
         else:
