@@ -128,9 +128,9 @@ def main():
     now = time.time()
 
     # get hours list
-    hours = getHours(opt_outs)
+    hours = getHours()
     # call credentials from config
-    creds = apiCreds(opt_outs)
+    creds = apiCreds()
     # start multiprocessing pool
     pool = mp.Pool(24)
     # process hours
