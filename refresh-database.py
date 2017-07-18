@@ -1,7 +1,8 @@
 import os
 import subprocess
 
-from quasar.config import config as config
+from quasar.config import config
+
 
 def get_filelist(dirname):
     filelist = os.listdir(dirname)
@@ -15,5 +16,5 @@ for file in filelist:
                    '-p%s' % config.pw,
                    '--host=%s' % config.host,
                    '--port=%s' % config.port]
-        proc = subprocess.Popen(command, stdin = f)
+        proc = subprocess.Popen(command, stdin=f)
         stdout, stderr = proc.communicate()
