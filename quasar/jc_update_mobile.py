@@ -13,6 +13,8 @@ from .config import config
 from . import database
 
 
+
+
 def getHours():
     """based on date or sys args creates list of tuples to feed to the api"""
     # list that will contain final tuples
@@ -50,6 +52,8 @@ def apiCreds():
 
 
 def getProfile(idx, start, finish, cred):
+    # list for opt outs using Manager function. Required for multiprocessing
+    opt_outs = Manager().list([])
     """gets updated profiles and checks for accounts that opted out"""
     print(idx, start, finish)
     acceptable_statuses = ['Undeliverable', 'Active Subscriber',
@@ -92,6 +96,7 @@ def getProfile(idx, start, finish, cred):
 
                 opt_outs.append((i.phone_number.text, status, converted_date))
         print('current len opt_outs', len(opt_outs))
+    print('total opt outs: ', len(opt_outs))
 
 
 def updateUsers(opt_out_list):
@@ -121,19 +126,16 @@ def main():
     # can't easily oop because Python multiprocessing is difficult
     # set time to track execution time
     now = time.time()
-    # list for opt outs using Manager function. Required for multiprocessing
-    opt_outs = Manager().list([])
 
     # get hours list
-    hours = getHours()
+    hours = getHours(opt_outs)
     # call credentials from config
-    creds = apiCreds()
+    creds = apiCreds(opt_outs)
     # start multiprocessing pool
     pool = mp.Pool(24)
     # process hours
     dates = [pool.apply(getProfile, args=(i, x[0], x[1], creds,))
              for i, x in enumerate(hours)]
-    print('total opt outs: ', len(opt_outs))
     pool.close()
     # open connection
     db, cur = database.connect({'conv': database.dec_to_float_converter()})
