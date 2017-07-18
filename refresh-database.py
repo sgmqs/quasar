@@ -8,6 +8,7 @@ def get_filelist(dirname):
     filelist = os.listdir(dirname)
     return filelist
 
+
 filelist = get_filelist('./data/sql/migrations/')
 
 for file in filelist:
