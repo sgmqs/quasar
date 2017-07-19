@@ -96,6 +96,8 @@ def getProfile(idx, start, finish, cred, opt_outs):
         print('current len opt_outs', len(opt_outs))
 
 def updateUsers(opt_outs):
+
+    db, cur = database.connect({'conv': database.dec_to_float_converter()})
     """updates user in db"""
     # all numbers
     phone_str = ",".join([i[0] for i in opt_outs])
@@ -116,6 +118,8 @@ def updateUsers(opt_outs):
     db.commit()
     cur.execute(q_update)
     db.commit()
+    cur.close()
+    db.close()
 
 
 def main():
@@ -136,12 +140,10 @@ def main():
              for i, x in enumerate(hours)]
     print('total opt outs: ', len(opt_outs))
     pool.close()
-    # open connection
-    db, cur = database.connect({'conv': database.dec_to_float_converter()})
+
     # update users
     updateUsers(opt_outs)
-    cur.close()
-    db.close()
+
     # print time
     print(time.time() - now)
 
