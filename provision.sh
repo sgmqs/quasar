@@ -20,6 +20,8 @@ echo "Updated bind address to accept connections from all hosts"
 
 mysql -uroot -ppassword -e "GRANT ALL ON *.* to 'root'@'%' identified by 'password';"
 mysql -uroot -ppassword -e "FLUSH PRIVILEGES;"
+echo "[mysqld]" > /etc/mysql/conf.d/quasar.cnf
+echo "sql-mode=\"NO_ENGINE_SUBSTITUTION\"" >> /etc/mysql/conf.d/quasar.cnf
 sudo /etc/init.d/mysql restart
 
 MIGRATIONS=/vagrant/data/sql/migrations/*
