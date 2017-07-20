@@ -33,7 +33,6 @@ def isInt(s):
         return False
 
 
-
 def to_string(base_value):
     """Converts to string and replaces None values with empty values."""
     if base_value is None:
@@ -50,7 +49,8 @@ def main():
         nextPage = ns_fetcher.nextPageStatusCreatedSince(formatted_time)
         i = 1
         while nextPage is True:
-            current_page = ns_fetcher.getUsersCreatedSince(formatted_time, 100, i)
+            current_page = ns_fetcher.getUsersCreatedSince(
+                formatted_time, 100, i)
             _process_records(current_page)
             nextPage = ns_fetcher.nextPageStatusCreatedSince(formatted_time,
                                                              100, i)
@@ -61,13 +61,13 @@ def main():
                                                                100, i)
                 _process_records(current_page)
 
-
     def updateUpdatedSince(formatted_time):
         """Grab all new NS users created since backfill time."""
         nextPage = ns_fetcher.nextPageStatusUpdatedSince(formatted_time)
         i = 1
         while nextPage is True:
-            current_page = ns_fetcher.getUsersUpdatedSince(formatted_time, 100, i)
+            current_page = ns_fetcher.getUsersUpdatedSince(
+                formatted_time, 100, i)
             _process_records(current_page)
             nextPage = ns_fetcher.nextPageStatusUpdatedSince(formatted_time,
                                                              100, i)
@@ -77,7 +77,6 @@ def main():
                 current_page = ns_fetcher.getUsersUpdatedSince(formatted_time,
                                                                100, i)
                 _process_records(current_page)
-
 
     def _process_records(current_page):
         """Process Northstar API JSON to user table records."""
@@ -157,10 +156,8 @@ def main():
                          to_string(user['source_detail'])))
             db.commit()
 
-
     start_time = time.time()
     """Keep track of start time of script."""
-
 
     # Set pagination variable to be true by default. This
     # will track whether there are any more pages in a

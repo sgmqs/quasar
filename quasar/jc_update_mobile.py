@@ -15,6 +15,7 @@ import sys
 from .config import config
 from . import database
 
+
 def getHours():
     """based on date or sys args creates list of tuples to feed to the api"""
     # list that will contain final tuples
@@ -43,12 +44,14 @@ def getHours():
         start_date = temp_date
     return hours
 
+
 def apiCreds():
     """mobilecommons auth and api url"""
     un = config.mc_user
     pw = config.mc_pw
     url = "https://secure.mcommons.com/api/profiles"
     return un, pw, url
+
 
 def getProfile(idx, start, finish, cred, opt_outs):
     """gets updated profiles and checks for accounts that opted out"""
@@ -94,6 +97,7 @@ def getProfile(idx, start, finish, cred, opt_outs):
                 opt_outs.append(
                     (i.phone_number.text, status, converted_date))
         print('current len opt_outs', len(opt_outs))
+
 
 def updateUsers(opt_outs):
 

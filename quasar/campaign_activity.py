@@ -28,7 +28,7 @@ def _backfill(hours=None):
 
     # Setup
     db = BladeMySQL()
-    start_time = strip_str(_now_minus_hours(hours)) # empty string if None
+    start_time = strip_str(_now_minus_hours(hours))  # empty string if None
     rogueAPI = API(''.join((config.ROGUE_URI, '/api/v2/activity')),
                    headers={'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY},
                    params={'page': 1, 'limit': 40, 'filter[updated_at]': start_time})
@@ -53,7 +53,6 @@ def _backfill(hours=None):
 
 
 def _get_start_page(db):
-    table = config.ROGUE_PROGRESS_TABLE
     querystr = ''.join(("SELECT counter_value FROM ", config.ROGUE_PROGRESS_TABLE,
                         " WHERE counter_name = 'rogue_backfill_page'"))
 

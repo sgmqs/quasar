@@ -1,11 +1,12 @@
 import requests
 from requests.packages.urllib3.util.retry import Retry
-from requests.adapters import HTTPAdapter
+
 
 class API:
     """ Instantiating a session allows us to re-use the same TCP connection
      for multiple requests to the same host
     """
+
     def __init__(self, url, retry_total=6, backoff_time=1.9, **defaults):
         self.url = url
         self.session = requests.Session()

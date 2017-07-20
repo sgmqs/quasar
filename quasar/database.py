@@ -1,6 +1,5 @@
 import MySQLdb
 import MySQLdb.converters
-import types
 from .config import config
 
 
