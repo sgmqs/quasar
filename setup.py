@@ -20,7 +20,8 @@ setup(
             'mobile_campaign_lookup_table_update = quasar.mobile_commons:scrape_campaigns',
             'mobile_subscriptions = quasar.jc_subscribers:main',
             'mobile_user_table_update = quasar.mobile_commons:backfill_user_profiles',
-            'northstar_to_quasar_import = quasar.northstar_to_user_table:main',  # fix mysql
+            'northstar_to_quasar_import = quasar.northstar_to_user_table:main',
+            'northstar_to_quasar_import_backfill = quasar.northstar_to_user_table_backfill:main',
             'quasar_blink_queue_consumer = quasar.customerio:main',
             'refresh_quasar_user_log_table_from_phoenix = quasar.update_phoenix_user_log:main',
             'regenerate_mobile_master_lookup_lite_table = quasar.create_mobile_master_lookup_lite:main',

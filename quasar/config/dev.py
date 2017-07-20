@@ -13,7 +13,7 @@ ns_client_id='some-client'
 ns_client_secret='password'
 
 # New Quasar Per Var Settings
-AMQP_URI = 'amqps://bbmxdbzn:BNVnnQYJNIIGTulycf8JmgAQcPMalUgU@bobbish-capybara.rmq.cloudamqp.com/bbmxdbzn'
+AMQP_URI = 'amqps://user:something@server-thing.cloudamqp.com/asdf'
 AMQP_QUEUE = 'quasar-customer-io-email-activity'
 AMQP_EXCHANGE = 'blink-x'
 MYSQL_HOST = '127.0.0.1'
