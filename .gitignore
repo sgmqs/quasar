@@ -1,4 +1,8 @@
 **.retry
-etl-scripts/config.py
-etl-scripts/__pycache__
-etl-scripts/__pycache__/*
+__pycache__
+.cache
+*.egg-info
+dist/
+.vagrant
+*.log
+dev_priv.py

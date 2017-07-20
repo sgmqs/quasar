@@ -1,0 +1,26 @@
+import time
+from . import database
+
+
+def main():
+    db, cur = database.connect({'db': 'phoenix_user_snapshots'})
+
+    snapshot_time = str(int(time.time()))
+
+    # Create Table Schema Snapshot
+    run_query = "CREATE TABLE IF NOT EXISTS phoenix_users_snapshot_" + \
+        snapshot_time + """ LIKE dosomething.users"""
+    cur.execute(run_query)
+
+    # Insert Daily Data from DS Users Table
+    run_query = "INSERT phoenix_users_snapshot_" + \
+        snapshot_time + """ SELECT * FROM dosomething.users"""
+    cur.execute(run_query)
+    db.commit()
+
+    # Close Cursor and Connection
+    cur.close()
+    db.close()
+
+if __name__ == "__main__":
+    main()
