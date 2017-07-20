@@ -1,10 +1,3 @@
-import MySQLdb
-import MySQLdb.converters
-import datetime
-from collections import OrderedDict
-import sys
-import os
-from .config import config
 from . import database
 
 
@@ -59,6 +52,7 @@ def main():
 
     cur.close()
     db.close()
+
 
 if __name__ == "__main__":
     main()

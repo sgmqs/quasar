@@ -1,8 +1,6 @@
 import requests
 from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-from warnings import filterwarnings
-import json
 from datetime import datetime as d
 from datetime import timedelta as t
 from bs4 import BeautifulSoup as bs

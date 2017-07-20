@@ -6,7 +6,6 @@ from requests_oauthlib import OAuth2Session
 from .QuasarWebScraper import Scraper
 
 
-
 class NorthstarScraper(Scraper):
 
     """Class for extracting Northstar data via API."""
