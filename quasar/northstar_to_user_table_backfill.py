@@ -166,7 +166,6 @@ def main():
 
     ca_settings = {'ca': '/home/quasar/rds-combined-ca-bundle.pem'}
     db_opts = {'use_unicode': True, 'charset': 'utf8', 'ssl': ca_settings}
-    db_opts = {}
     db, cur = database.connect(db_opts)
 
     if len(sys.argv) == 2:
