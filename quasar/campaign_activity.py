@@ -25,12 +25,6 @@ def backfill_since():
 
 def _backfill(hours=None):
 
-    if hours is not None:
-        print("Current backfill hours are %s." % hours)
-        current_page = 1
-    else:
-        current_page = _get_start_page(db)
-
     # Setup
     db = BladeMySQL()
     start_time = strip_str(_now_minus_hours(hours))  # empty string if None
@@ -38,6 +32,12 @@ def _backfill(hours=None):
                    headers={'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY},
                    params={'page': 1, 'limit': 40, 'filter[updated_at]': start_time})
     final_page = rogueAPI.get('')['meta']['pagination']['total_pages']
+
+    if hours is not None:
+        print("Current backfill hours are %s." % hours)
+        current_page = 1
+    else:
+        current_page = _get_start_page(db)
 
     # Main processing loop
     while current_page <= final_page:
