@@ -14,7 +14,7 @@ campaign_activity_table = config.CAMPAIGN_ACTIVITY_TABLE
 
 
 def full_backfill():
-    """Processes Rogue data starting from last processed page recorded in 
+    """Processes Rogue data starting from last processed page recorded in
     ROGUE_PROGRESS_TABLE; to restart from beginning, page_progress has to
     manually be set to 1.
     """
