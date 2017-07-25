@@ -14,10 +14,11 @@ campaign_activity_table = config.CAMPAIGN_ACTIVITY_TABLE
 
 
 def full_backfill():
+    """Processes Rogue data starting from last processed page recorded in 
+    ROGUE_PROGRESS_TABLE; to restart from beginning, page_progress has to
+    manually be set to 1.
+    """
     _backfill()
-    # There is an implicit state dependency here that requires
-    # setting Quasar DB page_progress to 1 for full backfill restart.
-
 
 def backfill_since():
     _backfill(hours=sys.argv[1])
