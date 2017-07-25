@@ -15,6 +15,8 @@ campaign_activity_table = config.CAMPAIGN_ACTIVITY_TABLE
 
 def full_backfill():
     _backfill()
+    # There is an implicit state dependency here that requires
+    # setting Quasar DB page_progress to 1 for full backfill restart.
 
 
 def backfill_since():
@@ -25,6 +27,9 @@ def _backfill(hours=None):
 
     if hours is not None:
         print("Current backfill hours are %s." % hours)
+        current_page = 1
+    else:
+        current_page = _get_start_page(db)
 
     # Setup
     db = BladeMySQL()
@@ -33,7 +38,6 @@ def _backfill(hours=None):
                    headers={'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY},
                    params={'page': 1, 'limit': 40, 'filter[updated_at]': start_time})
     final_page = rogueAPI.get('')['meta']['pagination']['total_pages']
-    current_page = _get_start_page(db)
 
     # Main processing loop
     while current_page <= final_page:
