@@ -14,17 +14,17 @@ campaign_activity_table = config.CAMPAIGN_ACTIVITY_TABLE
 
 
 def full_backfill():
+    """Processes Rogue data starting from last processed page recorded in
+    ROGUE_PROGRESS_TABLE; to restart from beginning, page_progress has to
+    manually be set to 1.
+    """
     _backfill()
-
 
 def backfill_since():
     _backfill(hours=sys.argv[1])
 
 
 def _backfill(hours=None):
-
-    if hours is not None:
-        print("Current backfill hours are %s." % hours)
 
     # Setup
     db = BladeMySQL()
@@ -33,7 +33,12 @@ def _backfill(hours=None):
                    headers={'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY},
                    params={'page': 1, 'limit': 40, 'filter[updated_at]': start_time})
     final_page = rogueAPI.get('')['meta']['pagination']['total_pages']
-    current_page = _get_start_page(db)
+
+    if hours is not None:
+        print("Current backfill hours are %s." % hours)
+        current_page = 1
+    else:
+        current_page = _get_start_page(db)
 
     # Main processing loop
     while current_page <= final_page:
