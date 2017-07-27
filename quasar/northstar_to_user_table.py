@@ -5,7 +5,7 @@ import sys
 from .config import config
 from .DSNorthstarScraper import NorthstarScraper
 from .utils import strip_str
-from . import database
+from .database import Database
 
 """DS Northstar to Quasar User ETL script.
 
@@ -31,7 +31,7 @@ def main():
 
     ca_settings = {'ca': '/home/quasar/rds-combined-ca-bundle.pem'}
     db_opts = {'use_unicode': True, 'charset': 'utf8', 'ssl': ca_settings}
-    db, cur = database.connect(db_opts)
+    db = Database(db_opts)
 
     def isInt(s):
         """Check if value is type int and return boolean result.
@@ -55,16 +55,12 @@ def main():
             sys.exit(0)
         if sys.argv[2] == 'cont':
             if sys.argv[1] == 'prod':
-                cur.execute("SELECT * from quasar_etl_status.northstar_ingestion \
+                last_page = db.query("SELECT * from quasar_etl_status.northstar_ingestion \
                             WHERE counter_name = 'last_page_scraped'")
-                db.commit()
-                last_page = cur.fetchall()
                 i = last_page[0][1]
             elif sys.argv[1] == 'thor':
-                cur.execute("SELECT * from quasar_etl_status.thor_northstar_ingestion \
+                last_page = db.query("SELECT * from quasar_etl_status.thor_northstar_ingestion \
                            WHERE counter_name = 'last_page_scraped'")
-                db.commit()
-                last_page = cur.fetchall()
                 i = last_page[0][1]
             else:
                 print("Can not continue, invalid env specified.")
@@ -90,7 +86,7 @@ def main():
     while nextPage is True:
         current_page = ns_fetcher.getUsers(100, i)
         for user in current_page:
-            cur.execute("INSERT INTO quasar.users (northstar_id,\
+            db.query("INSERT INTO quasar.users (northstar_id,\
                         northstar_created_at_timestamp,\
                         last_logged_in, last_accessed, drupal_uid,\
                         northstar_id_source_name,\
@@ -163,18 +159,16 @@ def main():
                          strip_str(user['mobilecommons_id']),
                          strip_str(user['mobilecommons_status']),
                          strip_str(user['source_detail'])))
-            db.commit()
         nextPage = ns_fetcher.nextPageStatus(100, i)
         if nextPage is True:
             i += 1
-            cur.execute("REPLACE INTO quasar_etl_status.northstar_ingestion \
+            db.query("REPLACE INTO quasar_etl_status.northstar_ingestion \
                     (counter_name, counter_value) VALUES(\"last_page_scraped\",\
                     \"{0}\")".format(i))
-            db.commit()
         else:
             current_page = ns_fetcher.getUsers(100, i)
             for user in current_page:
-                cur.execute("INSERT INTO quasar.users (northstar_id,\
+                db.query("INSERT INTO quasar.users (northstar_id,\
                             northstar_created_at_timestamp,\
                             last_logged_in, last_accessed, drupal_uid,\
                             northstar_id_source_name,\
@@ -247,10 +241,8 @@ def main():
                              strip_str(user['mobilecommons_id']),
                              strip_str(user['mobilecommons_status']),
                              strip_str(user['source_detail'])))
-                db.commit()
 
-    cur.close()
-    db.close()
+    db.disconnect()
 
     end_time = time.time()  # Record when script stopped running.
     duration = end_time - start_time  # Total duration in seconds.

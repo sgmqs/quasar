@@ -1,22 +1,20 @@
-from . import database
+from .database import Database, dec_to_float_converter
 
 
 def main():
-    db, cur = database.connect({'conv': database.dec_to_float_converter()})
+    db = Database({'conv': dec_to_float_converter()})
 
     # Populate Array with all mobile values from Phoenix DB
-    cur.execute("DROP TABLE users_and_activities.mobile_campaign_id_lookup_lite")
-    db.commit()
-    cur.execute("""CREATE TABLE users_and_activities.mobile_campaign_id_lookup_lite
+    db.query("DROP TABLE users_and_activities.mobile_campaign_id_lookup_lite")
+    
+    db.query("""CREATE TABLE users_and_activities.mobile_campaign_id_lookup_lite
                   select
                   mc.`mobile_campaign_id`, mc.`run_nid`
                   from users_and_activities.`mobile_campaign_id_lookup` mc
                   where mc.`run_nid` is not null
                   group by mc.`mobile_campaign_id`""")
-    db.commit()
-    cur.execute("DROP TABLE users_and_activities.mobile_master_lookup_lite")
-    db.commit()
-    cur.execute("""CREATE TABLE users_and_activities.mobile_master_lookup_lite
+    db.query("DROP TABLE users_and_activities.mobile_master_lookup_lite")
+    db.query("""CREATE TABLE users_and_activities.mobile_master_lookup_lite
                   SELECT
                   ms.phone_number as `ms_phone_number`,
                   ms.activated_at as `ms_activated_at`,
@@ -32,9 +30,7 @@ def main():
                   left outer join users_and_activities.mobile_user_lookup mu
                   on mu.phone_number = ms.phone_number
                   where mc.run_nid is not null""")
-    db.commit()
-    cur.close()
-    db.close()
+    db.disconnect
 
 if __name__ == "__main__":
     main()

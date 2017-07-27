@@ -13,7 +13,7 @@ import time
 import sys
 
 from .config import config
-from . import database
+from .database import Database, dec_to_float_converter
 
 
 def getHours():
@@ -101,7 +101,7 @@ def getProfile(idx, start, finish, cred, opt_outs):
 
 def updateUsers(opt_outs):
 
-    db, cur = database.connect({'conv': database.dec_to_float_converter()})
+    db = Database({'conv': dec_to_float_converter()})
     """updates user in db"""
     # all numbers
     phone_str = ",".join([i[0] for i in opt_outs])
@@ -118,12 +118,9 @@ def updateUsers(opt_outs):
     opted_out_at = CASE {1} END
     where phone_number in ({2})""".format(status_str, opt_out_time_str, phone_str)
 
-    cur.execute(q_set_mode)
-    db.commit()
-    cur.execute(q_update)
-    db.commit()
-    cur.close()
-    db.close()
+    db.query(q_set_mode)
+    db.query(q_update)
+    db.disconnect()
 
 
 def main():

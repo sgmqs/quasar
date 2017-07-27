@@ -1,6 +1,8 @@
 import MySQLdb
 import MySQLdb.converters
+
 from .config import config
+from .utils import QuasarException
 
 
 def dec_to_float_converter():
@@ -8,20 +10,69 @@ def dec_to_float_converter():
     converter[246] = float
     return converter
 
+def _connect(opts):
+    conn = None
+    try:
+        conn = MySQLdb.connect(**opts)
+    except MySQLdb.InterfaceError as e:
+        raise QuasarException(e)
+    finally:
+        return conn
 
-def connect(options={}):
+class Database:
 
-    opts = {'user': config.user,
-            'host': config.host,
-            'port': config.port,
-            'passwd': config.pw}
+    def __init__(self, options={}):
 
-    opts.update(options)
+         # Defaults
+        opts = {
+            'user': config.MYSQL_USER,
+            'host': config.MYSQL_HOST,
+            'port': config.MYSQL_PORT,
+            'passwd': config.MYSQL_PASSWORD,
+            'db': config.MYSQL_DATABASE,
+            'use_unicode': True,
+            'charset': 'utf8'
+        }
 
-    db = MySQLdb.connect(**opts)
-    cur = db.cursor()
+        opts.update(options)
 
-    if 'conv' in options:
-        cur = db.cursor(MySQLdb.cursors.DictCursor)
+        self.connection = _connect(opts)
+        if self.connection is None:
+            print("Error, couldn't connect to database with options:", opts)
+        else:
+            self.cursor = self.connection.cursor()
+            if 'conv' in opts:
+                self.cursor = self.connection.cursor(
+                    MySQLdb.cursors.DictCursor)
 
-    return db, cur
+
+    def disconnect(self):
+        self.cursor.close()
+        self.connection.close()
+        return self.connection
+
+    def query(self, query):
+        """Parse and run DB query.
+
+        Return On error, raise exception and log why.
+        """
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+            results = self.cursor.fetchall()
+            return results
+        except MySQLdb.DatabaseError as e:
+            raise QuasarException(e)
+
+    def query_str(self, query, string):
+        """Parse and run DB query.
+
+        Return On error, raise exception and log why.
+        """
+        try:
+            self.cursor.execute(query, string)
+            self.connection.commit()
+            results = self.cursor.fetchall()
+            return results
+        except MySQLdb.DatabaseError as e:
+            raise QuasarException(e)

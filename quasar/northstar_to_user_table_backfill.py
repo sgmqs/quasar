@@ -81,7 +81,7 @@ def main():
     def _process_records(current_page):
         """Process Northstar API JSON to user table records."""
         for user in current_page:
-            cur.execute("INSERT INTO quasar.users (northstar_id,\
+            db.query("INSERT INTO quasar.users (northstar_id,\
                         northstar_created_at_timestamp,\
                         last_logged_in, last_accessed, drupal_uid,\
                         northstar_id_source_name,\
@@ -113,7 +113,7 @@ def main():
                         moco_commons_profile_id = %s,\
                         moco_current_status = %s,\
                         moco_source_detail = %s",
-                        (to_string(user['id']),
+                     (to_string(user['id']),
                          to_string(user['created_at']),
                          to_string(user['last_authenticated_at']),
                          to_string(user['last_accessed_at']),
@@ -154,7 +154,6 @@ def main():
                          to_string(user['mobilecommons_id']),
                          to_string(user['mobilecommons_status']),
                          to_string(user['source_detail'])))
-            db.commit()
 
     start_time = time.time()
     """Keep track of start time of script."""
@@ -166,7 +165,7 @@ def main():
 
     ca_settings = {'ca': '/home/quasar/rds-combined-ca-bundle.pem'}
     db_opts = {'use_unicode': True, 'charset': 'utf8', 'ssl': ca_settings}
-    db, cur = database.connect(db_opts)
+    db = Database(db_opts)
 
     if len(sys.argv) == 2:
         if isInt(sys.argv[1]):
@@ -184,8 +183,7 @@ def main():
     updateCreatedSince(backfill_formatted_time)
     updateUpdatedSince(backfill_formatted_time)
 
-    cur.close()
-    db.close()
+    db.disconnect()
 
     end_time = time.time()  # Record when script stopped running.
     duration = end_time - start_time  # Total duration in seconds.

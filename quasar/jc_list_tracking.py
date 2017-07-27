@@ -1,8 +1,8 @@
-from . import database
+from .database import Database, dec_to_float_converter
 
 
 def main():
-    db, cur = database.connect({'conv': database.dec_to_float_converter()})
+    db = Database({'conv': dec_to_float_converter()})
 
     list_track_drop = "drop table if exists users_and_activities.list_tracking"
 
@@ -44,14 +44,11 @@ def main():
       ) o on c.date=o.date
     """
 
-    cur.execute(list_track_drop)
-    cur.execute(list_track_create)
-    cur.execute(list_track_pop)
+    db.query(list_track_drop)
+    db.query(list_track_create)
+    db.query(list_track_pop)
 
-    db.commit()
-
-    cur.close()
-    db.close()
+    db.disconnect()
 
 
 if __name__ == "__main__":
