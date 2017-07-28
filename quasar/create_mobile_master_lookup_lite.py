@@ -6,7 +6,7 @@ def main():
 
     # Populate Array with all mobile values from Phoenix DB
     db.query("DROP TABLE users_and_activities.mobile_campaign_id_lookup_lite")
-    
+
     db.query("""CREATE TABLE users_and_activities.mobile_campaign_id_lookup_lite
                   select
                   mc.`mobile_campaign_id`, mc.`run_nid`

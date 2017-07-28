@@ -10,6 +10,7 @@ def dec_to_float_converter():
     converter[246] = float
     return converter
 
+
 def _connect(opts):
     conn = None
     try:
@@ -19,11 +20,12 @@ def _connect(opts):
     finally:
         return conn
 
+
 class Database:
 
     def __init__(self, options={}):
 
-         # Defaults
+        # Defaults
         opts = {
             'user': config.MYSQL_USER,
             'host': config.MYSQL_HOST,
@@ -44,7 +46,6 @@ class Database:
             if 'conv' in opts:
                 self.cursor = self.connection.cursor(
                     MySQLdb.cursors.DictCursor)
-
 
     def disconnect(self):
         self.cursor.close()

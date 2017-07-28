@@ -3,7 +3,7 @@ import re
 import sys
 import time
 
-from . import database
+from .database import Database
 
 from .config import config
 from .DSNorthstarScraper import NorthstarScraper
