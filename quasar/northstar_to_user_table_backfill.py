@@ -44,39 +44,23 @@ def to_string(base_value):
 
 
 def main():
-    def updateCreatedSince(formatted_time):
+    def updateCreatedBetween(start, end, page_size, page):
         """Grab all new NS users created since backfill time."""
-        nextPage = ns_fetcher.nextPageStatusCreatedSince(formatted_time)
-        i = 1
-        while nextPage is True:
-            current_page = ns_fetcher.getUsersCreatedSince(
-                formatted_time, 100, i)
-            _process_records(current_page)
-            nextPage = ns_fetcher.nextPageStatusCreatedSince(formatted_time,
-                                                             100, i)
-            if nextPage is True:
-                i += 1
-            else:
-                current_page = ns_fetcher.getUsersCreatedSince(formatted_time,
-                                                               100, i)
-                _process_records(current_page)
+        current_page = ns_fetcher.getUsersCreatedBetween(
+            start, end, page_size, page)
+        process_records(current_page['data'])
+        nextPage = current_page['meta']['cursor']['next']
+        if nextPage is not None:
+            updateCreatedSince(start, end, page_size, page + 1)
 
-    def updateUpdatedSince(formatted_time):
+    def updateUpdatedSince(start, end, page_size, page):
         """Grab all new NS users created since backfill time."""
-        nextPage = ns_fetcher.nextPageStatusUpdatedSince(formatted_time)
-        i = 1
-        while nextPage is True:
-            current_page = ns_fetcher.getUsersUpdatedSince(
-                formatted_time, 100, i)
-            _process_records(current_page)
-            nextPage = ns_fetcher.nextPageStatusUpdatedSince(formatted_time,
-                                                             100, i)
-            if nextPage is True:
-                i += 1
-            else:
-                current_page = ns_fetcher.getUsersUpdatedSince(formatted_time,
-                                                               100, i)
-                _process_records(current_page)
+        current_page = ns_fetcher.getUsersUpdatedBetween(
+            start, end, 100, i)
+        _process_records(current_page['data'])
+        nextPage = current_page['meta']['cursor']['next']
+        if nextPage is not None:
+            updateUpdatedSince(start, end, page_size, page + 1)
 
     def _process_records(current_page):
         """Process Northstar API JSON to user table records."""
@@ -159,11 +143,6 @@ def main():
     start_time = time.time()
     """Keep track of start time of script."""
 
-    # Set pagination variable to be true by default. This
-    # will track whether there are any more pages in a
-    # result set. If there aren't, will return false.
-    nextPage = True
-
     ca_settings = {'ca': '/home/quasar/rds-combined-ca-bundle.pem'}
     db_opts = {'use_unicode': True, 'charset': 'utf8', 'ssl': ca_settings}
     db, cur = database.connect(db_opts)
@@ -178,11 +157,22 @@ def main():
 
     # Create NS Scraper and format backfill period to ISO8601.
     ns_fetcher = NorthstarScraper('https://northstar.dosomething.org')
-    backfill_since = int(time.time()) - (int(backfill_hours) * 3600)
-    backfill_formatted_time = dt.fromtimestamp(backfill_since).isoformat()
 
-    updateCreatedSince(backfill_formatted_time)
-    updateUpdatedSince(backfill_formatted_time)
+    def _interval(hour):
+        def _format(hr):
+            _time = int(time.time()) - (int(hr) * 3600)
+            formatted = dt.fromtimestamp(_time).isoformat()
+            return formatted
+
+        start = _format(hour)
+        end = _format(hour - 1)
+        return (start, end)
+
+    intervals = [_interval(hour) for hour in range(int(backfill_hours) + 1) if hour > 0]
+
+    for start, end in intervals:
+        updateCreatedBetween(start, end, page_size=100, page=1)
+        updateUpdatedBetween(start, end, page_size=100, page=1)
 
     cur.close()
     db.close()
