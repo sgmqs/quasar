@@ -171,8 +171,8 @@ def main():
     intervals = [_interval(hour) for hour in range(int(backfill_hours) + 1) if hour > 0]
 
     for start, end in intervals:
-        updateCreatedBetween(start, end, page_size=100, page=1)
-        updateUpdatedBetween(start, end, page_size=100, page=1)
+        _updateCreatedBetween(start, end, page_size=100, page=1)
+        _updateUpdatedBetween(start, end, page_size=100, page=1)
 
     cur.close()
     db.close()
