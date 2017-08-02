@@ -44,23 +44,23 @@ def to_string(base_value):
 
 
 def main():
-    def updateCreatedBetween(start, end, page_size, page):
+    def _updateCreatedBetween(start, end, page_size, page):
         """Grab all new NS users created since backfill time."""
         current_page = ns_fetcher.getUsersCreatedBetween(
             start, end, page_size, page)
-        process_records(current_page['data'])
-        nextPage = current_page['meta']['cursor']['next']
-        if nextPage is not None:
-            updateCreatedSince(start, end, page_size, page + 1)
-
-    def updateUpdatedSince(start, end, page_size, page):
-        """Grab all new NS users created since backfill time."""
-        current_page = ns_fetcher.getUsersUpdatedBetween(
-            start, end, 100, i)
         _process_records(current_page['data'])
         nextPage = current_page['meta']['cursor']['next']
         if nextPage is not None:
-            updateUpdatedSince(start, end, page_size, page + 1)
+            _updateCreatedBetween(start, end, page_size, page + 1)
+
+    def _updateUpdatedBetween(start, end, page_size, page):
+        """Grab all new NS users created since backfill time."""
+        current_page = ns_fetcher.getUsersUpdatedBetween(
+            start, end, page_size, page)
+        _process_records(current_page['data'])
+        nextPage = current_page['meta']['cursor']['next']
+        if nextPage is not None:
+            _updateUpdatedBetween(start, end, page_size, page + 1)
 
     def _process_records(current_page):
         """Process Northstar API JSON to user table records."""
