@@ -10,7 +10,7 @@ import os
 import time
 
 from .config import config
-from . import database
+from .database import Database, dec_to_float_converter
 
 # flags - hour backfill campaign force clean
 # - hours - how many hours to go back
@@ -57,8 +57,8 @@ class MainSetup:
 
         self.campaigns_dict = dict()
         self.all_clusters = list()
-        self.db, self.cur = database.connect(
-            {'conv': database.dec_to_float_converter()})
+        self.db = Database(
+            {'conv': dec_to_float_converter()})
         # always refresh master
         self.refreshMaster()
 
@@ -75,25 +75,23 @@ class MainSetup:
                     where type = 'campaign'
                     on duplicate key update title=n.title, alias=u.alias, status=ifnull(s.field_campaign_status_value, 'active')"""
 
-        self.cur.execute(q_refresh_master)
-        self.db.commit()
+        self.db.query(q_refresh_master)
 
     def dailyClean(self):
         q_set_mode = "SET @@session.sql_mode= ''"
         q_update_activated = "update users_and_activities.mobile_subscriptions set activated_at = opted_out_at_campaign where  activated_at = '0000-00-00 00:00:00';"
         q_all_live = "update user_processing.mobile_campaign_component set live = 'True'"
-        self.cur.execute(q_set_mode)
-        self.cur.execute(q_update_activated)
-        self.cur.execute(q_all_live)
-        self.db.commit()
+        self.db.query(q_set_mode)
+        self.db.query(q_update_activated)
+        self.db.query(q_all_live)
 
     def fastCampaigns(self):
         """this gets just campaigns that are directly tied to an nid """
         q_campaigns = """select campaign_id from user_processing.sms_games
                   union
                   select campaign_id from users_and_activities.mobile_campaign_ids"""
-        self.cur.execute(q_campaigns)
-        campaigns = {str(c['campaign_id']): None for c in self.cur.fetchall()}
+        results = self.db.query(q_campaigns)
+        campaigns = {str(c['campaign_id']): None for c in results}
         return campaigns
 
     def getCampaigns(self):
@@ -146,9 +144,7 @@ class MainSetup:
         q_cluster = """select nid, group_concat(campaign_id) as c
         from users_and_activities.mobile_campaign_ids
         group by nid, campaign_run"""
-        self.cur.execute(q_cluster)
-        self.db.commit()
-        out = self.cur.fetchall()
+        out = self.db.query(q_cluster)
         for cluster in out:
             self.all_clusters.append({'cluster': cluster['c'].split(
                 ","), 'nid': int(cluster['nid']), 'all_paths': list()})
@@ -191,10 +187,10 @@ class ClusterSubscribers:
     def isLive(self, campaign_id, opt_in_id):
         q_live = """select last_page, live from user_processing.mobile_campaign_component
         where campaign_id = %s and opt_in_id = %s""" % (campaign_id, opt_in_id)
-        self.cur.execute(q_live)
+        outs = self.db.query(q_live)
         try:
 
-            out_live = self.cur.fetchall()[0]
+            out_live = outs[0]
             current_page = out_live['last_page']
             live = bool(out_live['live'])
         except:
@@ -206,9 +202,9 @@ class ClusterSubscribers:
     def isWebAlpha(self, campaign_id, opt_in_id):
         q_webalpha = "select web_alpha from users_and_activities.mobile_campaign_ids where campaign_id = %s and opt_in_id = %s" % (
             campaign_id, opt_in_id)
-        self.cur.execute(q_webalpha)
+        outs = self.db.query(q_webalpha)
         try:
-            out_webalpha = self.cur.fetchall()[0]['web_alpha']
+            out_webalpha = outs[0]['web_alpha']
             return int(out_webalpha)
         except:
             return 0
@@ -217,8 +213,7 @@ class ClusterSubscribers:
         cluster_str = ",".join(self.cluster_list)
         q_allnums = "select distinct phone_number from users_and_activities.mobile_subscriptions where campaign_id in (%s)" % (
             cluster_str)
-        self.cur.execute(q_allnums)
-        out_allnums = self.cur.fetchall()
+        out_allnums = self.db.query(q_allnums)
         self.all_nums = {i['phone_number']: None for i in out_allnums}
 
     def convertTime(self, times_list):
@@ -261,8 +256,8 @@ class ClusterSubscribers:
             q_sub = """insert ignore into users_and_activities.mobile_subscriptions(phone_number, campaign_id, opt_in_id, activated_at, opted_out_at_campaign, web_alpha, first_seen_campaign)
             VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s) """ % (s.phone_number.text, campaign_id, opt_in_id, s.activated_at.text, s.opted_out_at.text, web_alpha, first_seen)
             try:
-                self.cur.execute(q_sub)
-                self.db.commit()
+                self.db.query(q_sub)
+
             except Exception as e:
                 print(e, q_sub)
 
@@ -336,8 +331,7 @@ class ClusterSubscribers:
             q_beenalpha = """update users_and_activities.mobile_subscriptions
                     set been_alpha = 1
                     where campaign_id in (%s) and phone_number in (%s)""" % (cluster_str, alpha_string)
-            self.cur.execute(q_beenalpha)
-            self.db.commit()
+            self.db.query(q_beenalpha)
 
     def runPath(self):
         """runs it all for all campaigns in cluster by opt in path"""
@@ -371,8 +365,8 @@ class ClusterSubscribers:
                           'campaign_id'], path['opt_in_id'])
                     q_notlive = """insert into user_processing.mobile_campaign_component (campaign_id, opt_in_id, last_date, last_page, active, live)
            VALUES ({0},{1},'{2}',{3},'{4}','False') ON DUPLICATE KEY UPDATE last_date='{2}', last_page={3}, active='{4}', live='False'""".format(path['campaign_id'], path['opt_in_id'], d.strftime(last_date, '%Y-%m-%d %H:%M:%S'), last_page, path['campaign_status'])
-                    self.cur.execute(q_notlive)
-                    self.db.commit()
+                    self.db.query(q_notlive)
+
                 else:
                     ensure_count = 2
                     while tracker_date > self.stop and int(page_param) > 0:
@@ -414,8 +408,7 @@ def main():
     duration = end_time - start_time
     print('duration: ', duration)
 
-    main.cur.close()
-    main.db.close()
+    main.db.disconnect()
 
 if __name__ == "__main__":
     main()

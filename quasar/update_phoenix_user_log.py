@@ -1,33 +1,28 @@
 from .config import config
-from . import database
+from .database import Database
 import time
 
 
 def main():
-    db, cur = database.connect({'db': 'phoenix_user_snapshots'})
+    db = Database({'db': 'phoenix_user_snapshots'})
 
     # Record start time.
     start_time = time.time()
 
     # Get list of all Phoenix DB staging tables.
-    cur.execute("SHOW TABLES LIKE '%_staging_changes';")
-    db.commit()
+    old_staging_tables = db.query("SHOW TABLES LIKE '%_staging_changes';")
 
     # Delete all pre-existing staging tables for re-runs of script.
-    old_staging_tables = cur.fetchall()
     for x in old_staging_tables:
         staging_table_name = str(x).strip('(').strip(')').strip(',').strip("'")
         print("Dropping " + staging_table_name)
         drop_table = "DROP TABLE IF EXISTS " + staging_table_name
-        cur.execute(drop_table)
-        db.commit()
+        db.query(drop_table)
 
     # Get list of all Phoenix snapshots.
-    cur.execute("SHOW TABLES;")
-    db.commit()
+    table_snapshot = db.query("SHOW TABLES;")
 
     # Iterate over tables and print name.
-    table_snapshot = cur.fetchall()
     for x in table_snapshot:
         table_name = str(x).strip('(').strip(')').strip(',').strip("'")
         print("Running daily diff from " + table_name)
@@ -43,29 +38,24 @@ def main():
                         ' GROUP BY uid, access'
                         ' HAVING COUNT(*) = 1'
                         ' ORDER BY uid;')
-        cur.execute(create_table)
-        db.commit()
+        db.query(create_table)
 
     # Get list of all newly generated Phoenix staging tables.
-    cur.execute("SHOW TABLES LIKE '%_staging_changes';")
-    db.commit()
+    staging_tables = db.query("SHOW TABLES LIKE '%_staging_changes';")
 
-    staging_tables = cur.fetchall()
     for x in staging_tables:
         staging_table_name = str(x).strip('(').strip(')').strip(',').strip("'")
         print("Importing " + staging_table_name)
         import_table = "INSERT IGNORE into quasar.phoenix_user_log_poc select * from " + \
             staging_table_name
-        cur.execute(import_table)
-        db.commit()
+        db.query(import_table)
+
         print("Dropping " + staging_table_name)
         drop_table = "DROP TABLE IF EXISTS " + staging_table_name
-        cur.execute(drop_table)
-        db.commit()
+        db.query(drop_table)
 
     # Close cursor and connection.
-    cur.close()
-    db.close()
+    db.disconnect()
 
     # Show total time run.
     end_time = time.time()

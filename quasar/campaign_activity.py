@@ -5,7 +5,7 @@ import time
 
 from .config import config
 from .utils import strip_str
-from .DSMySQL import BladeMySQL
+from .database import Database
 from .API import API
 
 log_format = "%(asctime)s - %(levelname)s: %(message)s"
@@ -27,7 +27,7 @@ def backfill_since():
 def _backfill(hours=None):
 
     # Setup
-    db = BladeMySQL()
+    db = Database()
     start_time = strip_str(_now_minus_hours(hours))  # empty string if None
     rogueAPI = API(''.join((config.ROGUE_URI, '/api/v2/activity')),
                    headers={'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY},
@@ -51,7 +51,7 @@ def _backfill(hours=None):
 
     # Cleanup
     try:
-        db.create_disconnect()
+        db.disconnect()
     except Exception as e:
         print("Exception is %s" % e)
         sys.exit(0)

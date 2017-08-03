@@ -8,7 +8,7 @@ from datetime import datetime, date, timedelta
 from bs4 import BeautifulSoup
 
 from .config import config
-from . import database
+from .database import Database
 
 
 def get(path, payload):
@@ -26,7 +26,7 @@ def backfill_user_profiles():
 
 
 def _backfill_user_profiles(backfill_hours):
-    db, cur = _connect_db()
+    db = Database()
 
     # Time Conversion from Now to ISO 8601 format used by MC
     now = datetime.now()
@@ -79,14 +79,15 @@ def _backfill_user_profiles(backfill_hours):
                 opt_in_path_id = "NULL"
             insert_profile = "replace into users_and_activities.mobile_user_lookup VALUES ({0}, {1}, {2}, \"{3}\", \"{4}\", \"{5}\", {6}, \"{7}\")".format(
                 phone_number, us_phone_number, uid, created_at, source_type, source_name, opt_in_path_id, status)
-            cur.execute(insert_profile)
-            db.commit()
+            db.query(insert_profile)
+
+    db.disconnect()
 
 
 def scrape_campaigns():
 
     mob_com_api_req = get("campaigns", {"include_opt_in_paths": 1})
-    db, cur = _connect_db()
+    db = Database()
 
     # Capture Output into Beautiful Soup
     mob_com_campaign_soup = BeautifulSoup(mob_com_api_req.text, 'xml')
@@ -116,30 +117,29 @@ def scrape_campaigns():
                     insert_campaign = "replace into users_and_activities.mobile_campaign_id_lookup VALUES ({0}, \"{1}\", {2}, \"{3}\", {4}, {5})".format(
                         path.get('id'), path_name.text.replace("\"", ""), campaign_id, name.text.replace("\"", ""), nid, run_id)
                     print(insert_campaign)
-                    cur.execute(insert_campaign)
-                    db.commit()
+                    db.query(insert_campaign)
+
                 else:
                     insert_campaign = "replace into users_and_activities.mobile_campaign_id_lookup VALUES ({0}, \"{1}\", {2}, \"{3}\", {4}, {5})".format(
                         path.get('id'), path_name.text.replace("\"", ""), campaign_id, name.text.replace("\"", ""), nid, 'NULL')
                     print(insert_campaign)
-                    cur.execute(insert_campaign)
-                    db.commit()
+                    db.query(insert_campaign)
+
             else:
                 insert_campaign = "replace into users_and_activities.mobile_campaign_id_lookup VALUES ({0}, \"{1}\", {2}, \"{3}\", {4}, {5})".format(
                     path.get('id'), path_name.text.replace("\"", ""), campaign_id, name.text.replace("\"", ""), 'NULL', 'NULL')
                 print(insert_campaign)
-                cur.execute(insert_campaign)
-                db.commit()
+                db.query(insert_campaign)
+
         print("****************************")
 
-    cur.close()
-    db.close()
+    db.disconnect()
 
 
 def convert_campaign_lookup_to_id():
-    db, cur = _connect_db()
-    cur.execute("SELECT * FROM users_and_activities.mobile_campaign_id_lookup")
-    result = cur.fetchall()
+    db = Database()
+    result = db.query(
+        "SELECT * FROM users_and_activities.mobile_campaign_id_lookup")
 
     for row in result:
         if row['nid'] is not None:
@@ -160,12 +160,6 @@ def convert_campaign_lookup_to_id():
                 insert_campaign = "insert ignore into users_and_activities.mobile_campaign_ids VALUES({0}, {1}, {2}, {3}, {4})".format(
                     nid, campaign_id, opt_in_id, web_alpha, campaign_run)
             print(insert_campaign)
-            cur.execute(insert_campaign)
-            db.commit()
+            db.query(insert_campaign)
 
-    cur.close()
-    db.close()
-
-
-def _connect_db():
-    return database.connect({'conv': database.dec_to_float_converter()})
+    db.disconnect()
