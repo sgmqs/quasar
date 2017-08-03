@@ -23,6 +23,7 @@ MYSQL_HOST = '127.0.0.1'
 MYSQL_PORT = 6603
 MYSQL_USER = 'root'
 MYSQL_PASSWORD = 'password'
+MYSQL_SSL = {}
 MYSQL_DATABASE = 'quasar'
 MYSQL_TABLE = 'users'
 BLINK_BACKUP_TABLE = 'blink_queue_backlog'

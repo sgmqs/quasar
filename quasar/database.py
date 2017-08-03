@@ -32,6 +32,7 @@ class Database:
             'port': config.MYSQL_PORT,
             'passwd': config.MYSQL_PASSWORD,
             'db': config.MYSQL_DATABASE,
+            'ssl': config.MYSQL_SSL,
             'use_unicode': True,
             'charset': 'utf8'
         }
