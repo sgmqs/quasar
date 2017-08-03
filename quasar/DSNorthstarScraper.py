@@ -55,12 +55,15 @@ class NorthstarScraper(Scraper):
         _params = {'limit': 100, 'pagination': 'cursor'}
         _params.update(params)
 
+        i = 1
+        if 'page' in params:
+            i = params['page']
+
         _next = True
-        current = 1
         while _next is True:
-            _params['page'] = current
+            _params['page'] = i
             response = self.get(path, _params)
-            process_fn(current, response)
-            current += 1
+            process_fn(i, response)
+            i += 1
             if response['meta']['cursor']['next'] is None:
                 _next = False
