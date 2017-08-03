@@ -174,4 +174,4 @@ def _backfill(hours_ago=None):
 
 
 if __name__ == "__main__":
-    backfill()
+    _backfill()
