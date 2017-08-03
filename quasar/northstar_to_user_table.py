@@ -29,8 +29,7 @@ def main():
     # result set. If there aren't, will return false.
     nextPage = True
 
-    ca_settings = {'ca': '/home/quasar/rds-combined-ca-bundle.pem'}
-    db_opts = {'use_unicode': True, 'charset': 'utf8', 'ssl': ca_settings}
+    db_opts = {'use_unicode': True, 'charset': 'utf8'}
     db = Database(db_opts)
 
     def isInt(s):

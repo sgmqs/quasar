@@ -32,14 +32,12 @@ class Database:
             'port': config.MYSQL_PORT,
             'passwd': config.MYSQL_PASSWORD,
             'db': config.MYSQL_DATABASE,
+            'ssl': config.MYSQL_SSL,
             'use_unicode': True,
             'charset': 'utf8'
         }
 
         opts.update(options)
-
-        if config.env == 'DEV':
-            opts['ssl'] = {}
 
         self.connection = _connect(opts)
         if self.connection is None:
