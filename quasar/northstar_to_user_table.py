@@ -6,7 +6,7 @@ import sys
 from .config import config
 from .DSNorthstarScraper import NorthstarScraper
 from .utils import strip_str
-from . import database
+from .database import Database
 
 """DS Northstar to Quasar User ETL script.
 
@@ -26,26 +26,22 @@ class NorthstarDB:
     def __init__(self):
         ca_settings = {'ca': '/home/quasar/rds-combined-ca-bundle.pem'}
         db_opts = {'use_unicode': True, 'charset': 'utf8', 'ssl': ca_settings}
-        self.db, self.cur = database.connect(db_opts)
+        self.db = Database(db_opts)
 
     def teardown(self):
-        self.cur.close()
-        self.db.close()
+        self.cb.disconnect()
 
     def get_start_page(self):
-        self.cur.execute(
-            "SELECT * from %s WHERE counter_name = 'last_page_scraped'" % config.ns_counter_table)
-        self.db.commit()
-        last_page = self.cur.fetchall()
+        querystr = "SELECT * from %s WHERE counter_name = 'last_page_scraped'" % config.ns_counter_table
+        last_page = self.db.query(querystr)
         return last_page[0][1]
 
     def update_start_page(self, page):
-        self.cur.execute("REPLACE INTO %s (counter_name, counter_value) VALUES(\"last_page_scraped\", \"%s\")" % (
+        self.db.query("REPLACE INTO %s (counter_name, counter_value) VALUES(\"last_page_scraped\", \"%s\")" % (
             config.ns_counter_table, page))
-        self.db.commit()
 
     def save_user(self, user):
-        self.cur.execute("INSERT INTO quasar.users (northstar_id,\
+        self.db.query_str("INSERT INTO quasar.users (northstar_id,\
                         northstar_created_at_timestamp,\
                         last_logged_in, last_accessed, drupal_uid,\
                         northstar_id_source_name,\
@@ -77,48 +73,47 @@ class NorthstarDB:
                         moco_commons_profile_id = %s,\
                         moco_current_status = %s,\
                         moco_source_detail = %s",
-                        (strip_str(user['id']),
-                            strip_str(user['created_at']),
-                            strip_str(user['last_authenticated_at']),
-                            strip_str(user['last_accessed_at']),
-                            strip_str(user['drupal_id']),
-                            strip_str(user['source']),
-                            strip_str(user['email']),
-                            strip_str(user['mobile']),
-                            strip_str(user['birthdate']),
-                            strip_str(user['first_name']),
-                            strip_str(user['last_name']),
-                            strip_str(user['addr_street1']),
-                            strip_str(user['addr_street2']),
-                            strip_str(user['addr_city']),
-                            strip_str(user['addr_state']),
-                            strip_str(user['addr_zip']),
-                            strip_str(user['country']),
-                            strip_str(user['language']),
-                            strip_str(user['mobilecommons_id']),
-                            strip_str(user['mobilecommons_status']),
-                            strip_str(user['source_detail']),
-                            strip_str(user['created_at']),
-                            strip_str(user['last_authenticated_at']),
-                            strip_str(user['last_accessed_at']),
-                            strip_str(user['drupal_id']),
-                            strip_str(user['source']),
-                            strip_str(user['email']),
-                            strip_str(user['mobile']),
-                            strip_str(user['birthdate']),
-                            strip_str(user['first_name']),
-                            strip_str(user['last_name']),
-                            strip_str(user['addr_street1']),
-                            strip_str(user['addr_street2']),
-                            strip_str(user['addr_city']),
-                            strip_str(user['addr_state']),
-                            strip_str(user['addr_zip']),
-                            strip_str(user['country']),
-                            strip_str(user['language']),
-                            strip_str(user['mobilecommons_id']),
-                            strip_str(user['mobilecommons_status']),
-                            strip_str(user['source_detail'])))
-        self.db.commit()
+                         (strip_str(user['id']),
+                          strip_str(user['created_at']),
+                          strip_str(user['last_authenticated_at']),
+                          strip_str(user['last_accessed_at']),
+                          strip_str(user['drupal_id']),
+                          strip_str(user['source']),
+                          strip_str(user['email']),
+                          strip_str(user['mobile']),
+                          strip_str(user['birthdate']),
+                          strip_str(user['first_name']),
+                          strip_str(user['last_name']),
+                          strip_str(user['addr_street1']),
+                          strip_str(user['addr_street2']),
+                          strip_str(user['addr_city']),
+                          strip_str(user['addr_state']),
+                          strip_str(user['addr_zip']),
+                          strip_str(user['country']),
+                          strip_str(user['language']),
+                          strip_str(user['mobilecommons_id']),
+                          strip_str(user['mobilecommons_status']),
+                          strip_str(user['source_detail']),
+                          strip_str(user['created_at']),
+                          strip_str(user['last_authenticated_at']),
+                          strip_str(user['last_accessed_at']),
+                          strip_str(user['drupal_id']),
+                          strip_str(user['source']),
+                          strip_str(user['email']),
+                          strip_str(user['mobile']),
+                          strip_str(user['birthdate']),
+                          strip_str(user['first_name']),
+                          strip_str(user['last_name']),
+                          strip_str(user['addr_street1']),
+                          strip_str(user['addr_street2']),
+                          strip_str(user['addr_city']),
+                          strip_str(user['addr_state']),
+                          strip_str(user['addr_zip']),
+                          strip_str(user['country']),
+                          strip_str(user['language']),
+                          strip_str(user['mobilecommons_id']),
+                          strip_str(user['mobilecommons_status']),
+                          strip_str(user['source_detail'])))
 
 
 def _interval(hours_ago):
@@ -168,8 +163,8 @@ def _backfill(hours_ago=None):
                 '/v1/users', update_params, _process_page)
 
     else:
-        start_page = db.get_start_page
-        scraper.process_all_pages('/v1/users', {}, _process_page)
+        start_page = db.get_start_page()
+        scraper.process_all_pages('/v1/users', {'page': start_page}, _process_page)
 
     db.teardown()
 
@@ -179,4 +174,4 @@ def _backfill(hours_ago=None):
 
 
 if __name__ == "__main__":
-    main()
+    backfill()

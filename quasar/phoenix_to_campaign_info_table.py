@@ -1,4 +1,4 @@
-from . import database
+from .database import Database, dec_to_float_converter
 from .config import config
 import time
 import sys
@@ -8,13 +8,13 @@ def main():
     start_time = time.time()
     """Keep track of start time of script."""
 
-    db_opts = {'conv': database.dec_to_float_converter(),
+    db_opts = {'conv': dec_to_float_converter(),
                'charset': 'utf8'}
-    db, cur = database.connect(db_opts)
+    db = Database(db_opts)
 
-    cur.execute('SET NAMES utf8;')
-    cur.execute('SET CHARACTER SET utf8;')
-    cur.execute('SET character_set_connection=utf8;')
+    db.query('SET NAMES utf8;')
+    db.query('SET CHARACTER SET utf8;')
+    db.query('SET character_set_connection=utf8;')
     """Set UTF-8 encoding on MySQL connection."""
 
     # Query to update Quasar campaign_info table from Phoenix DB.
@@ -80,13 +80,8 @@ def main():
     WHERE c.bundle = 'campaign_run'
     GROUP BY c.entity_id;"""
 
-    # Run and commit new data to campaign_info Quasar table.
-    cur.execute(update_campaign_table_query)
-    db.commit()
-
-    # Close Cursor and Connection
-    cur.close()
-    db.close()
+    db.query(update_campaign_table_query)
+    db.disconnect()
 
     end_time = time.time()  # Record when script stopped running.
     duration = end_time - start_time  # Total duration in seconds.
