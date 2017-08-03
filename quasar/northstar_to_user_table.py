@@ -86,7 +86,7 @@ def main():
     while nextPage is True:
         current_page = ns_fetcher.getUsers(100, i)
         for user in current_page:
-            db.query("INSERT INTO quasar.users (northstar_id,\
+            db.query_str("INSERT INTO quasar.users (northstar_id,\
                         northstar_created_at_timestamp,\
                         last_logged_in, last_accessed, drupal_uid,\
                         northstar_id_source_name,\
@@ -168,7 +168,7 @@ def main():
         else:
             current_page = ns_fetcher.getUsers(100, i)
             for user in current_page:
-                db.query("INSERT INTO quasar.users (northstar_id,\
+                db.query_str("INSERT INTO quasar.users (northstar_id,\
                             northstar_created_at_timestamp,\
                             last_logged_in, last_accessed, drupal_uid,\
                             northstar_id_source_name,\
