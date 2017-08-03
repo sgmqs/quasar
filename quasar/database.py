@@ -38,6 +38,9 @@ class Database:
 
         opts.update(options)
 
+        if config.env == 'DEV':
+            opts['ssl'] = {}
+
         self.connection = _connect(opts)
         if self.connection is None:
             print("Error, couldn't connect to database with options:", opts)
