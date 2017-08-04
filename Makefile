@@ -3,7 +3,7 @@ TEST_PATH=./
 .PHONY: clean
 
 build:
-	pip3 install --upgrade .
+	echo "BUILT!"
 
 clean:
 	find . -name '*.pyc' -exec rm --force {} +
@@ -22,3 +22,6 @@ migrate-sql: $(MIGRATIONS)
 	for file in $(MIGRATIONS); do \
 		MYSQL_PWD=password mysql -uroot --host 127.0.0.1 --port 6603 < $$file; \
 	done
+
+devel:
+	python setup.py develop
