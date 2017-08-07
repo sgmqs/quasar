@@ -3,7 +3,7 @@ TEST_PATH=./
 .PHONY: clean
 
 build:
-	python setup.py develop
+	python3 setup.py develop
 
 clean:
 	find . -name '*.pyc' -exec rm --force {} +
