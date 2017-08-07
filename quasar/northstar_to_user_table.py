@@ -1,3 +1,4 @@
+from datetime import datetime as dt
 import time
 import re
 import sys
@@ -20,72 +21,26 @@ that gets updated on ingestion loop.
 """
 
 
-def main():
-    start_time = time.time()
-    """Keep track of start time of script."""
+class NorthstarDB:
 
-    # Set pagination variable to be true by default. This
-    # will track whether there are any more pages in a
-    # result set. If there aren't, will return false.
-    nextPage = True
+    def __init__(self):
+        db_opts = {'use_unicode': True, 'charset': 'utf8'}
+        self.db = Database(db_opts)
 
-    db_opts = {'use_unicode': True, 'charset': 'utf8'}
-    db = Database(db_opts)
+    def teardown(self):
+        self.db.disconnect()
 
-    def isInt(s):
-        """Check if value is type int and return boolean result.
-        Source at http://stackoverflow.com/questions/1265665/python-check-if-a-string-represents-an-int-without-using-try-except
-        """
-        try:
-            int(s)
-            return True
-        except ValueError:
-            return False
+    def get_start_page(self):
+        querystr = "SELECT * from %s WHERE counter_name = 'last_page_scraped'" % config.ns_counter_table
+        last_page = self.db.query(querystr)
+        return last_page[0][1]
 
-    if len(sys.argv) == 3:
-        if sys.argv[1] == 'prod':
-            northstar_env_url = 'https://northstar.dosomething.org'
-            db_env = 'users'
-        elif sys.argv[1] == 'thor':
-            northstar_env_url = 'https://northstar-thor.dosomething.org'
-            db_env = 'thor_users'
-        else:
-            print("Please provide a working Northstar environment: thor/prod.")
-            sys.exit(0)
-        if sys.argv[2] == 'cont':
-            if sys.argv[1] == 'prod':
-                last_page = db.query("SELECT * from quasar_etl_status.northstar_ingestion \
-                            WHERE counter_name = 'last_page_scraped'")
-                i = last_page[0][1]
-            elif sys.argv[1] == 'thor':
-                last_page = db.query("SELECT * from quasar_etl_status.thor_northstar_ingestion \
-                           WHERE counter_name = 'last_page_scraped'")
-                i = last_page[0][1]
-            else:
-                print("Can not continue, invalid env specified.")
-        elif isInt(sys.argv[2]):
-            i = int(sys.argv[2])
-        else:
-            print("Please input 'cont' to continue backfill or integer value.")
-            sys.exit(0)
-    else:
-        print("Sorry, please specify proper arguments. i.e. env/page")
-        sys.exit(0)
-    """Determine environment, and page to start from.
+    def update_start_page(self, page):
+        self.db.query("REPLACE INTO %s (counter_name, counter_value) VALUES(\"last_page_scraped\", \"%s\")" % (
+            config.ns_counter_table, page))
 
-    With no arguments, env is set to prod and ingestion begins from last page.
-    With 1 argument, env is set to prod and ingestion begins at arg1 page.
-    With 2 arguments, env is set to arg1 and ingestion begins at arg2 page.
-
-    """
-
-    # Set environment url for Northstar, prod or thor.
-    ns_fetcher = NorthstarScraper(northstar_env_url)
-
-    while nextPage is True:
-        current_page = ns_fetcher.getUsers(100, i)
-        for user in current_page:
-            db.query_str("INSERT INTO quasar.users (northstar_id,\
+    def save_user(self, user):
+        self.db.query_str("INSERT INTO quasar.users (northstar_id,\
                         northstar_created_at_timestamp,\
                         last_logged_in, last_accessed, drupal_uid,\
                         northstar_id_source_name,\
@@ -117,135 +72,106 @@ def main():
                         moco_commons_profile_id = %s,\
                         moco_current_status = %s,\
                         moco_source_detail = %s",
-                        (strip_str(user['id']),
-                         strip_str(user['created_at']),
-                         strip_str(user['last_authenticated_at']),
-                         strip_str(user['last_accessed_at']),
-                         strip_str(user['drupal_id']),
-                         strip_str(user['source']),
-                         strip_str(user['email']),
-                         strip_str(user['mobile']),
-                         strip_str(user['birthdate']),
-                         strip_str(user['first_name']),
-                         strip_str(user['last_name']),
-                         strip_str(user['addr_street1']),
-                         strip_str(user['addr_street2']),
-                         strip_str(user['addr_city']),
-                         strip_str(user['addr_state']),
-                         strip_str(user['addr_zip']),
-                         strip_str(user['country']),
-                         strip_str(user['language']),
-                         strip_str(user['mobilecommons_id']),
-                         strip_str(user['mobilecommons_status']),
-                         strip_str(user['source_detail']),
-                         strip_str(user['created_at']),
-                         strip_str(user['last_authenticated_at']),
-                         strip_str(user['last_accessed_at']),
-                         strip_str(user['drupal_id']),
-                         strip_str(user['source']),
-                         strip_str(user['email']),
-                         strip_str(user['mobile']),
-                         strip_str(user['birthdate']),
-                         strip_str(user['first_name']),
-                         strip_str(user['last_name']),
-                         strip_str(user['addr_street1']),
-                         strip_str(user['addr_street2']),
-                         strip_str(user['addr_city']),
-                         strip_str(user['addr_state']),
-                         strip_str(user['addr_zip']),
-                         strip_str(user['country']),
-                         strip_str(user['language']),
-                         strip_str(user['mobilecommons_id']),
-                         strip_str(user['mobilecommons_status']),
-                         strip_str(user['source_detail'])))
-        nextPage = ns_fetcher.nextPageStatus(100, i)
-        if nextPage is True:
-            i += 1
-            db.query("REPLACE INTO quasar_etl_status.northstar_ingestion \
-                    (counter_name, counter_value) VALUES(\"last_page_scraped\",\
-                    \"{0}\")".format(i))
-        else:
-            current_page = ns_fetcher.getUsers(100, i)
-            for user in current_page:
-                db.query_str("INSERT INTO quasar.users (northstar_id,\
-                            northstar_created_at_timestamp,\
-                            last_logged_in, last_accessed, drupal_uid,\
-                            northstar_id_source_name,\
-                            email, mobile, birthdate,\
-                            first_name, last_name,\
-                            addr_street1, addr_street2,\
-                            addr_city, addr_state,\
-                            addr_zip, country, language,\
-                            agg_id, cgg_id,\
-                            moco_commons_profile_id,\
-                            moco_current_status,\
-                            moco_source_detail)\
-                            VALUES(%s,%s,%s,%s,%s,%s,\
-                            %s,%s,%s,%s,\
-                            %s,%s,%s,%s,\
-                            %s,%s,%s,%s,\
-                            NULL,NULL,%s,%s,%s)\
-                            ON DUPLICATE KEY UPDATE \
-                            northstar_created_at_timestamp = %s,\
-                            last_logged_in = %s,\
-                            last_accessed = %s, drupal_uid = %s,\
-                            northstar_id_source_name = %s,\
-                            email = %s, mobile = %s, birthdate = %s,\
-                            first_name = %s, last_name = %s,\
-                            addr_street1 = %s, addr_street2 = %s,\
-                            addr_city = %s, addr_state = %s,\
-                            addr_zip = %s, country = %s, language = %s,\
-                            agg_id = NULL, cgg_id = NULL,\
-                            moco_commons_profile_id = %s,\
-                            moco_current_status = %s,\
-                            moco_source_detail = %s",
-                            (strip_str(user['id']),
-                             strip_str(user['created_at']),
-                             strip_str(user['last_authenticated_at']),
-                             strip_str(user['last_accessed_at']),
-                             strip_str(user['drupal_id']),
-                             strip_str(user['source']),
-                             strip_str(user['email']),
-                             strip_str(user['mobile']),
-                             strip_str(user['birthdate']),
-                             strip_str(user['first_name']),
-                             strip_str(user['last_name']),
-                             strip_str(user['addr_street1']),
-                             strip_str(user['addr_street2']),
-                             strip_str(user['addr_city']),
-                             strip_str(user['addr_state']),
-                             strip_str(user['addr_zip']),
-                             strip_str(user['country']),
-                             strip_str(user['language']),
-                             strip_str(user['mobilecommons_id']),
-                             strip_str(user['mobilecommons_status']),
-                             strip_str(user['source_detail']),
-                             strip_str(user['created_at']),
-                             strip_str(user['last_authenticated_at']),
-                             strip_str(user['last_accessed_at']),
-                             strip_str(user['drupal_id']),
-                             strip_str(user['source']),
-                             strip_str(user['email']),
-                             strip_str(user['mobile']),
-                             strip_str(user['birthdate']),
-                             strip_str(user['first_name']),
-                             strip_str(user['last_name']),
-                             strip_str(user['addr_street1']),
-                             strip_str(user['addr_street2']),
-                             strip_str(user['addr_city']),
-                             strip_str(user['addr_state']),
-                             strip_str(user['addr_zip']),
-                             strip_str(user['country']),
-                             strip_str(user['language']),
-                             strip_str(user['mobilecommons_id']),
-                             strip_str(user['mobilecommons_status']),
-                             strip_str(user['source_detail'])))
+                          (strip_str(user['id']),
+                           strip_str(user['created_at']),
+                           strip_str(user['last_authenticated_at']),
+                           strip_str(user['last_accessed_at']),
+                           strip_str(user['drupal_id']),
+                           strip_str(user['source']),
+                           strip_str(user['email']),
+                           strip_str(user['mobile']),
+                           strip_str(user['birthdate']),
+                           strip_str(user['first_name']),
+                           strip_str(user['last_name']),
+                           strip_str(user['addr_street1']),
+                           strip_str(user['addr_street2']),
+                           strip_str(user['addr_city']),
+                           strip_str(user['addr_state']),
+                           strip_str(user['addr_zip']),
+                           strip_str(user['country']),
+                           strip_str(user['language']),
+                           strip_str(user['mobilecommons_id']),
+                           strip_str(user['mobilecommons_status']),
+                           strip_str(user['source_detail']),
+                           strip_str(user['created_at']),
+                           strip_str(user['last_authenticated_at']),
+                           strip_str(user['last_accessed_at']),
+                           strip_str(user['drupal_id']),
+                           strip_str(user['source']),
+                           strip_str(user['email']),
+                           strip_str(user['mobile']),
+                           strip_str(user['birthdate']),
+                           strip_str(user['first_name']),
+                           strip_str(user['last_name']),
+                           strip_str(user['addr_street1']),
+                           strip_str(user['addr_street2']),
+                           strip_str(user['addr_city']),
+                           strip_str(user['addr_state']),
+                           strip_str(user['addr_zip']),
+                           strip_str(user['country']),
+                           strip_str(user['language']),
+                           strip_str(user['mobilecommons_id']),
+                           strip_str(user['mobilecommons_status']),
+                           strip_str(user['source_detail'])))
 
-    db.disconnect()
+
+def _interval(hours_ago):
+    def _format(hr):
+        _time = int(time.time()) - (int(hr) * 3600)
+        formatted = dt.fromtimestamp(_time).isoformat()
+        return formatted
+
+    start = _format(hours_ago)
+    end = _format(hours_ago - 1)
+    return (start, end)
+
+
+def full_backfill():
+    _backfill()
+
+
+def backfill_since():
+    _backfill(sys.argv[1])
+
+
+def _backfill(hours_ago=None):
+    start_time = time.time()
+
+    db = NorthstarDB()
+    scraper = NorthstarScraper(config.ns_uri)
+    save_progress = hours_ago is None
+
+    def _process_page(page_n, page_response):
+        for user in page_response['data']:
+            db.save_user(user)
+        if save_progress:
+            db.update_start_page(page_n)
+
+    if hours_ago is not None:
+        intervals = [_interval(hour) for hour in range(
+            int(hours_ago) + 1) if hour > 0]
+
+        for start, end in intervals:
+            create_params = {'after[created_at]': str(
+                start), 'before[created_at]': str(end)}
+            update_params = {'after[updated_at]': str(
+                start), 'before[updated_at]': str(end)}
+            scraper.process_all_pages(
+                '/v1/users', create_params, _process_page)
+            scraper.process_all_pages(
+                '/v1/users', update_params, _process_page)
+
+    else:
+        start_page = db.get_start_page()
+        scraper.process_all_pages(
+            '/v1/users', {'page': start_page}, _process_page)
+
+    db.teardown()
 
     end_time = time.time()  # Record when script stopped running.
     duration = end_time - start_time  # Total duration in seconds.
     print('duration: ', duration)
 
+
 if __name__ == "__main__":
-    main()
+    _backfill()

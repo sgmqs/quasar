@@ -12,6 +12,8 @@ mc_pw = 'password'
 # Northstar OAuth2 Credentials:
 ns_client_id = 'some-client'
 ns_client_secret = 'password'
+ns_uri = 'https://northstar-thor.dosomething.org'
+ns_counter_table = 'quasar_etl_status.thor_northstar_ingestion'
 
 # New Quasar Per Var Settings
 AMQP_URI = 'amqps://user:something@server-thing.cloudamqp.com/asdf'
