@@ -1,4 +1,4 @@
-import requests
+    import requests
 from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 from datetime import datetime as d
@@ -398,7 +398,7 @@ def main():
                 continue
         print(c['cluster'])
         clust1 = ClusterSubscribers(
-            c, main.force, main.backtime, main.db, main.cur)
+            c, main.force, main.backtime, main.db, main.db.cursor)
         clust1.allNums()
         clust1.runPath()
         # print len(clust1.alpha_store.keys())
