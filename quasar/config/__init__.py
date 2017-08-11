@@ -1,7 +1,7 @@
 import os
 import sys
 
-from . import dev_priv as config
+from . import dev as config
 
 env = os.environ['ENV']
 
