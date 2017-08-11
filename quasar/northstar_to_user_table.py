@@ -4,7 +4,7 @@ import re
 import sys
 
 from .config import config
-from .DSNorthstarScraper import NorthstarScraper
+from .northstarscraper import NorthstarScraper
 from .utils import strip_str
 from .database import Database
 
@@ -142,7 +142,7 @@ def _backfill(hours_ago=None):
     save_progress = hours_ago is None
 
     def _process_page(page_n, page_response):
-        res = page_response.json()
+        res = page_response
         for user in res['data']:
             db.save_user(user)
         if save_progress:

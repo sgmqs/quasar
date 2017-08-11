@@ -6,7 +6,7 @@ import time
 from .config import config
 from .utils import strip_str
 from .database import Database
-from .API import API
+from .scraper import Scraper
 
 log_format = "%(asctime)s - %(levelname)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_format)
@@ -29,10 +29,10 @@ def _backfill(hours=None):
     # Setup
     db = Database()
     start_time = strip_str(_now_minus_hours(hours))  # empty string if None
-    rogueAPI = API(''.join((config.ROGUE_URI, '/api/v2/activity')),
+    scraper = Scraper(''.join((config.ROGUE_URI, '/api/v2/activity')),
                    headers={'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY},
                    params={'page': 1, 'limit': 40, 'filter[updated_at]': start_time})
-    final_page = rogueAPI.get('')['meta']['pagination']['total_pages']
+    final_page = scraper.getJson('')['meta']['pagination']['total_pages']
 
     if hours is not None:
         print("Current backfill hours are %s." % hours)
@@ -43,7 +43,7 @@ def _backfill(hours=None):
     # Main processing loop
     while current_page <= final_page:
         print("Current page: %s of %s" % (current_page, final_page))
-        data = rogueAPI.get('', params={'page': current_page})['data']
+        data = scraper.getJson('', params={'page': current_page})['data']
         _process_records(db, data)
         current_page += 1
         if hours is None:

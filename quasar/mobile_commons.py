@@ -9,17 +9,10 @@ from bs4 import BeautifulSoup
 
 from .config import config
 from .database import Database
+from .scraper import Scraper
 
 
-def get(path, payload):
-    retries = Retry(total=6, backoff_factor=600)
-    req = requests.Session()
-    req.mount('https://', HTTPAdapter(max_retries=retries))
-    path = ''.join(('https://secure.mcommons.com/api/', path))
-    response = requests.get(path, params=payload,
-                            auth=(config.mc_user, config.mc_pw))
-    return response
-
+scraper = Scraper('https://secure.mcommons.com/api/', backoff_time=600, auth=(config.mc_user, config.mc_pw))
 
 def backfill_user_profiles():
     _backfill_user_profiles(sys.argv[1])
@@ -52,7 +45,7 @@ def _backfill_user_profiles(backfill_hours):
 
         payload = {'from': origin_time_iso, 'to': now_iso,
                    'limit': '300', 'page': page_num}
-        mob_com_api_profile_req = get("profiles", payload)
+        mob_com_api_profile_req = scraper.get("profiles", params=payload)
 
         # Capture output as BeautifulSoup object, and iterate page till "num"
         # does not equal 300 (default page limit set by script)
@@ -86,7 +79,7 @@ def _backfill_user_profiles(backfill_hours):
 
 def scrape_campaigns():
 
-    mob_com_api_req = get("campaigns", {"include_opt_in_paths": 1})
+    mob_com_api_req = scraper.get("campaigns", params={"include_opt_in_paths": 1})
     db = Database()
 
     # Capture Output into Beautiful Soup

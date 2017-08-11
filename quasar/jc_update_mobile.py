@@ -1,20 +1,15 @@
 from datetime import datetime as dt
 from datetime import timedelta as t_delt
-import multiprocessing as mp
-import requests
-from requests.packages.urllib3.util.retry import Retry
-from requests.adapters import HTTPAdapter
-import json
-from bs4 import BeautifulSoup as bs
-from multiprocessing import Manager
-import MySQLdb
-import MySQLdb.converters
 import time
+import multiprocessing as mp
+from multiprocessing import Manager
 import sys
 
 from .config import config
 from .database import Database, dec_to_float_converter
+from .scraper import Scraper
 
+scraper = Scraper('https://secure.mcommons.com/api/', backoff_time=600, auth=(config.mc_user, config.mc_pw))
 
 def getHours():
     """based on date or sys args creates list of tuples to feed to the api"""
@@ -45,15 +40,7 @@ def getHours():
     return hours
 
 
-def apiCreds():
-    """mobilecommons auth and api url"""
-    un = config.mc_user
-    pw = config.mc_pw
-    url = "https://secure.mcommons.com/api/profiles"
-    return un, pw, url
-
-
-def getProfile(idx, start, finish, cred, opt_outs):
+def getProfile(idx, start, finish, opt_outs):
     """gets updated profiles and checks for accounts that opted out"""
     print(idx, start, finish)
     acceptable_statuses = ['Undeliverable', 'Active Subscriber',
@@ -67,16 +54,12 @@ def getProfile(idx, start, finish, cred, opt_outs):
     while num == 100:
         page += 1
         print(idx, page)
-        data = {'limit': '100', 'page': page, 'from': start, 'to': finish}
-        req = requests.Session()
-        retries = Retry(total=6, backoff_factor=600)
-        req.mount('https://', HTTPAdapter(max_retries=retries))
-        req = requests.get(cred[2], auth=(cred[0], cred[1]), params=data)
-        # parse with beautiful soup
-        soup = bs(req.text, 'xml')
+        params = {'limit': '100', 'page': page, 'from': start, 'to': finish}
+        response = scraper.getXml('profiles', params=params)
+       
         # set num to count of returned profiles
-        num = int(soup.profiles.get('num'))
-        profiles = soup.find_all('profile')
+        num = int(response.profiles.get('num'))
+        profiles = response.find_all('profile')
 
         for i in profiles:
             # only get active to inactive to cut back on updates
@@ -129,15 +112,12 @@ def main():
     now = time.time()
     # list for opt outs using Manager function. Required for multiprocessing
     opt_outs = Manager().list([])
-
     # get hours list
     hours = getHours()
-    # call credentials from config
-    creds = apiCreds()
     # start multiprocessing pool
     pool = mp.Pool(24)
     # process hours
-    dates = [pool.apply(getProfile, args=(i, x[0], x[1], creds, opt_outs))
+    dates = [pool.apply(getProfile, args=(i, x[0], x[1], opt_outs))
              for i, x in enumerate(hours)]
     print('total opt outs: ', len(opt_outs))
     pool.close()
