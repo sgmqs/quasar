@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: quasar-staging.c9ajz690mens.us-east-1.rds.amazonaws.com (MySQL 5.7.17-log)
+# Host: quasar.c9ajz690mens.us-east-1.rds.amazonaws.com (MySQL 5.7.17-log)
 # Database: quasar
-# Generation Time: 2017-07-11 17:31:21 +0000
+# Generation Time: 2017-08-15 20:53:27 +0000
 # ************************************************************
 
 
@@ -18,60 +18,15 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
 DROP DATABASE IF EXISTS quasar;
 CREATE DATABASE quasar;
 USE quasar;
 
-# Dump of table all_moco_users
-# ------------------------------------------------------------
-
-CREATE TABLE `all_moco_users` (
-  `phone_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `us_phone_number` bigint(20) DEFAULT NULL,
-  `created_at` datetime DEFAULT NULL,
-  `source_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `source_name` longtext COLLATE utf8mb4_unicode_ci,
-  `opt_in_path_id` bigint(20) DEFAULT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`phone_number`),
-  KEY `us_phone_number` (`us_phone_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-
-# Dump of table blink_queue_backlog
-# ------------------------------------------------------------
-
-CREATE TABLE `blink_queue_backlog` (
-  `email` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `customer_io_subscription_status` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `customer_io_subscription_timestamp` datetime NOT NULL,
-  PRIMARY KEY (`email`,`customer_io_subscription_status`,`customer_io_subscription_timestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-
-# Dump of table c_io_export_fix_missing
-# ------------------------------------------------------------
-
-CREATE TABLE `c_io_export_fix_missing` (
-  `id` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `subscribed_at` varchar(24) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `unsubscribed` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `unsubscribed_at` varchar(24) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`,`email`,`unsubscribed`),
-  KEY `unsubscribed_at` (`unsubscribed_at`),
-  KEY `id` (`id`),
-  KEY `email` (`email`),
-  KEY `subscribed_at` (`subscribed_at`),
-  KEY `unsubscribed` (`unsubscribed`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-
 # Dump of table campaign_activity
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `campaign_activity`;
 
 CREATE TABLE `campaign_activity` (
   `northstar_id` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -94,41 +49,16 @@ CREATE TABLE `campaign_activity` (
   PRIMARY KEY (`northstar_id`,`signup_id`,`signup_created_at`,`signup_updated_at`,`submission_created_at`),
   KEY `northstar_id` (`northstar_id`),
   KEY `campaign_id` (`campaign_id`),
-  KEY `campaign_run_id` (`campaign_run_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-
-# Dump of table campaign_activity_orig
-# ------------------------------------------------------------
-
-CREATE TABLE `campaign_activity_orig` (
-  `northstar_id` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `signup_id` int(11) DEFAULT NULL,
-  `campaign_id` int(11) DEFAULT NULL,
-  `campaign_run_id` int(11) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL,
-  `why_participated` text COLLATE utf8mb4_unicode_ci,
-  `signup_source` varchar(24) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `signup_created_at` datetime DEFAULT NULL,
-  `signup_updated_at` datetime DEFAULT NULL,
-  `post_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT '',
-  `url` text COLLATE utf8mb4_unicode_ci,
-  `caption` text COLLATE utf8mb4_unicode_ci,
-  `status` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `remote_addr` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `post_source` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `submission_created_at` datetime DEFAULT NULL,
-  `submission_updated_at` datetime DEFAULT NULL,
-  KEY `northstar_id` (`northstar_id`),
-  KEY `campaign_id` (`campaign_id`),
-  KEY `campaign_run_id` (`campaign_run_id`)
+  KEY `campaign_run_id` (`campaign_run_id`),
+  KEY `submission_updated_at` (`submission_updated_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 
 # Dump of table campaign_info
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `campaign_info`;
 
 CREATE TABLE `campaign_info` (
   `campaign_node_id` int(11) DEFAULT NULL,
@@ -154,6 +84,8 @@ CREATE TABLE `campaign_info` (
 # Dump of table phoenix_user_log_poc
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `phoenix_user_log_poc`;
+
 CREATE TABLE `phoenix_user_log_poc` (
   `uid` int(11) NOT NULL,
   `name` varchar(60) NOT NULL,
@@ -173,6 +105,8 @@ CREATE TABLE `phoenix_user_log_poc` (
 
 # Dump of table users
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
   `northstar_id` varchar(26) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -219,15 +153,25 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DELIMITER ;;
+/*!50003 SET SESSION SQL_MODE="NO_ENGINE_SUBSTITUTION" */;;
+/*!50003 CREATE */ /*!50017 DEFINER=`quasaradm`@`%` */ /*!50003 TRIGGER `userlog` AFTER UPDATE ON `users` FOR EACH ROW BEGIN  
+INSERT IGNORE INTO users_log SELECT * FROM users WHERE northstar_id = NEW.northstar_id;
+END */;;
+DELIMITER ;
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;
 
-# Dump of table users_test
+
+# Dump of table users_log
 # ------------------------------------------------------------
 
-CREATE TABLE `users_test` (
+DROP TABLE IF EXISTS `users_log`;
+
+CREATE TABLE `users_log` (
   `northstar_id` varchar(26) COLLATE utf8mb4_unicode_ci NOT NULL,
   `northstar_created_at_timestamp` datetime DEFAULT NULL,
-  `last_logged_in` datetime DEFAULT NULL,
-  `last_accessed` datetime DEFAULT NULL,
+  `last_logged_in` datetime NOT NULL,
+  `last_accessed` datetime NOT NULL,
   `drupal_uid` int(24) DEFAULT NULL,
   `northstar_id_source_name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -258,7 +202,7 @@ CREATE TABLE `users_test` (
   `moco_commons_profile_id` varchar(24) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `moco_current_status` varchar(48) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `moco_source_detail` varchar(96) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`northstar_id`),
+  PRIMARY KEY (`northstar_id`,`last_logged_in`,`last_accessed`),
   KEY `drupal_uid` (`drupal_uid`),
   KEY `cgg_id` (`cgg_id`),
   KEY `agg_id` (`agg_id`),

@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: quasar-staging.c9ajz690mens.us-east-1.rds.amazonaws.com (MySQL 5.7.17-log)
+# Host: quasar.c9ajz690mens.us-east-1.rds.amazonaws.com (MySQL 5.7.17-log)
 # Database: quasar_etl_status
-# Generation Time: 2017-07-11 17:32:09 +0000
+# Generation Time: 2017-08-15 20:53:40 +0000
 # ************************************************************
 
 
@@ -26,6 +26,8 @@ USE quasar_etl_status;
 # Dump of table northstar_ingestion
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `northstar_ingestion`;
+
 CREATE TABLE `northstar_ingestion` (
   `counter_name` varchar(32) NOT NULL,
   `counter_value` int(11) DEFAULT NULL,
@@ -37,18 +39,9 @@ CREATE TABLE `northstar_ingestion` (
 # Dump of table rogue_ingestion
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `rogue_ingestion`;
+
 CREATE TABLE `rogue_ingestion` (
-  `counter_name` varchar(32) NOT NULL,
-  `counter_value` int(11) DEFAULT NULL,
-  PRIMARY KEY (`counter_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-
-# Dump of table thor_northstar_ingestion
-# ------------------------------------------------------------
-
-CREATE TABLE `thor_northstar_ingestion` (
   `counter_name` varchar(32) NOT NULL,
   `counter_value` int(11) DEFAULT NULL,
   PRIMARY KEY (`counter_name`)
