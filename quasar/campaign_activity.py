@@ -145,7 +145,7 @@ def _process_records(db, rogue_page):
                               strip_str(i['created_at']),
                               strip_str(i['updated_at']),
                               strip_str(j['id']),
-                              strip_str(j['media']['url']),
+                              j['media']['url'],
                               strip_str(j['media']['caption']),
                               strip_str(j['status']),
                               strip_str(j['remote_addr']),
