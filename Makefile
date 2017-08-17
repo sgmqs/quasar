@@ -14,8 +14,7 @@ clean-build:
 	find . -name '*.egg*' -exec rm -rf --force {} +
 
 test: clean
-	python -m unittest
-	# py.test --verbose --color=yes $(TEST_PATH)
+	python -m unittest discover
 
 MIGRATIONS:=$(shell find $(./data/sql/migrations) -name '*.sql' | sort)
 migrate-sql: $(MIGRATIONS)

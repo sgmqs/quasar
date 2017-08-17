@@ -1,8 +1,10 @@
 **.retry
 __pycache__
+*.pyc
 .cache
 *.egg-info
 dist/
 .vagrant
 *.log
 quasar/config/dev.py
+quasar/config/dev_priv.py

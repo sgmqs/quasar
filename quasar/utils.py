@@ -1,5 +1,7 @@
 import logging
 import re
+from datetime import datetime as dt
+import time
 
 # DoSomething Helper Functions - Code Reused Across Lots of our ETL Scripts
 
@@ -17,6 +19,16 @@ def strip_str(base_value):
     else:
         strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
         return str(strip_special_chars)
+
+
+def now_minus_hours(hours):
+    """Returns time x hours ago"""
+    if hours is None:
+        return None
+    else:
+        start_time = int(time.time()) - (int(hours) * 3600)
+        return dt.fromtimestamp(start_time).isoformat()
+
 
 # Error Logging
 

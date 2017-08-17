@@ -1,10 +1,8 @@
-from datetime import datetime as dt
 import logging
 import sys
-import time
 
 from .config import config
-from .utils import strip_str
+from .utils import strip_str, now_minus_hours
 from .database import Database
 from .scraper import Scraper
 
@@ -20,6 +18,7 @@ def full_backfill():
     """
     _backfill()
 
+
 def backfill_since():
     _backfill(hours=sys.argv[1])
 
@@ -28,10 +27,10 @@ def _backfill(hours=None):
 
     # Setup
     db = Database()
-    start_time = strip_str(_now_minus_hours(hours))  # empty string if None
+    start_time = strip_str(now_minus_hours(hours))  # empty string if None
     scraper = Scraper(''.join((config.ROGUE_URI, '/api/v2/activity')),
-                   headers={'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY},
-                   params={'page': 1, 'limit': 40, 'filter[updated_at]': start_time})
+                      headers={'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY},
+                      params={'page': 1, 'limit': 40, 'filter[updated_at]': start_time})
     final_page = scraper.getJson('')['meta']['pagination']['total_pages']
 
     if hours is not None:
@@ -66,15 +65,6 @@ def _get_start_page(db):
         return 1
     else:
         return int(last_page)
-
-
-def _now_minus_hours(hours):
-    """Returns time x hours ago"""
-    if hours is None:
-        return None
-    else:
-        start_time = int(time.time()) - (int(hours) * 3600)
-        return dt.fromtimestamp(start_time).isoformat()
 
 
 def _update_progress(db, page):
