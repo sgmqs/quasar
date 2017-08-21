@@ -14,9 +14,19 @@ class GladitorDB:
 	def teardown(self):
 		self.db.disconnect()
 
-	def _save_competition(self, competition):
-		db.querystr(table, competition)
-		#STUB
+	def _save_competition(self, *competition):
+		self.db.querystr("REPLACE INTO gladiator.competitions (id,\ 
+					leaderboard_msg_day, rules, created_at, updated_at,\
+					competition_dates_start, competition_dates_end, \
+					contest_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
+					(strip_str(competition[0]),
+					 strip_str(competition[1]),
+					 competition[2],
+					 strip_str(competition[3]),
+					 strip_str(competition[4]),
+					 strip_str(competition[5]),
+					 strip_str(competition[6]),
+					 strip_str(competition[7])))
 
 	def _save_contest(self, *contest):
 		self.db.query_str("REPLACE INTO gladiator.contest (id,\
@@ -60,6 +70,15 @@ def get_competitions():
 							 page['data'][0]['updated_at'],
 							 page['data'][0]['sender']['name'],
 							 page['data'][0]['sender']['email'])
+			for competition in page['data'][0]['competitions']['data']:
+				db._save_competition(competition['id'],
+									 competition['leaderboard_msg_day'],
+									 competition['rules'],
+									 competition['created_at'],
+									 competition['updated_at'],
+									 competition['competition_dates']['start_date'],
+									 competition['competition_dates']['end_date'],
+									 page['data'][0]['id'])
 
 		start_page += 1
 

@@ -32,7 +32,7 @@ class Duration:
 
     def duration(self):
         run_time = self.start_time - time.time()
-        print('Duration in seconds: ', run_time)
+        logging.info("Duration in seconds: ".format(run_time))
         return run_time
 
 class QuasarException(Exception):
