@@ -19,7 +19,6 @@ def strip_str(base_value):
         strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
         return str(strip_special_chars)
 
-
 class Duration:
     """Simple duration tracker.
 
