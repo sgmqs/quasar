@@ -15,7 +15,7 @@ class GladitorDB:
 		self.db.disconnect()
 
 	def _save_competition(self, *competition):
-		self.db.querystr("REPLACE INTO gladiator.competitions (id,\ 
+		self.db.query_str("REPLACE INTO gladiator.competitions (id,\
 					leaderboard_msg_day, rules, created_at, updated_at,\
 					competition_dates_start, competition_dates_end, \
 					contest_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
