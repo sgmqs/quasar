@@ -3,11 +3,10 @@ import sys
 from .config import config
 from .database import Database
 from .scraper import Scraper
-from .utils import strip_str, QuasarException
+from .utils import strip_str, QuasarException, Duration
 
 
 class GladiatorDB:
-
     def __init__(self):
         db_opts = {'use_unicode': True, 'charset': 'utf8'}
         self.db = Database(db_opts)
@@ -88,11 +87,11 @@ class GladiatorDB:
 
 
 def get_competitions():
+    duration = Duration()
     db = GladiatorDB()
     scraper = Scraper(config.gladiator_uri)
     start_page = 1
-    end_page = scraper.getJson(
-        '/api/v2/contests')['meta']['pagination']['total_pages']
+    end_page = scraper.getJson('/api/v2/contests')['meta']['pagination']['total_pages']
     while start_page <= end_page:
         try:
             page = scraper.getJson('/api/v2/contests', params={'page': start_page})
@@ -154,6 +153,7 @@ def get_competitions():
             QuasarException(sys.exc_info()[0])
         start_page += 1
     db.teardown()
+    duration.duration()
 
 if __name__ == "__main__":
     get_competitions()

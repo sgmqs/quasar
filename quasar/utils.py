@@ -27,10 +27,10 @@ class Duration:
     duration time in seconds.
     """
     def __init__(self):
-        start_time = time.time()
+        self.start_time = time.time()
 
     def duration(self):
-        run_time = self.start_time - time.time()
+        run_time =  time.time() - self.start_time
         logging.info("Duration in seconds: ".format(run_time))
         return run_time
 
