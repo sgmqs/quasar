@@ -91,10 +91,12 @@ def get_competitions():
     db = GladiatorDB()
     scraper = Scraper(config.gladiator_uri)
     start_page = 1
-    end_page = scraper.getJson('/api/v2/contests')['meta']['pagination']['total_pages']
+    end_page = scraper.getJson(
+        '/api/v2/contests')['meta']['pagination']['total_pages']
     while start_page <= end_page:
         try:
-            page = scraper.getJson('/api/v2/contests', params={'page': start_page})
+            page = scraper.getJson('/api/v2/contests',
+                                   params={'page': start_page})
             db._save_contest(page['data'][0]['id'],
                              page['data'][0]['campaign_id'],
                              page['data'][0]['campaign_run_id'],

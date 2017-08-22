@@ -44,4 +44,3 @@ class QuasarException(Exception):
         """Log errors with formatted messaging."""
         logging.error("ERROR: {0}".format(message))
         pass
-
