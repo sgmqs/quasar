@@ -1,3 +1,4 @@
+from datetime import datetime as dt
 import logging
 import re
 import time
@@ -18,6 +19,14 @@ def strip_str(base_value):
     else:
         strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
         return str(strip_special_chars)
+
+def now_minus_hours(hours):
+    """Returns time x hours ago"""
+    if hours is None:
+        return None
+    else:
+        start_time = int(time.time()) - (int(hours) * 3600)
+        return dt.fromtimestamp(start_time).isoformat()
 
 class Duration:
     """Simple duration tracker.
