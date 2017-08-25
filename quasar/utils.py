@@ -1,6 +1,6 @@
+from datetime import datetime as dt
 import logging
 import re
-from datetime import datetime as dt
 import time
 
 # DoSomething Helper Functions - Code Reused Across Lots of our ETL Scripts
@@ -20,7 +20,6 @@ def strip_str(base_value):
         strip_special_chars = re.sub(r'[()<>/"\,\'\\]', '', base_string)
         return str(strip_special_chars)
 
-
 def now_minus_hours(hours):
     """Returns time x hours ago"""
     if hours is None:
@@ -29,9 +28,20 @@ def now_minus_hours(hours):
         start_time = int(time.time()) - (int(hours) * 3600)
         return dt.fromtimestamp(start_time).isoformat()
 
+class Duration:
+    """Simple duration tracker.
 
-# Error Logging
+    Object starts tracking time when instantiated, and then when
+    duration function is called records and prints then returns
+    duration time in seconds.
+    """
+    def __init__(self):
+        self.start_time = time.time()
 
+    def duration(self):
+        run_time =  time.time() - self.start_time
+        logging.info("Duration in seconds: ".format(run_time))
+        return run_time
 
 class QuasarException(Exception):
     """Donated exception handling code by Rob Spectre.
