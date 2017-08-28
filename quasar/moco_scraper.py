@@ -1,11 +1,11 @@
 import boto3
-from bs4 import BeautifulSoup
 from .config import config
 from .database import Database
 from .scraper import Scraper
 from .utils import strip_str
 
-scraper = Scraper('https://secure.mcommons.com', auth=(config.mc_user, config.mc_pw))
+scraper = Scraper('https://secure.mcommons.com',
+                  auth=(config.mc_user, config.mc_pw))
 s3 = boto3.client(
     's3',
     aws_access_key_id=config.QUASAR_AWS_S3_ID,
@@ -22,7 +22,8 @@ def _write_file(filename, data):
 
 
 def _get_start_page(db):
-    querystr = ''.join(("SELECT last_page_scraped FROM ", config.MOCO_PROGRESS_TABLE))
+    querystr = ''.join(("SELECT last_page_scraped FROM ",
+                        config.MOCO_PROGRESS_TABLE))
     start_page = strip_str(db.query(querystr))
     return start_page
 
@@ -42,7 +43,8 @@ def scrape_profiles(start_page=None):
         profiles = _get_profile(page_num).find_all('profile')
         if profiles is not None:
             for profile in profiles:
-                filename = profile['id'] + '-' + profile.phone_number.string + '.xml'
+                filename = (profile['id'] + '-' +
+                            profile.phone_number.string + '.xml')
                 print(filename)
                 _write_file(filename, profile)
             interim_cast = int(page_num)
