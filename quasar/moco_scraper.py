@@ -25,23 +25,27 @@ def _get_start_page(db):
     return start_page
 
 def _update_start_page(db, page):
-    
+     db.query_str(''.join(("UPDATE ", config.MOCO_PROGRESS_TABLE,
+                 " SET last_page_scraped = %s")), page,)
 
 
 def scrape_profiles(start_page=None):
     db = Database()
     if start_page is not None:
-        page_num = start_page
+        page_num = str(start_page)
     else:
         page_num = _get_start_page(db)
-    while > 0:
+    while int(page_num) > 0:
         profiles = _get_profile(page_num).find_all('profile')
         if profiles is not None:
             for profile in profiles:
                 filename = profile['id'] + '-' + profile.phone_number.string + '.xml'
                 print(filename)
                 _write_file(filename, profile)
-            page_num += 1
+            interim_cast = int(page_num)
+            interim_cast += 1
+            page_num = str(interim_cast)
+            _update_start_page(db, page_num)
         else:
             page_num = -1
 
