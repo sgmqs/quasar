@@ -11,8 +11,10 @@ s3 = boto3.client(
     aws_access_key_id=config.QUASAR_AWS_S3_ID,
     aws_secret_access_key=config.QUASAR_AWS_S3_SECRET)
 
+
 def _get_profile(page):
-    return scraper.getXml('/api/profiles', params={'page': page}) 
+    return scraper.getXml('/api/profiles', params={'page': page})
+
 
 def _write_file(filename, data):
     s3.put_object(Key=filename, Bucket=config.MOCO_ARCHIVE_BUCKET,
@@ -24,8 +26,9 @@ def _get_start_page(db):
     start_page = strip_str(db.query(querystr))
     return start_page
 
+
 def _update_start_page(db, page):
-     db.query_str(''.join(("UPDATE ", config.MOCO_PROGRESS_TABLE,
+    db.query_str(''.join(("UPDATE ", config.MOCO_PROGRESS_TABLE,
                  " SET last_page_scraped = %s")), page,)
 
 
