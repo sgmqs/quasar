@@ -16,6 +16,7 @@ setup(
             'get_competitions = quasar.gladiator_import:get_competitions',
             'import_UID_to_mobile_user_lookup_table = quasar.import_uid_by_phone_number:main',
             'legacy_mobile_campaign_table_update = quasar.mobile_commons:convert_campaign_lookup_to_id',
+            'scrape_moco_profile = quasar.moco_scraper:start_scrape',
             'mobile_campaign_lookup_table_update = quasar.mobile_commons:scrape_campaigns',
             'mobile_subscriptions = quasar.jc_subscribers:main',
             'mobile_user_table_update = quasar.mobile_commons:backfill_user_profiles',
