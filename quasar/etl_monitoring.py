@@ -1,28 +1,51 @@
 import sys
 import pandas as pd
+
 from .config import config
-from .database import Database
+from sqlalchemy import create_engine
+from .database import Database as db
 from pandas import DataFrame as df
 from .utils import QuasarException
+import datetime
 
-class dataframe_db:
-    def __init__(self):
-        pass
+class DataFrameDB:
+    def __init__(self, options={}):
 
-    def db_connect(path):
-        host = 'quasar-slave-new.c9ajz690mens.us-east-1.rds.amazonaws.com'
-        database = 'quasar'
-        login = open(path).read()
-        user_name = login.split(':')[0]
-        password = login.split(':')[1]
+        # Defaults
+        self.opts = {
+            'user': config.MYSQL_USER,
+            'host': config.MYSQL_HOST,
+            'port': config.MYSQL_PORT,
+            'passwd': config.MYSQL_PASSWORD,
+            'db': config.MYSQL_DATABASE,
+            'ssl': config.MYSQL_SSL,
+            'use_unicode': True,
+            'charset': 'utf8'
+        }
 
-        engine = create_engine('mysql+pymysql://' + user_name + ':' + password + '@' + host + '/' + database)
+        self.opts.update(options)
+
+    def db_connect(self):
+        # host = 'quasar-slave-new.c9ajz690mens.us-east-1.rds.amazonaws.com'
+        # database = 'quasar'
+        # login = open(path).read()
+        # user_name = login.split(':')[0]
+        # password = login.split(':')[1]
+
+        engine = create_engine(
+            'mysql+pymysql://' +
+            self.opts['user'] +
+            ':' +
+            self.opts['passwd'] +
+            '@' +
+            self.opts['host'] +
+            '/' +
+            self.opts['database']
+        )
         return engine
 
-
-    def run_query(query, credentials):
-        import pandas as pd
-        engine = db_connect(credentials)
+    def run_query(self, query):
+        engine = self.db_connect()
 
         if '.sql' in query:
             q = open(query, 'r').read()
@@ -31,7 +54,7 @@ class dataframe_db:
         df = pd.read_sql_query(q, engine)
         return df
 
-    def write_frame_to_db(self, frame):
+    def write_frame_to_db(self, frame, engine):
         df.to_sql(frame, engine)
 
 class ETLMonitoring:
@@ -39,7 +62,7 @@ class ETLMonitoring:
         pass
 
     def teardown(self):
-        self.db.disconnect()
+        db.disconnect()
 
     def construct_query_dict(description, query, query_set=None):
         if query_set==None:
@@ -51,7 +74,7 @@ class ETLMonitoring:
 
     def get_status(query):
         try:
-            value = dataframe_db.run_query(query, credentials)
+            value = DataFrameDB.run_query(query)
             out = int(value.iloc[0])
             return out
         except:
@@ -65,7 +88,7 @@ class ETLMonitoring:
         table = []
 
         for query in queries.values():
-            value = get_status(query)
+            value = ETLMonitoring.get_status(query)
             values.append(value)
             time = datetime.datetime.now().strftime("%m-%d-%y %H:%M:%S")
             ts.append(time)
