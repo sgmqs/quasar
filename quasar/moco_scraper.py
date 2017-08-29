@@ -48,7 +48,8 @@ def scrape_profiles(start_page=None):
                 filename = (profile['id'] + '-' +
                             profile.phone_number.string + '.xml')
                 _write_file(filename, profile)
-                print("Wrote profile {}/1000 of page {}".format(profile_num, page_num))
+                print("Wrote profile {}/1000 of page "
+                      "{}".format(profile_num, page_num))
                 profile_num += 1
             interim_cast = int(page_num)
             interim_cast += 1
