@@ -30,7 +30,7 @@ def _get_start_page(db):
 
 def _update_start_page(db, page):
     querystr = ''.join(("UPDATE ", config.MOCO_PROGRESS_TABLE,
-                 " SET last_page_scraped = {}")).format(page)
+                        " SET last_page_scraped = {}")).format(page)
     db.query(querystr)
 
 
