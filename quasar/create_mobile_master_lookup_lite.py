@@ -18,6 +18,7 @@ def main():
                   SELECT
                   ms.phone_number as `ms_phone_number`,
                   ms.activated_at as `ms_activated_at`,
+                  ms.opt_in_id as `ms_opt_in_id`,
                   mc.run_nid as `mc_run_id`,
                   n.title as `n_title`,
                   mu.uid as `mu_uid`,
