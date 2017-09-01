@@ -15,10 +15,8 @@ class DataFrameDB:
         self.opts = {
             'user': config.MYSQL_USER,
             'host': config.MYSQL_HOST,
-            'port': config.MYSQL_PORT,
             'passwd': config.MYSQL_PASSWORD,
             'db': config.MYSQL_DATABASE,
-            'ssl': config.MYSQL_SSL,
             'use_unicode': True,
             'charset': 'utf8'
         }
@@ -32,7 +30,7 @@ class DataFrameDB:
         # user_name = login.split(':')[0]
         # password = login.split(':')[1]
 
-        engine = create_engine(
+        self.engine = create_engine(
             'mysql+pymysql://' +
             self.opts['user'] +
             ':' +
@@ -42,17 +40,17 @@ class DataFrameDB:
             '/' +
             self.opts['database']
         )
-        return engine
+        return self.engine
 
     def run_query(self, query):
-        engine = self.db_connect()
+        self.engine = self.db_connect()
 
         if '.sql' in query:
             q = open(query, 'r').read()
         else:
             q = query
-        df = pd.read_sql_query(q, engine)
-        return df
+        self.df = pd.read_sql_query(q, self.engine)
+        return self.df
 
     def write_frame_to_db(self, frame, engine):
         df.to_sql(frame, engine)
@@ -113,3 +111,6 @@ user_queries =  {
     'ca_table_count': 'SELECT count(*) FROM quasar.campaign_activity c',
     'ca_post_count': 'SELECT count(distinct c.post_id) FROM quasar.campaign_activity c'
 }
+
+db = DataFrameDB()
+db.db_connect()
