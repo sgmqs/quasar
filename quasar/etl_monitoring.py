@@ -104,6 +104,17 @@ class ETLMonitoring:
              })
         return out
 
+    def extract_latest_value(self, table, desc):
+        max_query = \
+            "SELECT " \
+            "m.output " \
+            "FROM quasar.monitoring m " \
+            "WHERE m.table = '" + table + "' " \
+            "AND m.timestamp = max(m.timestamp) " \
+            "AND m.query = '" + desc + "'"
+        value = DataFrameDB.get_status(max_query)
+        return value
+
 
 user_queries =  {
     'user_count':'SELECT count(*) FROM quasar.users',
