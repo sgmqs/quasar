@@ -89,12 +89,12 @@ def _process_records(db, rogue_page):
                               signup_created_at = %s,\
                               signup_updated_at = %s,\
                               post_id = -1,\
-                              url = '',\
-                              caption = '',\
-                              status = '',\
-                              remote_addr = '',\
-                              post_source = '',\
-                              submission_created_at = ''",
+                              url = NULL,\
+                              caption = NULL,\
+                              status = NULL,\
+                              remote_addr = NULL,\
+                              post_source = NULL,\
+                              submission_created_at = NULL",
                          (strip_str(i['northstar_id']),
                           strip_str(i['signup_id']),
                           strip_str(i['campaign_id']),
