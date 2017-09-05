@@ -1,4 +1,5 @@
 beautifulsoup4; python_version >= '3.3'
+fixtures; python_version >= '3.3'
 SQLAlchemy; python_version >= '3.3'
 requests; python_version >= '3.3'
 lxml; python_version >= '3.3'
