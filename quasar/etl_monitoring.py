@@ -70,7 +70,7 @@ class ETLMonitoring:
 
         return query_set
 
-    def get_status(query):
+    def get_value(self, query):
         try:
             value = DataFrameDB.run_query(query)
             out = int(value.iloc[0])
@@ -79,14 +79,14 @@ class ETLMonitoring:
             out = str(QuasarException(sys.exc_info()[0]))
             return out
 
-    def compile_statuses(queries):
+    def compile_statuses(self, queries):
         values = []
         descriptions = []
         ts = []
         table = []
 
         for query in queries.values():
-            value = ETLMonitoring.get_status(query)
+            value = self.get_value(query)
             values.append(value)
             time = datetime.datetime.now().strftime("%m-%d-%y %H:%M:%S")
             ts.append(time)
@@ -106,13 +106,40 @@ class ETLMonitoring:
 
     def extract_latest_value(self, table, desc):
         max_query = \
-            "SELECT " \
-            "m.output " \
-            "FROM quasar.monitoring m " \
-            "WHERE m.table = '" + table + "' " \
-            "AND m.timestamp = max(m.timestamp) " \
-            "AND m.query = '" + desc + "'"
-        value = DataFrameDB.get_status(max_query)
+            "SELECT  \
+                m.output  \
+            FROM quasar.monitoring m  \
+            INNER JOIN ( \
+            SELECT \
+                t.table, \
+                t.query,  \
+                max(t.timestamp) AS max_created \
+            FROM quasar.monitoring t \
+            GROUP BY t.table, t.query \
+                ) m ON m.max_created = u.timestamp \
+            WHERE m.table = '" + table + "'  \
+            AND m.query = '" + desc + "'"
+        value = self.get_value(max_query)
+        return value
+
+    def extract_second_latest_value(self, table, desc):
+        max_2_query = \
+            "SELECT \
+                m.output \
+            FROM quasar.monitoring m \
+            INNER JOIN \
+                (SELECT \
+                    max(t.timestamp) AS ts_2 \
+                FROM quasar.monitoring t \
+                WHERE t.table = '" + table + "' \
+                AND t.query = '" + desc + "' \
+                AND \
+                t.timestamp < (SELECT max(t1.timestamp)  \
+                                FROM quasar.monitoring t1 \
+                                WHERE t1.table = '" + table + "' AND t1.query = '" + desc + "') \
+                ) ts2 ON ts2.ts_2 = u.timestamp \
+            WHERE t1.table = '" + table + "' AND t1.query = '" + desc + "'"
+        value = self.get_value(max_2_query)
         return value
 
 
