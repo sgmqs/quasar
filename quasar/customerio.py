@@ -124,7 +124,7 @@ class QuasarQueue:
                              "".format(message_data['meta']['request_id']))
                 logging.info("Retry counter at {0}."
                              "".format(self.retry_counter))
-                time.sleep(1)
+                time.sleep(0.25)
             else:
                 logging.info("Max retry counter reached, exiting for now.")
                 sys.exit(0)
