@@ -41,7 +41,6 @@ def scrape_profiles(start_page=None):
     else:
         page_num = _get_start_page(db)
     profiles = _get_profile(page_num).find_all('profile')
-    print(profiles)
     while profiles != []:
         profile_num = 1
         for profile in profiles:
