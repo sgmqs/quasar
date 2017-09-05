@@ -40,24 +40,22 @@ def scrape_profiles(start_page=None):
         page_num = str(start_page)
     else:
         page_num = _get_start_page(db)
-    while int(page_num) > 0:
+    profiles = _get_profile(page_num).find_all('profile')
+    while profiles != []:
+        profile_num = 1
+        for profile in profiles:
+            filename = (profile['id'] + '-' +
+                        profile.phone_number.string + '.xml')
+            _write_file(filename, profile)
+            print("Wrote profile {}/1000 of page "
+                  "{}".format(profile_num, page_num))
+            profile_num += 1
+        interim_cast = int(page_num)
+        interim_cast += 1
+        page_num = str(interim_cast)
+        print(page_num)
+        _update_start_page(db, str(page_num))
         profiles = _get_profile(page_num).find_all('profile')
-        if profiles is not None:
-            profile_num = 1
-            for profile in profiles:
-                filename = (profile['id'] + '-' +
-                            profile.phone_number.string + '.xml')
-                _write_file(filename, profile)
-                print("Wrote profile {}/1000 of page "
-                      "{}".format(profile_num, page_num))
-                profile_num += 1
-            interim_cast = int(page_num)
-            interim_cast += 1
-            page_num = str(interim_cast)
-            print(page_num)
-            _update_start_page(db, str(page_num))
-        else:
-            page_num = -1
 
 
 def start_scrape():
