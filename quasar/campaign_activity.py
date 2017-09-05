@@ -57,7 +57,7 @@ def _backfill(hours=None):
         sys.exit(0)
 
 def _get_final_page(scraper):
-    scraper.getJson('')['meta']['pagination']['total_pages']
+    return scraper.getJson('')['meta']['pagination']['total_pages']
 
 def _get_start_page(db):
     querystr = ''.join(("SELECT counter_value FROM ", config.ROGUE_PROGRESS_TABLE,
