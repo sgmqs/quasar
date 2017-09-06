@@ -22,7 +22,7 @@ def _get_campaigns():
 
 def _get_message(campaign, page):
     return scraper.getXml('/api/messages', params={'include_profile': 'true',
-                           'campaign_id': campaign, 'page': page})
+                          'campaign_id': campaign, 'page': page})
 
 def _write_file(filename, data):
     s3.put_object(Key=filename, Bucket=config.MOCO_ARCHIVE_BUCKET,
@@ -41,8 +41,8 @@ def _update_profile_start_page(db, page):
                         " SET last_page_scraped = {}")).format(page)
     db.query(querystr)
 
+
 def scrape_messages():
-    db = Database()
     campaigns = _get_campaigns().find_all('campaign')
     for campaign in reversed(campaigns):
         page = 1
@@ -58,6 +58,7 @@ def scrape_messages():
             page += 1
             messages = _get_message(campaign['id'], page).find_all('message')
         print(campaign['id'])
+
 
 def scrape_profiles(start_page=None):
     db = Database()
@@ -85,6 +86,7 @@ def scrape_profiles(start_page=None):
 
 def start_profile_scrape():
     scrape_profiles()
+
 
 def start_message_scrape():
     scrape_messages()
