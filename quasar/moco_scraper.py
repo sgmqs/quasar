@@ -53,7 +53,7 @@ def scrape_messages():
                             message['id'] + '-' +
                             'message' + '.xml')
                 _write_file(filename, message)
-                print("Wrote message {}/20 for campaign {}, "
+                print("Wrote message {} for campaign {}, "
                       "page {}".format(filename, campaign['id'], page))
             page += 1
             messages = _get_message(campaign['id'], page).find_all('message')
