@@ -45,7 +45,6 @@ def scrape_messages():
     db = Database()
     campaigns = _get_campaigns().find_all('campaign')
     for campaign in reversed(campaigns):
-        print("Campaign is {}".format(campaign['id']))
         page = 1
         messages = _get_message(campaign['id'], page).find_all('message')
         while messages != []:
