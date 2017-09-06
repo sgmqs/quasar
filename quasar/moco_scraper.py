@@ -44,20 +44,20 @@ def _update_profile_start_page(db, page):
 def scrape_messages():
     db = Database()
     campaigns = _get_campaigns().find_all('campaign')
-    for campaign in campaigns:
+    for campaign in reversed(campaigns):
         print("Campaign is {}".format(campaign['id']))
         page = 1
-        print("About to request messages.")
         messages = _get_message(campaign['id'], page).find_all('message')
-        print("Got Messages.")
         while messages != []:
             for message in messages:
-                filename = (campaign_id['id'] + '-' +
+                filename = (campaign['id'] + '-' +
                             message['id'] + '-' +
                             'message' + '.xml')
-                print("Filename is {}".format(filename))
+                _write_file(filename, message)
+                print("Wrote message {}/20 for campaign {}, "
+                      "page {}".format(filename, campaign['id'], page))
             page += 1
-            _get_message(campaign['id'], page).find_all('message')
+            messages = _get_message(campaign['id'], page).find_all('message')
         print(campaign['id'])
 
 def scrape_profiles(start_page=None):
