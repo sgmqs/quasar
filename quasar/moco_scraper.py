@@ -20,12 +20,9 @@ def _get_campaigns():
     return scraper.getXml('/api/campaigns')
 
 
-#def _get_message(campaign, page):
-#    return scraper.getXml('/api/messages', params={'include_profile': 'true',
-#                           'campaign_id': campaign, 'page': page})
-
-def _get_message(campaign):
-    return scraper.getXml('/api/messages', params={'campaign_id': campaign})
+def _get_message(campaign, page):
+    return scraper.getXml('/api/messages', params={'include_profile': 'true',
+                           'campaign_id': campaign, 'page': page})
 
 def _write_file(filename, data):
     s3.put_object(Key=filename, Bucket=config.MOCO_ARCHIVE_BUCKET,
@@ -51,8 +48,7 @@ def scrape_messages():
         print("Campaign is {}".format(campaign['id']))
         page = 1
         print("About to request messages.")
-        # messages = _get_message(campaign['id'], page).find_all('message')
-        messages = _get_message(campaign['id']).find_all('message')
+        messages = _get_message(campaign['id'], page).find_all('message')
         print("Got Messages.")
         while messages != []:
             for message in messages:
