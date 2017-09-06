@@ -16,22 +16,48 @@ def _get_profile(page):
     return scraper.getXml('/api/profiles', params={'page': page})
 
 
+def _get_campaigns():
+    return scraper.getXml('/api/campaigns')
+
+
+def _get_message(campaign, page):
+    return scraper.getXml('/api/messages', params={'include_profile': 'true',
+                          'campaign_id': campaign, 'page': page})
+
 def _write_file(filename, data):
     s3.put_object(Key=filename, Bucket=config.MOCO_ARCHIVE_BUCKET,
                   Body=bytes(str(data), encoding='utf-8'))
 
 
-def _get_start_page(db):
+def _get_profile_start_page(db):
     querystr = ''.join(("SELECT last_page_scraped FROM ",
                         config.MOCO_PROGRESS_TABLE))
     start_page = strip_str(db.query(querystr))
     return start_page
 
 
-def _update_start_page(db, page):
+def _update_profile_start_page(db, page):
     querystr = ''.join(("UPDATE ", config.MOCO_PROGRESS_TABLE,
                         " SET last_page_scraped = {}")).format(page)
     db.query(querystr)
+
+
+def scrape_messages():
+    campaigns = _get_campaigns().find_all('campaign')
+    for campaign in reversed(campaigns):
+        page = 1
+        messages = _get_message(campaign['id'], page).find_all('message')
+        while messages != []:
+            for message in messages:
+                filename = (campaign['id'] + '-' +
+                            message['id'] + '-' +
+                            'message' + '.xml')
+                _write_file(filename, message)
+                print("Wrote message {} for campaign {}, "
+                      "page {}".format(filename, campaign['id'], page))
+            page += 1
+            messages = _get_message(campaign['id'], page).find_all('message')
+        print(campaign['id'])
 
 
 def scrape_profiles(start_page=None):
@@ -39,7 +65,7 @@ def scrape_profiles(start_page=None):
     if start_page is not None:
         page_num = str(start_page)
     else:
-        page_num = _get_start_page(db)
+        page_num = _get_profile_start_page(db)
     profiles = _get_profile(page_num).find_all('profile')
     while profiles != []:
         profile_num = 1
@@ -54,9 +80,13 @@ def scrape_profiles(start_page=None):
         interim_cast += 1
         page_num = str(interim_cast)
         print(page_num)
-        _update_start_page(db, str(page_num))
+        _update_profile_start_page(db, str(page_num))
         profiles = _get_profile(page_num).find_all('profile')
 
 
-def start_scrape():
+def start_profile_scrape():
     scrape_profiles()
+
+
+def start_message_scrape():
+    scrape_messages()

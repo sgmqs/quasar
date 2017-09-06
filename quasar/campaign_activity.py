@@ -91,7 +91,7 @@ def _process_records(db, rogue_page):
                               signup_source = %s,\
                               signup_created_at = %s,\
                               signup_updated_at = %s,\
-                              post_id = NULL,\
+                              post_id = -1,\
                               url = NULL,\
                               caption = NULL,\
                               status = NULL,\
