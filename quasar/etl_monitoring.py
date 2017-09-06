@@ -24,11 +24,6 @@ class DataFrameDB:
         self.opts.update(options)
 
     def db_connect(self):
-        # host = 'quasar-slave-new.c9ajz690mens.us-east-1.rds.amazonaws.com'
-        # database = 'quasar'
-        # login = open(path).read()
-        # user_name = login.split(':')[0]
-        # password = login.split(':')[1]
 
         self.engine = create_engine(
             'mysql+pymysql://' +
@@ -141,6 +136,18 @@ class ETLMonitoring:
             WHERE t1.table = '" + table + "' AND t1.query = '" + desc + "'"
         value = self.get_value(max_2_query)
         return value
+
+    def compare_latest_values(self, table, desc):
+        latest_value = self.extract_latest_value(table, desc)
+        second_latest_value = self.extract_second_latest_value(table, desc)
+
+        if latest_value > second_latest_value:
+            message = 'Passed'
+        else:
+            message = 'Issue Detected'
+        report = table + ' ' + desc + ' ' + message
+
+        return report
 
 
 user_queries =  {
