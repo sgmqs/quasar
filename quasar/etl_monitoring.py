@@ -99,6 +99,14 @@ class ETLMonitoring:
              })
         return out
 
+    def write_to_monitoring_table(self, table):
+        table.to_sql(
+            name='monitoring',
+            con=DataFrameDB.db_connect(),
+            schema='quasar',
+            if_exists='append'
+        )
+
     def extract_latest_value(self, table, desc):
         max_query = \
             "SELECT  \
@@ -156,6 +164,3 @@ user_queries =  {
     'ca_table_count': 'SELECT count(*) FROM quasar.campaign_activity c',
     'ca_post_count': 'SELECT count(distinct c.post_id) FROM quasar.campaign_activity c'
 }
-
-db = DataFrameDB()
-db.db_connect()
