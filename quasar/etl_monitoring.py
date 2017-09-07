@@ -3,14 +3,12 @@ import pandas as pd
 
 from .config import config
 from sqlalchemy import create_engine
-from .database import Database as db
 from .utils import QuasarException
 import datetime
 
 class DataFrameDB:
     def __init__(self, options={}):
 
-        # Defaults
         self.opts = {
             'user': config.MYSQL_USER,
             'host': config.MYSQL_HOST,
@@ -19,8 +17,6 @@ class DataFrameDB:
             'use_unicode': True,
             'charset': 'utf8'
         }
-
-        self.opts.update(options)
 
     def db_connect(self):
 
@@ -49,6 +45,9 @@ class DataFrameDB:
 
 class ETLMonitoring:
     def __init__(self):
+        db_opts = {}
+        self.db = DataFrameDB(db_opts)
+
         self.etl_queries = {
             'user_count': 'SELECT count(*) FROM quasar.users',
             'user_user_count': 'SELECT count(distinct u.northstar_id) FROM quasar.users u',
@@ -58,10 +57,10 @@ class ETLMonitoring:
 
     @staticmethod
     def teardown(self):
-        db.disconnect(self)
+        self.db.disconnect(self)
 
     @staticmethod
-    def construct_query_dict(self, description, query, query_set=None):
+    def construct_query_dict(description, query, query_set=None):
         if query_set==None:
             query_set = {}
 
@@ -71,7 +70,7 @@ class ETLMonitoring:
 
     def get_value(self, query):
         try:
-            value = DataFrameDB.run_query(query)
+            value = self.db.run_query(query)
             out = int(value.iloc[0])
             return out
         except:
@@ -104,10 +103,10 @@ class ETLMonitoring:
         return out
 
     @staticmethod
-    def write_to_monitoring_table(table):
+    def write_to_monitoring_table(self, table):
         table.to_sql(
             name='monitoring',
-            con=DataFrameDB.db_connect(DataFrameDB.opts),
+            con=self.db.db_connect(),
             schema='quasar',
             if_exists='append'
         )
