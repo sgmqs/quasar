@@ -4,7 +4,6 @@ import pandas as pd
 from .config import config
 from sqlalchemy import create_engine
 from .database import Database as db
-from pandas import DataFrame as df
 from .utils import QuasarException
 import datetime
 
@@ -47,17 +46,22 @@ class DataFrameDB:
         self.df = pd.read_sql_query(q, self.engine)
         return self.df
 
-    def write_frame_to_db(self, frame, engine):
-        df.to_sql(frame, engine)
 
 class ETLMonitoring:
     def __init__(self):
-        pass
+        self.etl_queries = {
+            'user_count': 'SELECT count(*) FROM quasar.users',
+            'user_user_count': 'SELECT count(distinct u.northstar_id) FROM quasar.users u',
+            'ca_table_count': 'SELECT count(*) FROM quasar.campaign_activity c',
+            'ca_post_count': 'SELECT count(distinct c.post_id) FROM quasar.campaign_activity c'
+        }
 
+    @staticmethod
     def teardown(self):
-        db.disconnect()
+        db.disconnect(self)
 
-    def construct_query_dict(description, query, query_set=None):
+    @staticmethod
+    def construct_query_dict(self, description, query, query_set=None):
         if query_set==None:
             query_set = {}
 
@@ -85,8 +89,8 @@ class ETLMonitoring:
             values.append(value)
             time = datetime.datetime.now().strftime("%m-%d-%y %H:%M:%S")
             ts.append(time)
-            thisTable = query.split('FROM')[1].split(' ')[1]
-            table.append(thisTable)
+            this_table = query.split('FROM')[1].split(' ')[1]
+            table.append(this_table)
 
         for description in queries.keys():
             descriptions.append(description)
@@ -99,10 +103,11 @@ class ETLMonitoring:
              })
         return out
 
-    def write_to_monitoring_table(self, table):
+    @staticmethod
+    def write_to_monitoring_table(table):
         table.to_sql(
             name='monitoring',
-            con=DataFrameDB.db_connect(),
+            con=DataFrameDB.db_connect(DataFrameDB.opts),
             schema='quasar',
             if_exists='append'
         )
@@ -157,10 +162,15 @@ class ETLMonitoring:
 
         return report
 
+    def monitor(self, queries):
+        messages = []
+        frame = self.compile_statuses(self.etl_queries)
+        self.write_to_monitoring_table(frame)
 
-user_queries =  {
-    'user_count':'SELECT count(*) FROM quasar.users',
-    'user_user_count': 'SELECT count(distinct u.northstar_id) FROM quasar.users u',
-    'ca_table_count': 'SELECT count(*) FROM quasar.campaign_activity c',
-    'ca_post_count': 'SELECT count(distinct c.post_id) FROM quasar.campaign_activity c'
-}
+        for table in queries:
+            this_table = table.split('FROM')[1].split(' ')[1]
+            this_desc = table.keys()
+            this_message = self.compare_latest_values(this_table, this_desc)
+            messages.append(this_message)
+
+        return messages
