@@ -102,15 +102,6 @@ class ETLMonitoring:
              })
         return out
 
-    @staticmethod
-    def write_to_monitoring_table(self, table):
-        table.to_sql(
-            name='monitoring',
-            con=self.db.db_connect(),
-            schema='quasar',
-            if_exists='append'
-        )
-
     def extract_latest_value(self, table, desc):
         max_query = \
             "SELECT  \
@@ -173,3 +164,11 @@ class ETLMonitoring:
             messages.append(this_message)
 
         return messages
+
+    def write_to_monitoring_table(self, table):
+        table.to_sql(
+            name='monitoring',
+            con=self.db.db_connect(),
+            schema='quasar',
+            if_exists='append'
+        )
