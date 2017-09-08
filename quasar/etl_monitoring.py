@@ -6,8 +6,9 @@ from sqlalchemy import create_engine
 from .utils import QuasarException
 import datetime
 
+
 class DataFrameDB:
-    def __init__(self, options={}):
+    def __init__(self, opts={}):
 
         self.opts = {
             'user': config.MYSQL_USER,
@@ -17,8 +18,6 @@ class DataFrameDB:
             'use_unicode': True,
             'charset': 'utf8'
         }
-
-    def db_connect(self):
 
         self.engine = create_engine(
             'mysql+pymysql://' +
@@ -30,17 +29,14 @@ class DataFrameDB:
             '/' +
             self.opts['database']
         )
-        return self.engine
 
     def run_query(self, query):
-        self.engine = self.db_connect()
-
         if '.sql' in query:
             q = open(query, 'r').read()
         else:
             q = query
-        self.df = pd.read_sql_query(q, self.engine)
-        return self.df
+        df = pd.read_sql_query(q, self.engine)
+        return df
 
 
 class ETLMonitoring:
@@ -168,7 +164,7 @@ class ETLMonitoring:
     def write_to_monitoring_table(self, table):
         table.to_sql(
             name='monitoring',
-            con=self.db.db_connect(),
+            con=self.db.engine,
             schema='quasar',
             if_exists='append'
         )
