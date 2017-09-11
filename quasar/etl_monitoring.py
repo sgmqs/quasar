@@ -12,7 +12,7 @@ class DataFrameDB:
         self.opts = {
             'user': config.MYSQL_USER,
             'host': config.MYSQL_HOST,
-            'passwd': config.MYSQL_PASSWORD,
+            'password': config.MYSQL_PASSWORD,
             'db': config.MYSQL_DATABASE,
             'port': config.MYSQL_PORT,
             'use_unicode': True,
@@ -150,6 +150,14 @@ class ETLMonitoring:
 
         return report
 
+    def write_to_monitoring_table(self, table):
+        table.to_sql(
+            name='monitoring',
+            con=self.db.engine,
+            schema='quasar',
+            if_exists='append'
+        )
+
     def monitor(self, queries):
         messages = []
         frame = self.compile_statuses(self.etl_queries)
@@ -163,13 +171,6 @@ class ETLMonitoring:
 
         return messages
 
-    def write_to_monitoring_table(self, table):
-        table.to_sql(
-            name='monitoring',
-            con=self.db.engine,
-            schema='quasar',
-            if_exists='append'
-        )
 
 def run_monitoring():
     etl = ETLMonitoring()
