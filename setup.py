@@ -25,6 +25,7 @@ setup(
             'northstar_to_quasar_import_backfill = quasar.northstar_to_user_table:backfill_since',
             'quasar_blink_queue_consumer = quasar.customerio:main',
             'regenerate_mobile_master_lookup_lite_table = quasar.create_mobile_master_lookup_lite:main',
+            'etl_monitoring = quasar.etl_monitoring:run_monitoring',
             'update_mobile = quasar.jc_update_mobile:main',
             'us_phone_number_cleanup = quasar.us_phone_number_cleanup:main'
         ],
