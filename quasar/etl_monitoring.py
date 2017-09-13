@@ -20,17 +20,16 @@ class DataFrameDB:
         }
 
         self.engine = create_engine(
-            'mysql://' +
+            'mysql+mysqldb://' +
             self.opts['user'] +
             ':' +
             self.opts['password'] +
             '@' +
             self.opts['host'] +
-            '/' +
-            self.opts['db'] +
             ':' +
-            self.opts['port']
-        )
+            self.opts['port'] +
+            '/' +
+            self.opts['db'])
 
     def run_query(self, query):
         if '.sql' in query:
