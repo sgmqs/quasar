@@ -157,14 +157,14 @@ class ETLMonitoring:
             if_exists='append'
         )
 
-    def monitor(self, queries):
+    def monitor(self):
         messages = []
         frame = self.compile_statuses(self.etl_queries)
         self.write_to_monitoring_table(frame)
 
-        for table in queries:
-            this_table = table.split('FROM')[1].split(' ')[1]
-            this_desc = table.keys()
+        for index, row in frame.iterrows():
+            this_table = row['table']
+            this_desc = row['query']
             this_message = self.compare_latest_values(this_table, this_desc)
             messages.append(this_message)
 
@@ -173,4 +173,5 @@ class ETLMonitoring:
 
 def run_monitoring():
     etl = ETLMonitoring()
-    etl.monitor(etl.etl_queries)
+    etl.monitor()
+
