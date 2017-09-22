@@ -28,6 +28,7 @@ def now_minus_hours(hours):
         start_time = int(time.time()) - (int(hours) * 3600)
         return dt.fromtimestamp(start_time).isoformat()
 
+
 class Duration:
     """Simple duration tracker.
 
