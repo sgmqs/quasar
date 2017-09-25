@@ -30,9 +30,11 @@ def _update_campaigns(db):
                             "")).format(campaign['id'], campaign['id'])
         db.query(querystr)
 
+
 def _get_campaigns(db):
     querystr = ''.join(("SELECT * FROM ", config.MOCO_CAMPAIGN_LIST_TABLE))
     return db.query(querystr)
+
 
 def _update_campaign_completed(db, campaign):
     querystr = ''.join(("UPDATE ", config.MOCO_CAMPAIGN_LIST_TABLE,
@@ -40,20 +42,24 @@ def _update_campaign_completed(db, campaign):
                         "WHERE campaign_id = {}")).format(campaign)
     db.query(querystr)
 
+
 def _get_campaign_page(db):
     querystr = ''.join(("SELECT last_page FROM ",
                         config.MOCO_CAMPAIGN_LAST_PAGE))
     start_page = strip_str(db.query(querystr))
     return start_page
 
+
 def _update_campaign_page(db, page):
     querystr = ''.join(("UPDATE ", config.MOCO_CAMPAIGN_LAST_PAGE,
                         " SET last_page = {}")).format(page)
     db.query(querystr)
 
+
 def _get_message(campaign, page):
     return scraper.getXml('/api/messages', params={'include_profile': 'true',
                           'campaign_id': campaign, 'page': page})
+
 
 def _write_file(filename, data):
     s3.put_object(Key=filename, Bucket=config.MOCO_ARCHIVE_BUCKET,
@@ -86,7 +92,7 @@ def scrape_messages():
                 for message in messages:
                     filename = (campaign['id'] + '-' +
                                 message['id'] + '-' +
-                               'message' + '.xml')
+                                'message' + '.xml')
                     _write_file(filename, message)
                     print("Wrote message {} for campaign {}, "
                           "page {}".format(filename, campaign['id'], page))
