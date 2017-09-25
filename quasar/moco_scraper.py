@@ -98,7 +98,8 @@ def scrape_messages():
                           "page {}".format(filename, campaign['id'], page))
                 page += 1
                 _update_campaign_page(db, page)
-                messages = _get_message(campaign['id'], page).find_all('message')
+                messages = _get_message(campaign['id'],
+                                        page).find_all('message')
             _update_campaign_completed(db, campaign['id'])
 
 
