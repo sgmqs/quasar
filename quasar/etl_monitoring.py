@@ -1,6 +1,6 @@
 import sys
-import pandas as pd
 
+import pandas as pd
 from .config import config
 from sqlalchemy import create_engine
 from .utils import QuasarException
@@ -64,6 +64,7 @@ class ETLMonitoring:
         query_set[description] = query
 
         return query_set
+
 
     def get_value(self, query):
         try:
@@ -134,6 +135,7 @@ class ETLMonitoring:
                                 WHERE t1.table = '" + table + "' AND t1.query = '" + desc + "') \
                 ) ts2 ON ts2.ts_2 = u.timestamp \
             WHERE t1.table = '" + table + "' AND t1.query = '" + desc + "'"
+        print(max_2_query)
         value = self.get_value(max_2_query)
         return value
 
@@ -141,10 +143,13 @@ class ETLMonitoring:
         latest_value = self.extract_latest_value(table, desc)
         second_latest_value = self.extract_second_latest_value(table, desc)
 
-        if latest_value > second_latest_value:
-            message = 'Passed'
-        else:
-            message = 'Issue Detected'
+        try:
+            if latest_value > second_latest_value:
+                message = 'Passed'
+            else:
+                message = 'Issue Detected'
+        except:
+            message = str(QuasarException(sys.exc_info()[0]))
         report = table + ' ' + desc + ' ' + message
 
         return report
