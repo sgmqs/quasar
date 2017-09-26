@@ -44,7 +44,8 @@ class NorthstarDB:
                         northstar_created_at_timestamp,\
                         last_logged_in, last_accessed, drupal_uid,\
                         northstar_id_source_name,\
-                        email, mobile, birthdate,\
+                        email, facebook_id,\
+                        mobile, birthdate,\
                         first_name, last_name,\
                         addr_street1, addr_street2,\
                         addr_city, addr_state,\
@@ -54,7 +55,7 @@ class NorthstarDB:
                         moco_current_status,\
                         moco_source_detail)\
                         VALUES(%s,%s,%s,%s,%s,%s,\
-                        %s,%s,%s,%s,\
+                        %s,%s,%s,%s,%s,\
                         %s,%s,%s,%s,\
                         %s,%s,%s,%s,\
                         NULL,NULL,%s,%s,%s)\
@@ -63,7 +64,8 @@ class NorthstarDB:
                         last_logged_in = %s,\
                         last_accessed = %s, drupal_uid = %s,\
                         northstar_id_source_name = %s,\
-                        email = %s, mobile = %s, birthdate = %s,\
+                        email = %s, facebook_id = %s,\
+                        mobile = %s, birthdate = %s,\
                         first_name = %s, last_name = %s,\
                         addr_street1 = %s, addr_street2 = %s,\
                         addr_city = %s, addr_state = %s,\
@@ -79,6 +81,7 @@ class NorthstarDB:
                            strip_str(user['drupal_id']),
                            strip_str(user['source']),
                            strip_str(user['email']),
+                           strip_str(user['facebook_id']),
                            strip_str(user['mobile']),
                            strip_str(user['birthdate']),
                            strip_str(user['first_name']),
@@ -99,6 +102,7 @@ class NorthstarDB:
                            strip_str(user['drupal_id']),
                            strip_str(user['source']),
                            strip_str(user['email']),
+                           strip_str(user['facebook_id']),
                            strip_str(user['mobile']),
                            strip_str(user['birthdate']),
                            strip_str(user['first_name']),
