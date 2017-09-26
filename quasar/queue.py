@@ -59,21 +59,43 @@ class QuasarQueue:
             self.channel.stop_consuming()
         self.connection.close()
 
+
     def stop_consume(self, tag="quasar_consumer"):
         self.channel.basic_cancel(tag)
+
 
     def test_consumer(self, tag="test_consumer"):
         logging.info("Starting {0} test consumer for one message.")
         self.channel(basic_consume(self.on_test_message, self.amqp_queue,
                                    consumer_tag=tag))
         stop_consume(tag)
+
+    def test_on_message(self, channel, method_frame, header_frame, body, process_message):
+        self.channel.basic_publish(self.amqp_exchange, self.amqp_queue,
+                                           self._body_encode(message_data),
+                                           pika.BasicProperties(
+                                               content_type='application/json',
+                                               delivery_mode=2))
+        message_data = self._body_decode(body)
+        print("Decoding one message.")
+        print("Message contents is: {}").format(body)
+        self.channel.basic_ack(method_frame.delivery_tag)
+        print("Message republished to queue.")
+        sys.exit(0)
+
+    @on_message
+    def test_on_message():
+        pub_message(self, message_data)
+
+
         
     def on_message(self, channel, method_frame, header_frame, body, process_message):
+    def on_message(process_message):
     """Decorator to handle messages ingested from queue.
 
     Body is automatically JSON decoded and message ID is logged.
     """
-        def parse_message:
+        def parse_message(*args, **kwargs):
             message_data = self._body_decode(body)
             logging.info("[Message {0}]: Received."
                 "".format(message_data['meta']['request_id']))
