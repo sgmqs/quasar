@@ -111,10 +111,10 @@ class ETLMonitoring:
                 t.query,  \
                 max(t.timestamp) AS max_created \
             FROM quasar.monitoring t \
-            GROUP BY t.table, t.query \
-                ) m ON m.max_created = u.timestamp \
+            WHERE t.table = '" + table + "' AND t.query = '" + desc + "' \
+                ) tim ON tim.max_created = m.timestamp \
             WHERE m.table = '" + table + "'  \
-            AND m.query = '" + desc + "'"
+            AND m.query = '" + desc + "';"
         value = self.get_value(max_query)
         return value
 
@@ -133,9 +133,8 @@ class ETLMonitoring:
                 t.timestamp < (SELECT max(t1.timestamp)  \
                                 FROM quasar.monitoring t1 \
                                 WHERE t1.table = '" + table + "' AND t1.query = '" + desc + "') \
-                ) ts2 ON ts2.ts_2 = u.timestamp \
-            WHERE t1.table = '" + table + "' AND t1.query = '" + desc + "'"
-        print(max_2_query)
+                ) ts2 ON ts2.ts_2 = m.timestamp \
+            WHERE m.table = '" + table + "' AND m.query = '" + desc + "';"
         value = self.get_value(max_2_query)
         return value
 
@@ -172,11 +171,10 @@ class ETLMonitoring:
             this_desc = row['query']
             this_message = self.compare_latest_values(this_table, this_desc)
             messages.append(this_message)
-
+        print(messages)
         return messages
 
 
 def run_monitoring():
     etl = ETLMonitoring()
     etl.monitor()
-
