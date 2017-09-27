@@ -148,13 +148,13 @@ class ETLMonitoring:
                           " Previous Value = " + str(second_latest_value) +  \
                           ", Count increased by " + str(latest_value - second_latest_value)
             elif latest_value == second_latest_value:
-                message = "Failed - Latest Count = " + str(latest_value) + \
-                          " Previous Value = " + str(second_latest_value) +  \
-                          ", Count Unchanged"
+                message = "Failed - Count Unchanged," \
+                          " Latest Count = " + str(latest_value) + \
+                          " Previous Value = " + str(second_latest_value)
             elif latest_value < second_latest_value:
-                message = "Failed - Latest Count = " + str(latest_value) + \
-                          " Previous Value = " + str(second_latest_value) +  \
-                          ", Count Decreased"
+                message = "Failed - Count Decreased," \
+                          " Latest Count = " + str(latest_value) + \
+                          " Previous Value = " + str(second_latest_value)
             else:
                 message = 'Failed - Unspecified Error'
         except:
