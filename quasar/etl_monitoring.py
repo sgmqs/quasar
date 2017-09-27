@@ -47,7 +47,7 @@ class ETLMonitoring:
 
         self.etl_queries = {
             'user_count': 'SELECT count(*) FROM quasar.users',
-            'user_user_count': 'SELECT count(distinct u.northstar_id) FROM quasar.users u',
+            'user_distinct_user_count': 'SELECT count(distinct u.northstar_id) FROM quasar.users u',
             'ca_table_count': 'SELECT count(*) FROM quasar.campaign_activity c',
             'ca_post_count': 'SELECT count(distinct c.post_id) FROM quasar.campaign_activity c'
         }
@@ -144,12 +144,22 @@ class ETLMonitoring:
 
         try:
             if latest_value > second_latest_value:
-                message = 'Passed'
+                message = "Passed - Latest Count = " + str(latest_value) + \
+                          " Previous Value = " + str(second_latest_value) +  \
+                          ", Count increased by " + str(latest_value - second_latest_value)
+            elif latest_value == second_latest_value:
+                message = "Failed - Latest Count = " + str(latest_value) + \
+                          " Previous Value = " + str(second_latest_value) +  \
+                          ", Count Unchanged"
+            elif latest_value < second_latest_value:
+                message = "Failed - Latest Count = " + str(latest_value) + \
+                          " Previous Value = " + str(second_latest_value) +  \
+                          ", Count Decreased"
             else:
-                message = 'Issue Detected'
+                message = 'Failed - Unspecified Error'
         except:
             message = str(QuasarException(sys.exc_info()[0]))
-        report = table + ' ' + desc + ' ' + message
+        report = table + " " + desc + " " + message
 
         return report
 
@@ -171,10 +181,10 @@ class ETLMonitoring:
             this_desc = row['query']
             this_message = self.compare_latest_values(this_table, this_desc)
             messages.append(this_message)
-        print(messages)
         return messages
 
 
 def run_monitoring():
     etl = ETLMonitoring()
-    etl.monitor()
+    out = etl.monitor()
+    out
