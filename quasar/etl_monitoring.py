@@ -1,12 +1,14 @@
 import sys
-import pandas as pd
-import datetime
 import os
+import datetime as dt
+import pandas as pd
+
 
 from .config import config
 from .utils import QuasarException
 from sqlalchemy import create_engine
 from slackclient import SlackClient
+
 
 class DataFrameDB:
     def __init__(self, opts={}):
@@ -67,7 +69,6 @@ class ETLMonitoring:
 
         return query_set
 
-
     def get_value(self, query):
         try:
             value = self.db.run_query(query)
@@ -86,7 +87,7 @@ class ETLMonitoring:
         for query in queries.values():
             value = self.get_value(query)
             values.append(value)
-            time = datetime.datetime.now().strftime("%m-%d-%y %H:%M:%S")
+            time = dt.datetime.now().strftime("%m-%d-%y %H:%M:%S")
             ts.append(time)
             this_table = query.split('FROM')[1].split(' ')[1]
             table.append(this_table)
@@ -187,14 +188,13 @@ class ETLMonitoring:
 
 
 def run_monitoring():
-    client_token = os.environ.get('ETLMON_SLACKBOT_TOKEN')
-    etl = ETLMonitoring()
-    out = etl.monitor()
-    sc = SlackClient(client_token)
+    mon = ETLMonitoring()
+    out = mon.monitor()
 
+    client_token = os.environ.get('ETLMON_SLACKBOT_TOKEN')
+    sc = SlackClient(client_token)
     sc.api_call(
         "chat.postMessage",
         channel="#quasar-notifications",
         text=out
     )
-
