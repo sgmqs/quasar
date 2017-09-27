@@ -1,10 +1,12 @@
 import sys
-
 import pandas as pd
-from .config import config
-from sqlalchemy import create_engine
-from .utils import QuasarException
 import datetime
+import os
+
+from .config import config
+from .utils import QuasarException
+from sqlalchemy import create_engine
+from slackclient import SlackClient
 
 class DataFrameDB:
     def __init__(self, opts={}):
@@ -185,6 +187,14 @@ class ETLMonitoring:
 
 
 def run_monitoring():
+    client_token = os.environ.get('ETLMON_SLACKBOT_TOKEN')
     etl = ETLMonitoring()
     out = etl.monitor()
-    out
+    sc = SlackClient(client_token)
+
+    sc.api_call(
+        "chat.postMessage",
+        channel="#quasar-notifications",
+        text=out
+    )
+
