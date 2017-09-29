@@ -83,24 +83,24 @@ def scrape_messages():
     _update_campaigns(db)
     campaigns = _get_campaigns(db)
     for campaign in reversed(campaigns):
-        if campaign[1] != 1:
+        if campaign[1] == 1:
             pass
         else:
-            page = _get_campaign_page(db)
+            page = int(_get_campaign_page(db))
             messages = _get_message(campaign[0], page).find_all('message')
             while messages != []:
                 for message in messages:
-                    filename = (campaign['id'] + '-' +
+                    filename = (str(campaign[0]) + '-' +
                                 message['id'] + '-' +
                                 'message' + '.xml')
                     _write_file(filename, message)
                     print("Wrote message {} for campaign {}, "
-                          "page {}".format(filename, campaign['id'], page))
+                          "page {}".format(filename, campaign[0], page))
                 page += 1
                 _update_campaign_page(db, page)
-                messages = _get_message(campaign['id'],
+                messages = _get_message(campaign[0],
                                         page).find_all('message')
-            _update_campaign_completed(db, campaign['id'])
+            _update_campaign_completed(db, campaign[0])
 
 
 def scrape_profiles(start_page=None):
