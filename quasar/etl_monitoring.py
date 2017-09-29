@@ -53,11 +53,13 @@ class ETLMonitoring:
             'user_count':
                 'SELECT count(*) FROM quasar.users',
             'user_distinct_user_count':
-                'SELECT count(distinct u.northstar_id) FROM quasar.users u',
+                'SELECT count(distinct u.northstar_id) '
+                'FROM quasar.users u',
             'ca_table_count':
                 'SELECT count(*) FROM quasar.campaign_activity c',
             'ca_post_count':
-                'SELECT count(distinct c.post_id) FROM quasar.campaign_activity c'
+                'SELECT count(distinct c.post_id) '
+                'FROM quasar.campaign_activity c'
         }
 
     @staticmethod
@@ -139,7 +141,8 @@ class ETLMonitoring:
                 AND \
                 t.timestamp < (SELECT max(t1.timestamp)  \
                                 FROM quasar.monitoring t1 \
-                                WHERE t1.table = '" + table + "' AND t1.query = '" + desc + "') \
+                                WHERE t1.table = '" + table + "'  \
+                                AND t1.query = '" + desc + "') \
                 ) ts2 ON ts2.ts_2 = m.timestamp \
             WHERE m.table = '" + table + "' AND m.query = '" + desc + "';"
         value = self.get_value(max_2_query)
