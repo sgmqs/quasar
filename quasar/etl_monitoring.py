@@ -3,7 +3,6 @@ import os
 import datetime as dt
 import pandas as pd
 
-
 from .config import config
 from .utils import QuasarException
 from sqlalchemy import create_engine
