@@ -50,10 +50,14 @@ class ETLMonitoring:
         self.db = DataFrameDB(db_opts)
 
         self.etl_queries = {
-            'user_count': 'SELECT count(*) FROM quasar.users',
-            'user_distinct_user_count': 'SELECT count(distinct u.northstar_id) FROM quasar.users u',
-            'ca_table_count': 'SELECT count(*) FROM quasar.campaign_activity c',
-            'ca_post_count': 'SELECT count(distinct c.post_id) FROM quasar.campaign_activity c'
+            'user_count':
+                'SELECT count(*) FROM quasar.users',
+            'user_distinct_user_count':
+                'SELECT count(distinct u.northstar_id) FROM quasar.users u',
+            'ca_table_count':
+                'SELECT count(*) FROM quasar.campaign_activity c',
+            'ca_post_count':
+                'SELECT count(distinct c.post_id) FROM quasar.campaign_activity c'
         }
 
     @staticmethod
@@ -147,17 +151,24 @@ class ETLMonitoring:
 
         try:
             if latest_value > second_latest_value:
-                message = "Passed - Latest Count = " + str(latest_value) + \
-                          " Previous Value = " + str(second_latest_value) +  \
-                          ", Count increased by " + str(latest_value - second_latest_value)
+                message = "Passed - Latest Count = " + \
+                          str(latest_value) + \
+                          " Previous Value = " + \
+                          str(second_latest_value) +  \
+                          ", Count increased by " + \
+                          str(latest_value - second_latest_value)
             elif latest_value == second_latest_value:
                 message = "Failed - Count Unchanged," \
-                          " Latest Count = " + str(latest_value) + \
-                          " Previous Value = " + str(second_latest_value)
+                          " Latest Count = " + \
+                          str(latest_value) + \
+                          " Previous Value = " + \
+                          str(second_latest_value)
             elif latest_value < second_latest_value:
                 message = "Failed - Count Decreased," \
-                          " Latest Count = " + str(latest_value) + \
-                          " Previous Value = " + str(second_latest_value)
+                          " Latest Count = " + \
+                          str(latest_value) + \
+                          " Previous Value = " + \
+                          str(second_latest_value)
             else:
                 message = 'Failed - Unspecified Error'
         except:
