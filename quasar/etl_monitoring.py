@@ -62,7 +62,7 @@ class ETLMonitoring:
 
     @staticmethod
     def construct_query_dict(description, query, query_set=None):
-        if query_set==None:
+        if query_set is None:
             query_set = {}
 
         query_set[description] = query
