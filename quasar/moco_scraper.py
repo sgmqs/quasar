@@ -38,9 +38,8 @@ def _get_campaigns(db):
 
 def _update_campaign_completed(db, campaign):
     querystr = ''.join(("UPDATE ", config.MOCO_CAMPAIGN_LIST_TABLE,
-                        "SET campaign_scrape_completed = TRUE ",
+                        " SET campaign_scrape_completed = TRUE ",
                         "WHERE campaign_id = {}")).format(campaign)
-    print(querystr)
     db.query(querystr)
 
 
