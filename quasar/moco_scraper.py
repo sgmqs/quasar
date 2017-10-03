@@ -102,7 +102,7 @@ def scrape_messages():
                 messages = _get_message(campaign[0],
                                         page).find_all('message')
             _update_campaign_completed(db, campaign[0])
-            page = 1 
+            page = 1
             _update_campaign_page(db, page)
 
 
