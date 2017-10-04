@@ -1,8 +1,5 @@
-from datetime import datetime
 import json
 import logging
-import re
-import sys
 import time
 
 import pika
@@ -18,7 +15,7 @@ class QuasarQueue:
     """Basic queue handling class for Quasar.
 
     This class sets up a connection to a queue, and provides the basic
-    building blocks for handing queue messages and consumer start/stop. 
+    building blocks for handing queue messages and consumer start/stop.
 
     It's most direct function is to have the on_message method over-ridden
     by children classes to specify exactly how to handle each message.
@@ -41,7 +38,6 @@ class QuasarQueue:
         self.amqp_queue = amqp_queue
         self.retry_counter = 0
 
-
     def start_consume(self, tag="quasar_consumer"):
         """Kick off consumer process to ingest messages.
 
@@ -58,11 +54,9 @@ class QuasarQueue:
             self.stop_consume()
         self.connection.close()
 
-
     def stop_consume(self, tag="quasar_consumer"):
         self.channel.basic_cancel(tag)
 
-        
     def on_message(self, channel, method_frame, header_frame, body, output="true"):
         message_data = self.body_decode(body)
         if output == "true":
@@ -70,17 +64,15 @@ class QuasarQueue:
             print("Message method_frame is {}".format(method_frame))
             print("Message header_frame is {}".format(header_frame))
             print("Message body is {}".format(body))
-        print("Republishing message.")   
+        print("Republishing message.")
         self.pub_message(message_data)
         print("Acking message.")
         self.ack_message(method_frame)
         print("Original message ack'd.")
         time.sleep(0.5)
 
-
     def ack_message(self, method_frame):
         self.channel.basic_ack(method_frame.delivery_tag)
-
 
     def pub_message(self, message_data):
         self.channel.basic_publish(self.amqp_exchange, self.amqp_queue,
@@ -95,7 +87,6 @@ class QuasarQueue:
             return json.loads(message_response)
         except Exception as e:
             raise QuasarException(e)
-            
 
     def body_encode(self, message_data):
         return json.dumps(message_data)
