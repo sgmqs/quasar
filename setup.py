@@ -26,7 +26,7 @@ setup(
             'quasar_blink_queue_consumer = quasar.customerio:main',
             'regenerate_mobile_master_lookup_lite_table = quasar.create_mobile_master_lookup_lite:main',
             'update_mobile = quasar.jc_update_mobile:main',
-            'us_phone_number_cleanup = quasar.us_phone_number_cleanup:main',
+            'us_phone_number_cleanup = quasar.us_phone_number_cleanup:main'
         ],
     },
     author="",
