@@ -17,7 +17,7 @@ class DataFrameDB:
             'host': config.MYSQL_HOST,
             'password': config.MYSQL_PASSWORD,
             'db': config.MYSQL_DATABASE,
-            'port': config.MYSQL_PORT,
+            'port': str(config.MYSQL_PORT),
             'use_unicode': True,
             'charset': 'utf8'
         }
