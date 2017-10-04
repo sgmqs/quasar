@@ -17,12 +17,11 @@ logging.basicConfig(level=logging.INFO, format=log_format)
 class QuasarQueue:
     """Basic queue handling class for Quasar.
 
-    This class sets up 
+    This class sets up a connection to a queue, and provides the basic
+    building blocks for handing queue messages and consumer start/stop. 
 
-    Basic setup for now is assuming only connecting to a single queue.
-    For future version, re-factoring so this class handles all the queue
-    connection niceties and can connect to any queue URI using pika is
-    probably better.
+    It's most direct function is to have the on_message method over-ridden
+    by children classes to specify exactly how to handle each message.
     """
 
     def __init__(self,
@@ -41,6 +40,7 @@ class QuasarQueue:
         self.amqp_exchange = amqp_exchange
         self.amqp_queue = amqp_queue
         self.retry_counter = 0
+
 
     def start_consume(self, tag="quasar_consumer"):
         """Kick off consumer process to ingest messages.
@@ -95,6 +95,7 @@ class QuasarQueue:
             return json.loads(message_response)
         except Exception as e:
             raise QuasarException(e)
+            
 
     def body_encode(self, message_data):
         return json.dumps(message_data)
