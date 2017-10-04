@@ -57,7 +57,8 @@ class QuasarQueue:
     def stop_consume(self, tag="quasar_consumer"):
         self.channel.basic_cancel(tag)
 
-    def on_message(self, channel, method_frame, header_frame, body, output="true"):
+    def on_message(self, channel, method_frame, header_frame,
+                   body, output="true"):
         message_data = self.body_decode(body)
         if output == "true":
             print("Message received.")
