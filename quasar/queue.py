@@ -79,8 +79,8 @@ class QuasarQueue:
         self.channel.basic_publish(self.amqp_exchange, self.amqp_queue,
                                    self.body_encode(message_data),
                                    pika.BasicProperties(
-                                        content_type='application/json',
-                                        delivery_mode=2))
+                                       content_type='application/json',
+                                       delivery_mode=2))
 
     def body_decode(self, body):
         message_response = body.decode()
