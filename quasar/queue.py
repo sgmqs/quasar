@@ -1,5 +1,6 @@
 import json
 import logging
+import sys
 import time
 
 import pika
@@ -30,7 +31,7 @@ class QuasarQueue:
         self.params.socket_timeout = 5
         self.connection = pika.BlockingConnection(self.params)
         self.channel = self.connection.channel()
-        self.channel.basic_qos(prefetch_count=100)
+        self.channel.basic_qos(prefetch_count=config.QUEUE_PREFETCH_COUNT)
         self.channel.queue_declare(amqp_queue, durable=True)
 
         self.amqp_uri = amqp_uri
@@ -38,7 +39,7 @@ class QuasarQueue:
         self.amqp_queue = amqp_queue
         self.retry_counter = 0
 
-    def start_consume(self, tag="quasar_consumer"):
+    def start_consume(self, tag="quasar_consumer", test="false"):
         """Kick off consumer process to ingest messages.
 
         Stays active until killed by keyboard interrupt (Ctrl-c or equivalent).
@@ -57,20 +58,13 @@ class QuasarQueue:
     def stop_consume(self, tag="quasar_consumer"):
         self.channel.basic_cancel(tag)
 
-    def on_message(self, channel, method_frame, header_frame,
-                   body, output="true"):
+    def on_message(self, channel, method_frame, header_frame, body):
         message_data = self.body_decode(body)
-        if output == "true":
-            print("Message received.")
-            print("Message method_frame is {}".format(method_frame))
-            print("Message header_frame is {}".format(header_frame))
-            print("Message body is {}".format(body))
-        print("Republishing message.")
-        self.pub_message(message_data)
-        print("Acking message.")
+        self.process_message(message_data)
         self.ack_message(method_frame)
-        print("Original message ack'd.")
-        time.sleep(0.5)
+
+    def process_message(self, message_data):
+        pass
 
     def ack_message(self, method_frame):
         self.channel.basic_ack(method_frame.delivery_tag)
@@ -91,3 +85,29 @@ class QuasarQueue:
 
     def body_encode(self, message_data):
         return json.dumps(message_data)
+
+    # Some Testing methods to code cleaner later.
+
+    def test_consume(self, tag="quasar_test_consumer"):
+        """Kick off consumer process to ingest messages.
+
+        Stays active until killed by keyboard interrupt (Ctrl-c or equivalent).
+        """
+        logging.info("Starting {0} consumer..."
+                     "".format(self.amqp_queue))
+        self.channel.basic_consume(self.on_test_message, self.amqp_queue,
+                                   consumer_tag=tag)
+        try:
+            self.channel.start_consuming()
+            logging.info("{0} consumer started.".format(self.amqp_queue))
+        except KeyboardInterrupt:
+            self.stop_consume(tag="quasar_test_consumer")
+        self.connection.close()
+
+    def on_test_message(self, channel, method_frame, header_frame, body):
+        print("Message received.")
+        print("Message method_frame is {}".format(method_frame))
+        print("Message header_frame is {}".format(header_frame))
+        print("Message body is {}".format(body))
+        self.channel.basic_nack(method_frame.delivery_tag, requeue=True)
+        time.sleep(0.5) # Basic rate limiter for messages to stdout.
