@@ -204,8 +204,7 @@ def run_monitoring():
     mon = ETLMonitoring()
     out = mon.monitor()
 
-    client_token = os.environ.get('ETLMON_SLACKBOT_TOKEN')
-    sc = SlackClient(client_token)
+    sc = SlackClient(config.ETLMON_SLACKBOT_TOKEN)
     sc.api_call(
         "chat.postMessage",
         channel="#quasar-notifications",
