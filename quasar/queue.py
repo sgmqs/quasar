@@ -68,6 +68,9 @@ class QuasarQueue:
     def ack_message(self, method_frame):
         self.channel.basic_ack(method_frame.delivery_tag)
 
+    def nack_message(self, method_frame):
+        self.channel.basic_nack(method_frame.delivery_tag, requeue=True)
+
     def pub_message(self, message_data):
         self.channel.basic_publish(self.amqp_exchange, self.amqp_queue,
                                    self.body_encode(message_data),
@@ -108,5 +111,5 @@ class QuasarQueue:
         print("Message method_frame is {}".format(method_frame))
         print("Message header_frame is {}".format(header_frame))
         print("Message body is {}".format(body))
-        self.channel.basic_nack(method_frame.delivery_tag, requeue=True)
+        self.nack_message(method_frame.delivery_tag)
         time.sleep(0.5)  # Basic rate limiter for messages to stdout.
