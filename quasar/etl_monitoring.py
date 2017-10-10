@@ -187,8 +187,15 @@ class ETLMonitoring:
             if_exists='append'
         )
 
+    def send_message(self, message):
+        sc = SlackClient(config.ETLMON_SLACKBOT_TOKEN)
+        sc.api_call(
+            "chat.postMessage",
+            channel="#quasar-notifications",
+            text=message
+        )
+
     def monitor(self):
-        messages = []
         frame = self.compile_statuses(self.etl_queries)
         self.write_to_monitoring_table(frame)
 
@@ -196,17 +203,9 @@ class ETLMonitoring:
             this_table = row['table']
             this_desc = row['query']
             this_message = self.compare_latest_values(this_table, this_desc)
-            messages.append(this_message)
-        return messages
+            self.send_message(this_message)
 
 
 def run_monitoring():
     mon = ETLMonitoring()
-    out = mon.monitor()
-
-    sc = SlackClient(config.ETLMON_SLACKBOT_TOKEN)
-    sc.api_call(
-        "chat.postMessage",
-        channel="#quasar-notifications",
-        text=out
-    )
+    mon.monitor()
