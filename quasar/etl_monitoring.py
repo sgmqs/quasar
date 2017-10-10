@@ -161,16 +161,21 @@ class ETLMonitoring:
                                FROM quasar.monitoring t1 \
                                WHERE t1.query = 'user_distinct_user_count')"
         frame = self.db.run_query(query)
-        user_count = int(frame[frame['query'] == 'user_count']['output'])
-        distinct_count = int(frame[frame['query'] == 'user_distinct_user_count']['output'])
+        user_count = \
+            int(frame[frame['query'] == 'user_count']['output'])
+        distinct_count = \
+            int(frame[frame['query'] == 'user_distinct_user_count']['output'])
 
         if user_count == distinct_count:
-            message = "Passed - Distinct users equals number of rows in quasar.users"
+            message = \
+                "Passed - Distinct users equals " \
+                "number of rows in quasar.users"
         else:
-            message = "Failed - Distinct users does not equal number of rows in quasar.users"
+            message = \
+                "Failed - Distinct users does not equal " \
+                "number of rows in quasar.users"
 
         return message
-
 
     def compare_latest_values(self, table, desc):
         latest_value = self.extract_latest_value(table, desc)
@@ -212,6 +217,7 @@ class ETLMonitoring:
             if_exists='append'
         )
 
+    @staticmethod
     def send_message(self, message):
         sc = SlackClient(config.ETLMON_SLACKBOT_TOKEN)
         sc.api_call(
