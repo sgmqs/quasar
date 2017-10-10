@@ -196,7 +196,6 @@ class ETLMonitoring:
             this_table = row['table']
             this_desc = row['query']
             this_message = self.compare_latest_values(this_table, this_desc)
-            print(this_message)
             sc.api_call(
                 "chat.postMessage",
                 channel="#quasar-notifications",
