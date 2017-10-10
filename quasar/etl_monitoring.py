@@ -147,6 +147,31 @@ class ETLMonitoring:
         value = self.get_value(max_2_query)
         return value
 
+    def compare_distinct(self):
+        query = \
+            "SELECT  \
+               m.query,  \
+               m.output  \
+            FROM quasar.monitoring m   \
+            WHERE m.table = 'quasar.users' \
+            AND m.timestamp = (SELECT max(t1.timestamp)  \
+                               FROM quasar.monitoring t1 \
+                               WHERE t1.query = 'user_count') \
+            OR m.timestamp = (SELECT max(t1.timestamp)  \
+                               FROM quasar.monitoring t1 \
+                               WHERE t1.query = 'user_distinct_user_count')"
+        frame = self.db.run_query(query)
+        user_count = int(frame[frame['query'] == 'user_count']['output'])
+        distinct_count = int(frame[frame['query'] == 'user_distinct_user_count']['output'])
+
+        if user_count == distinct_count:
+            message = "Passed - Distinct users equals number of rows in quasar.users"
+        else:
+            message = "Failed - Distinct users does not equal number of rows in quasar.users"
+
+        return message
+
+
     def compare_latest_values(self, table, desc):
         latest_value = self.extract_latest_value(table, desc)
         second_latest_value = self.extract_second_latest_value(table, desc)
@@ -175,7 +200,7 @@ class ETLMonitoring:
                 message = 'Failed - Unspecified Error'
         except:
             message = str(QuasarException(sys.exc_info()[0]))
-        report = table + " " + desc + " " + message
+        report = message + ": " + table + " " + desc
 
         return report
 
@@ -204,6 +229,9 @@ class ETLMonitoring:
             this_desc = row['query']
             this_message = self.compare_latest_values(this_table, this_desc)
             self.send_message(this_message)
+
+        this_message = self.compare_distinct()
+        self.send_message(this_message)
 
 
 def run_monitoring():
