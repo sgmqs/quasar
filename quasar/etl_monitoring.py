@@ -218,7 +218,7 @@ class ETLMonitoring:
         )
 
     @staticmethod
-    def send_message(self, message):
+    def send_message(message):
         sc = SlackClient(config.ETLMON_SLACKBOT_TOKEN)
         sc.api_call(
             "chat.postMessage",
