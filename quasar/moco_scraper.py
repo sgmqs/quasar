@@ -2,7 +2,7 @@ import boto3
 from .config import config
 from .database import Database
 from .scraper import Scraper
-from .utils import strip_str, QuasarException
+from .utils import strip_str
 
 scraper = Scraper('https://secure.mcommons.com',
                   auth=(config.mc_user, config.mc_pw))
