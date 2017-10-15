@@ -36,23 +36,33 @@ def _get_campaigns(db):
     return db.query(querystr)
 
 
-def _update_campaign_completed(db, campaign):
+def _get_campaign(db):
+    querystr = ''.join(("SELECT * FROM ", config.MOCO_CAMPAIGN_LIST_TABLE,
+                        " WHERE status = 'unlocked' AND ",
+                        "campaign_scrape_completed <> TRUE ",
+                        "ORDER BY campaign_id DESC LIMIT 1"))
+    return db.query(querystr)
+
+
+def _set_campaign_page(db, page, campaign):
     querystr = ''.join(("UPDATE ", config.MOCO_CAMPAIGN_LIST_TABLE,
-                        " SET campaign_scrape_completed = TRUE ",
-                        "WHERE campaign_id = {}")).format(campaign)
+                        " SET last_page = {} WHERE campaign_id = {}",
+                        "")).format(page, campaign)
     db.query(querystr)
 
 
-def _get_campaign_page(db):
-    querystr = ''.join(("SELECT last_page FROM ",
-                        config.MOCO_CAMPAIGN_LAST_PAGE))
-    start_page = strip_str(db.query(querystr))
-    return start_page
+def _set_status(db, status, campaign):
+    querystr = ''.join(("UPDATE ", config.MOCO_CAMPAIGN_LIST_TABLE,
+                        " SET status = '{}' WHERE campaign_id = {}",
+                        "")).format(status, campaign)
+    db.query(querystr)
 
 
-def _update_campaign_page(db, page):
-    querystr = ''.join(("UPDATE ", config.MOCO_CAMPAIGN_LAST_PAGE,
-                        " SET last_page = {}")).format(page)
+def _set_campaign_completed(db, campaign):
+    querystr = ''.join(("UPDATE ", config.MOCO_CAMPAIGN_LIST_TABLE,
+                        " SET campaign_scrape_completed = TRUE, ",
+                        " status = '{}' WHERE campaign_id = {}",
+                        "")).format("done", campaign)
     db.query(querystr)
 
 
@@ -81,28 +91,30 @@ def _update_profile_start_page(db, page):
 
 def scrape_messages():
     _update_campaigns(db)
-    campaigns = _get_campaigns(db)
-    for campaign in reversed(campaigns):
-        if campaign[1] == 1:
-            pass
-        else:
-            page = int(_get_campaign_page(db))
-            messages = _get_message(campaign[0], page).find_all('message')
+    campaign = _get_campaign(db)
+    try:
+        while campaign is not None:
+            page = campaign[0][1]
+            _set_status(db, "locked", campaign[0][0])
+            messages = _get_message(campaign[0][0],
+                                    page).find_all('message')
             while messages != []:
                 for message in messages:
-                    filename = (str(campaign[0]) + '-' +
+                    filename = (str(campaign[0][0]) + '-' +
                                 message['id'] + '-' +
                                 'message' + '.xml')
                     _write_file(filename, message)
                     print("Wrote message {} for campaign {}, "
-                          "page {}".format(filename, campaign[0], page))
+                          "page {}".format(filename,
+                                           campaign[0][0], page))
                 page += 1
-                _update_campaign_page(db, page)
-                messages = _get_message(campaign[0],
+                _set_campaign_page(db, page, campaign[0][0])
+                messages = _get_message(campaign[0][0],
                                         page).find_all('message')
-            _update_campaign_completed(db, campaign[0])
-            page = 1
-            _update_campaign_page(db, page)
+            _set_campaign_completed(db, campaign[0][0])
+            campaign = _get_campaign(db)
+    except KeyboardInterrupt:
+        _set_status(db, "unlocked", campaign[0][0])
 
 
 def scrape_profiles(start_page=None):
