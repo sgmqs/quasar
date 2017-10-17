@@ -111,5 +111,5 @@ class QuasarQueue:
         print("Message method_frame is {}".format(method_frame))
         print("Message header_frame is {}".format(header_frame))
         print("Message body is {}".format(body))
-        self.nack_message(method_frame.delivery_tag)
+        self.nack_message(method_frame)
         time.sleep(0.5)  # Basic rate limiter for messages to stdout.
