@@ -1,6 +1,5 @@
-import time
-
 from .queue import QuasarQueue
+
 
 class RunscopeQueue(QuasarQueue):
 
@@ -15,6 +14,7 @@ class RunscopeQueue(QuasarQueue):
 
 
 queue = RunscopeQueue()
+
 
 def main():
     queue.start_consume()
