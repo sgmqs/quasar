@@ -71,8 +71,8 @@ def _get_message(campaign, page):
                           'campaign_id': campaign, 'page': page})
 
 
-def _write_file(filename, data):
-    s3.put_object(Key=filename, Bucket=config.MOCO_ARCHIVE_BUCKET,
+def _write_file(filename, data, bucket):
+    s3.put_object(Key=filename, Bucket=bucket,
                   Body=bytes(str(data), encoding='utf-8'))
 
 
@@ -103,7 +103,7 @@ def scrape_messages():
                     filename = (str(campaign[0][0]) + '-' +
                                 message['id'] + '-' +
                                 'message' + '.xml')
-                    _write_file(filename, message)
+                    _write_file(filename, message, config.MOCO_MESSAGE_BUCKET)
                     print("Wrote message {} for campaign {}, "
                           "page {}".format(filename,
                                            campaign[0][0], page))
@@ -128,7 +128,7 @@ def scrape_profiles(start_page=None):
         for profile in profiles:
             filename = (profile['id'] + '-' +
                         profile.phone_number.string + '.xml')
-            _write_file(filename, profile)
+            _write_file(filename, profile, config.MOCO_PROFILE_BUCKET)
             print("Wrote profile {}/1000 of page "
                   "{}".format(profile_num, page_num))
             profile_num += 1
