@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="quasar",
-    version="0.1.3",
+    version="0.1.4",
     packages=find_packages(),
     install_requires=requirements,
     entry_points={
@@ -16,6 +16,7 @@ setup(
             'etl_monitoring = quasar.etl_monitoring:run_monitoring',
             'get_competitions = quasar.gladiator_import:get_competitions',
             'import_UID_to_mobile_user_lookup_table = quasar.import_uid_by_phone_number:main',
+            'import_moco_profiles = quasar.moco_xml_to_quasar:main_import_profiles',
             'legacy_mobile_campaign_table_update = quasar.mobile_commons:convert_campaign_lookup_to_id',
             'mobile_campaign_lookup_table_update = quasar.mobile_commons:scrape_campaigns',
             'mobile_subscriptions = quasar.jc_subscribers:main',
