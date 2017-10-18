@@ -1,6 +1,8 @@
-import json, os
+import json
+import os
 
-import boto3, xmltodict
+import boto3
+import xmltodict
 from .config import config
 from .database import Database
 from .utils import strip_str
@@ -12,16 +14,17 @@ s3 = boto3.client(
 
 db = Database()
 
+
 def _insert_profile(db, profile):
     str = ''.join(("REPLACE INTO quasar.moco_profile_import ",
                    "VALUES ({}, '{}', '{}', '{}', '{}', '{}', ",
                    "'{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', ",
                    "'{}', POINT({}, {}))",
                    "")).format(
-                            profile['@id'], 
+                            profile['@id'],
                             strip_str(profile['phone_number']),
                             profile['created_at'], profile['updated_at'],
-                            strip_str(profile['status']), 
+                            strip_str(profile['status']),
                             strip_str(profile['opted_out_at']),
                             strip_str(profile['opted_out_source']),
                             strip_str(profile['address']['street1']),
@@ -38,6 +41,7 @@ def _insert_profile(db, profile):
                             profile['location']['longitude'])
     db.query(str)
 
+
 def import_profiles():
     for file in os.listdir(config.MOCO_PROFILE_DIR):
         moco_xml = open(''.join((config.MOCO_PROFILE_DIR, "/{}",
@@ -45,11 +49,14 @@ def import_profiles():
         profile = xmltodict.parse(moco_xml)['profile']
         _insert_profile(db, profile)
 
+
 def convert_to_json_file():
     pass
 
+
 def import_filenames():
     pass
-    
+
+
 def main_import_profiles():
     import_profiles()
