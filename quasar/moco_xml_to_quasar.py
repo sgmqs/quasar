@@ -19,8 +19,7 @@ def _insert_profile(db, profile):
                    "VALUES ({}, '{}', '{}', '{}', '{}', '{}', ",
                    "'{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', ",
                    "'{}', '{}', '{}', POINT({}, {}))",
-                   "")).format(
-                               profile['@id'],
+                   "")).format(profile['@id'],
                                strip_str(profile['phone_number']),
                                profile['created_at'], profile['updated_at'],
                                strip_str(profile['status']),
