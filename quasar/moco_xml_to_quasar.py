@@ -41,9 +41,9 @@ def _insert_profile(db, profile):
 
 
 def import_profiles():
-    for file in os.listdir(config.MOCO_PROFILE_DIR):
+    for file in os.scandir(path=config.MOCO_PROFILE_DIR):
         moco_xml = open(''.join((config.MOCO_PROFILE_DIR, "/{}",
-                                 "")).format(file), "r").read()
+                                 "")).format(file.name), "r").read()
         profile = xmltodict.parse(moco_xml)['profile']
         _insert_profile(db, profile)
 
