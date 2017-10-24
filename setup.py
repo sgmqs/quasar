@@ -13,6 +13,7 @@ setup(
             'campaign_activity_backfill_diff = quasar.campaign_activity:backfill_since',
             'campaign_activity_full_backfill = quasar.campaign_activity:full_backfill',
             'campaign_info_table_refresh = quasar.phoenix_to_campaign_info_table:main',
+            'cio_import = quasar.cio_queue_process:main',
             'etl_monitoring = quasar.etl_monitoring:run_monitoring',
             'get_competitions = quasar.gladiator_import:get_competitions',
             'import_UID_to_mobile_user_lookup_table = quasar.import_uid_by_phone_number:main',
