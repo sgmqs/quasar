@@ -29,6 +29,9 @@ def now_minus_hours(hours):
         return dt.fromtimestamp(start_time).isoformat()
 
 
+def unixtime_to_isotime(unixtime):
+    return dt.fromtimestamp(unixtime).isoformat()
+
 class Duration:
     """Simple duration tracker.
 
