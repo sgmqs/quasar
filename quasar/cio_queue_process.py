@@ -1,10 +1,9 @@
 import json
 
-from .config import config
 from .database import Database
 from .queue import QuasarQueue
 from .utils import unixtime_to_isotime as u2i
-from .utils import strip_str as ss
+from .utils import strip_str
 
 
 db = Database()
@@ -13,11 +12,13 @@ db = Database()
 class CioQueue(QuasarQueue):
 
     def process_message(self, message_data):
-        print("Processing C.IO event id: {}.".format(message_data['data']['event_id']))
+        print(''.join(("Processing C.IO event id: "
+                       "{}.")).format(message_data['data']['event_id']))
         log_event(db, message_data)
         customer_event(db, message_data)
-        if (message_data['data']['event_type'] == 'customer_subscribed' or
-            message_data['data']['event_type'] == 'customer_unsubscribed'):
+        event_type = message_data['data']['event_type']
+        if (event_type == 'customer_subscribed' or
+                event_type == 'customer_unsubscribed'):
             legacy_sub_unsub(db, message_data)
 
 
@@ -44,14 +45,14 @@ def legacy_sub_unsub(db, message_data):
         status = 'subscribed'
     else:
         status = 'unsubscribed'
-    if ss(nsid) != "":
+    if strip_str(nsid) != "":
         db.query_str(''.join(("UPDATE quasar.users SET "
                               "customer_io_subscription_status = %s, "
                               "customer_io_subscription_timestamp = %s"
                               " WHERE northstar_id = %s")),
                      (status,
                       u2i(message_data['data']['timestamp']),
-                      ss(nsid)))
+                      strip_str(nsid)))
     else:
         db.query_str("INSERT INTO cio.legacy_sub_backlog VALUES (%s, %s, %s)",
                      (status,
@@ -59,13 +60,14 @@ def legacy_sub_unsub(db, message_data):
                       message_data['data']['data']['customer_id']))
 
 
+@staticmethod
 def legacy_update_users():
     backlog = db.query("SELECT * FROM cio.legacy_sub_backlog")
     for entry in backlog:
         nsid = db.query_str(''.join(("SELECT northstar_id FROM quasar.users "
                                      "WHERE northstar_id = %s")),
                             (entry[2],))
-        if ss(nsid) != "":
+        if strip_str(nsid) != "":
             db.query_str(''.join(("UPDATE quasar.users SET "
                                   "customer_io_subscription_status = %s, "
                                   "customer_io_subscription_timestamp = %s "
