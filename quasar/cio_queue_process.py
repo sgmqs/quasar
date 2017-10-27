@@ -1,5 +1,4 @@
 import json
-import time
 
 from .config import config
 from .database import Database
@@ -10,23 +9,22 @@ from .utils import strip_str as ss
 
 db = Database()
 
+
 class CioQueue(QuasarQueue):
 
     def process_message(self, message_data):
-        print("Inserting record.")
+        print("Processing C.IO event id: {}.".format(message_data['data']['event_id']))
         log_event(db, message_data)
         customer_event(db, message_data)
         if (message_data['data']['event_type'] == 'customer_subscribed' or
             message_data['data']['event_type'] == 'customer_unsubscribed'):
             legacy_sub_unsub(db, message_data)
-        self.pub_message(message_data)
-        time.sleep(1)
 
 
 def log_event(db, message_data):
     db.query_str(''.join(("INSERT IGNORE INTO cio.event_log"
                           "(meta, data) VALUES (%s, %s)")),
-                 (json.dumps(message_data['meta']), 
+                 (json.dumps(message_data['meta']),
                   json.dumps(message_data['data'])))
 
 
@@ -37,11 +35,11 @@ def customer_event(db, message_data):
                   u2i(message_data['data']['timestamp']),
                   message_data['data']['data']['customer_id']))
 
+
 def legacy_sub_unsub(db, message_data):
     nsid = db.query_str(''.join(("SELECT northstar_id FROM quasar.users "
-                              "WHERE email = %s")),
-                          (message_data['data']['data']['email_address'],))
-    print("Northstar ID is :{}".format(ss(nsid)))
+                                 "WHERE email = %s")),
+                        (message_data['data']['data']['email_address'],))
     if message_data['data']['event_type'] == 'customer_subscribed':
         status = 'subscribed'
     else:
@@ -61,9 +59,32 @@ def legacy_sub_unsub(db, message_data):
                       message_data['data']['data']['customer_id']))
 
 
+def legacy_update_users():
+    backlog = db.query("SELECT * FROM cio.legacy_sub_backlog")
+    for entry in backlog:
+        nsid = db.query_str(''.join(("SELECT northstar_id FROM quasar.users "
+                                     "WHERE northstar_id = %s")),
+                            (entry[2],))
+        if ss(nsid) != "":
+            db.query_str(''.join(("UPDATE quasar.users SET "
+                                  "customer_io_subscription_status = %s, "
+                                  "customer_io_subscription_timestamp = %s "
+                                  "WHERE northstar_id = %s")),
+                         (entry[0], entry[1], entry[2]))
+            db.query_str(''.join(("DELETE FROM cio.legacy_sub_backlog "
+                                  "WHERE northstar_id = %s")),
+                         (entry[2],))
+            print("Northstar ID {} c.io status updated.".format(entry[2]))
+        else:
+            print("Northstar ID {} staying in backlog.".format(entry[2]))
+
 
 queue = CioQueue()
 
 
 def main():
     queue.start_consume()
+
+
+def legacy_cio_backfill():
+    legacy_update_users()
