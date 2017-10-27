@@ -60,7 +60,6 @@ def legacy_sub_unsub(db, message_data):
                       message_data['data']['data']['customer_id']))
 
 
-@staticmethod
 def legacy_update_users():
     backlog = db.query("SELECT * FROM cio.legacy_sub_backlog")
     for entry in backlog:
