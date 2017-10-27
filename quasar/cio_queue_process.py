@@ -23,7 +23,7 @@ class CioQueue(QuasarQueue):
 
 
 def log_event(db, message_data):
-    db.query_str(''.join(("INSERT IGNORE INTO cio.event_log"
+    db.query_str(''.join(("INSERT INTO cio.event_log"
                           "(meta, data) VALUES (%s, %s)")),
                  (json.dumps(message_data['meta']),
                   json.dumps(message_data['data'])))
