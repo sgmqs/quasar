@@ -17,7 +17,7 @@ setup(
             'etl_monitoring = quasar.etl_monitoring:run_monitoring',
             'get_competitions = quasar.gladiator_import:get_competitions',
             'import_UID_to_mobile_user_lookup_table = quasar.import_uid_by_phone_number:main',
-            'legacy_cio_backfill = quasar.cio_queue_process:legacy_cio_backfill',
+            'legacy_cio_backfill = quasar.cio_legacy_backfill:legacy_cio_backfill',
             'import_moco_profiles = quasar.moco_xml_to_quasar:main_import_profiles',
             'legacy_mobile_campaign_table_update = quasar.mobile_commons:convert_campaign_lookup_to_id',
             'mobile_campaign_lookup_table_update = quasar.mobile_commons:scrape_campaigns',

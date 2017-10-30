@@ -60,32 +60,8 @@ def legacy_sub_unsub(db, message_data):
                       message_data['data']['data']['customer_id']))
 
 
-def legacy_update_users():
-    backlog = db.query("SELECT * FROM cio.legacy_sub_backlog")
-    for entry in backlog:
-        nsid = db.query_str(''.join(("SELECT northstar_id FROM quasar.users "
-                                     "WHERE northstar_id = %s")),
-                            (entry[2],))
-        if strip_str(nsid) != "":
-            db.query_str(''.join(("UPDATE quasar.users SET "
-                                  "customer_io_subscription_status = %s, "
-                                  "customer_io_subscription_timestamp = %s "
-                                  "WHERE northstar_id = %s")),
-                         (entry[0], entry[1], entry[2]))
-            db.query_str(''.join(("DELETE FROM cio.legacy_sub_backlog "
-                                  "WHERE northstar_id = %s")),
-                         (entry[2],))
-            print("Northstar ID {} c.io status updated.".format(entry[2]))
-        else:
-            print("Northstar ID {} staying in backlog.".format(entry[2]))
-
-
 queue = CioQueue()
 
 
 def main():
     queue.start_consume()
-
-
-def legacy_cio_backfill():
-    legacy_update_users()
