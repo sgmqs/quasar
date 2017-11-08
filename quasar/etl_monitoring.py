@@ -54,6 +54,10 @@ class ETLMonitoring:
             'user_distinct_user_count':
                 'SELECT count(distinct u.northstar_id) '
                 'FROM quasar.users u',
+            'active_user_count':
+                "SELECT count(*) FROM quasar.users u " 
+                "WHERE u.customer_io_subscription_status = 'subscribed' "
+                "OR u.moco_current_status = 'active'",
             'ca_table_count':
                 'SELECT count(*) FROM quasar.campaign_activity c',
             'ca_post_count':
