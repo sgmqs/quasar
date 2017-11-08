@@ -26,6 +26,7 @@ setup(
             'northstar_to_quasar_import = quasar.northstar_to_user_table:full_backfill',
             'northstar_to_quasar_import_backfill = quasar.northstar_to_user_table:backfill_since',
             'quasar_blink_queue_consumer = quasar.customerio:main',
+            'phoenix_next_cleanup = quasar.phoenix_next_queue_cleanup:main',
             'regenerate_mobile_master_lookup_lite_table = quasar.create_mobile_master_lookup_lite:main',
             'runscope_cleanup = quasar.cio_runscope_queue_cleanup:main',
             'scrape_moco_profiles = quasar.moco_scraper:start_profile_scrape',
