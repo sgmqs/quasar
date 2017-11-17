@@ -54,7 +54,7 @@ CREATE TABLE `campaign_activity` (
 
 DELIMITER ;;
 /*!50003 SET SESSION SQL_MODE="NO_ENGINE_SUBSTITUTION" */;;
-/*!50003 CREATE */ /*!50017 DEFINER=`quasaradm`@`%` */ /*!50003 TRIGGER `log` AFTER INSERT ON `campaign_activity` FOR EACH ROW BEGIN  
+/*!50003 CREATE */ /*!50017 DEFINER=`root`@`%` */ /*!50003 TRIGGER `log` AFTER INSERT ON `campaign_activity` FOR EACH ROW BEGIN  
 INSERT IGNORE INTO campaign_activity_log SELECT * FROM campaign_activity WHERE northstar_id = NEW.northstar_id AND signup_id = NEW.signup_id AND campaign_id = NEW.campaign_id AND campaign_run_id = NEW.campaign_run_id AND post_id = NEW.post_id;
 END */;;
 DELIMITER ;

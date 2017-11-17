@@ -30,8 +30,9 @@ def _backfill(hours=None):
     start_time = strip_str(now_minus_hours(hours))  # empty string if None
     scraper = Scraper(''.join((config.ROGUE_URI, '/api/v2/activity')),
                       headers={'X-DS-Rogue-API-Key': config.DS_ROGUE_API_KEY},
-                      params={'page': 1, 'limit': 40, 'filter[updated_at]': start_time})
-    final_page = _get_final_page(scraper)
+                      params={'page': 1, 'limit': 40,
+                              'filter[updated_at]': start_time,
+                              'pagination': 'cursor'})
 
     if hours is not None:
         print("Current backfill hours are %s." % hours)
@@ -39,15 +40,17 @@ def _backfill(hours=None):
     else:
         current_page = _get_start_page(db)
 
+    page = scraper.getJson('', params={'page': current_page})
+
     # Main processing loop
-    while current_page <= final_page:
-        print("Current page: %s of %s" % (current_page, final_page))
-        data = scraper.getJson('', params={'page': current_page})['data']
+    while page['meta']['cursor']['next'] is not None:
+        print("Current page: {}".format(current_page,))
+        data = page['data']
         _process_records(db, data)
         if hours is None:
             _update_progress(db, current_page)
-
         current_page += 1
+        page = scraper.getJson('', params={'page': current_page})
 
     # Cleanup
     try:
@@ -56,8 +59,6 @@ def _backfill(hours=None):
         print("Exception is %s" % e)
         sys.exit(0)
 
-def _get_final_page(scraper):
-    return scraper.getJson('')['meta']['pagination']['total_pages']
 
 def _get_start_page(db):
     querystr = ''.join(("SELECT counter_value FROM ", config.ROGUE_PROGRESS_TABLE,
